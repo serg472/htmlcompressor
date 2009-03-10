@@ -130,7 +130,7 @@ public class HtmlCompressor implements Compressor {
 		
 		//remove comments
 		Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		result = commentPattern.matcher(result).replaceAll(" ");
+		result = commentPattern.matcher(result).replaceAll("");
 		
 		//remove extra whitespace characters
 		result = result.replaceAll("\\s{2,}"," ");
