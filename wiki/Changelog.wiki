@@ -1,0 +1,13 @@
+#summary Changelog
+#labels Featured
+
+*0.3*
+  * Added `removeQuotes` parameter to HTML compressor that will remove unnecessary quotes from tag attributes (dafault is off)
+  * Performance tweaks
+
+*0.2*
+  * Added XmlCompressor
+  * Created JSP taglib for <compress:html> and <compress:xml> tags
+
+*0.1*
+  * Initial release
