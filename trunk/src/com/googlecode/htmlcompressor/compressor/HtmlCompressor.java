@@ -218,7 +218,6 @@ public class HtmlCompressor implements Compressor {
 			compressor.compress(result, yuiJsLineBreak, !yuiJsNoMunge, false, yuiJsPreserveAllSemiColons, yuiJsDisableOptimizations);
 			
 			return (new StringBuilder(source.substring(0, scriptMatcher.start(1))).append(result.toString()).append(source.substring(scriptMatcher.end(1)))).toString();
-			//return source.substring(0, scriptMatcher.start(1)) + result.toString() + source.substring(scriptMatcher.end(1));
 		
 		} else {
 			return source;
@@ -239,7 +238,6 @@ public class HtmlCompressor implements Compressor {
 			compressor.compress(result, yuiCssLineBreak);
 			
 			return (new StringBuilder(source.substring(0, styleMatcher.start(1))).append(result.toString()).append(source.substring(styleMatcher.end(1)))).toString();
-			//return source.substring(0, styleMatcher.start(1)) + result.toString() + source.substring(styleMatcher.end(1));
 		
 		} else {
 			return source;
