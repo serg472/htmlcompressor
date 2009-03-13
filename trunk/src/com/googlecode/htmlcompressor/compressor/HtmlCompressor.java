@@ -141,7 +141,7 @@ public class HtmlCompressor implements Compressor {
 				Matcher attrMatcher = attrPattern.matcher(quotedTag);
 				String strippedTag = attrMatcher.replaceAll("$2");
 				
-				result = result.replaceAll(quotedTag, Matcher.quoteReplacement(strippedTag));
+				result = result.replaceAll(escRegEx(quotedTag), Matcher.quoteReplacement(strippedTag));
 			}
 		}
 		
@@ -244,6 +244,10 @@ public class HtmlCompressor implements Compressor {
 		} else {
 			return source;
 		}
+	}
+	
+	private String escRegEx(String inStr) {
+		return inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1");
 	}
 
 	/**
