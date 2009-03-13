@@ -49,7 +49,6 @@
                 <pathelement location="${lib.dir}/yuicompressor-2.4.2.jar"/>
 	    		<pathelement location="${lib.dir}/jsp-api.jar"/>
             </classpath>
-	      <!--<classpath refid="compile.classpath"/>-->
 	      <sourcepath>
 	        <pathelement path="${src.dir}" />
 	      </sourcepath>
