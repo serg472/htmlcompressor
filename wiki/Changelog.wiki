@@ -1,6 +1,4 @@
-#summary Changelog
 #labels Featured
-
 *0.3*
   * Added `removeQuotes` parameter to HTML compressor that will remove unnecessary quotes from tag attributes (dafault is off)
   * Performance tweaks
