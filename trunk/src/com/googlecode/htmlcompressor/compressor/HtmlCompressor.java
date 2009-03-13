@@ -17,6 +17,7 @@ package com.googlecode.htmlcompressor.compressor;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,8 +47,10 @@ public class HtmlCompressor implements Compressor {
 	private int yuiJsLineBreak = -1;
 	private int yuiCssLineBreak = -1;
 	
-	private String tempPrefix = "%%%COMPRESS~";
-	private String tempSuffix = "%%%";
+	private final String tempPreBlock = "%%%COMPRESS~PRE%%%";
+	private final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA%%%";
+	private final String tempScriptBlock = "%%%COMPRESS~SCRIPT%%%";
+	private final String tempStyleBlock = "%%%COMPRESS~STYLE%%%";
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed result.
@@ -70,48 +73,36 @@ public class HtmlCompressor implements Compressor {
 		String result = html;
 		
 		//preserve PRE tags
-		String preRule = "<pre[^>]*?>.*?</pre>";
-		Pattern prePattern = Pattern.compile(preRule, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
+		Pattern prePattern = Pattern.compile("<pre[^>]*?>.*?</pre>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		Matcher preMatcher = prePattern.matcher(result);
 		while(preMatcher.find()) {
 			preBlocks.add(preMatcher.group(0));
 		}
-		
-		result = preMatcher.replaceAll(tempPrefix + "PRE" + tempSuffix);
+		result = preMatcher.replaceAll(tempPreBlock);
 		
 		//preserve TEXTAREA tags
-		String taRule = "<textarea[^>]*?>.*?</textarea>";
-		Pattern taPattern = Pattern.compile(taRule, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
+		Pattern taPattern = Pattern.compile("<textarea[^>]*?>.*?</textarea>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		Matcher taMatcher = taPattern.matcher(result);
 		while(taMatcher.find()) {
 			taBlocks.add(taMatcher.group(0));
 		}
-		
-		result = taMatcher.replaceAll(tempPrefix + "TEXTAREA" + tempSuffix);
+		result = taMatcher.replaceAll(tempTextAreaBlock);
 		
 		//preserve SCRIPT tags
-		String scriptRule = "<script[^>]*?>.*?</script>";
-		Pattern scriptPattern = Pattern.compile(scriptRule, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
+		Pattern scriptPattern = Pattern.compile("<script[^>]*?>.*?</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		Matcher scriptMatcher = scriptPattern.matcher(result);
 		while(scriptMatcher.find()) {
 			scriptBlocks.add(scriptMatcher.group(0));
 		}
-		
-		result = scriptMatcher.replaceAll(tempPrefix + "SCRIPT" + tempSuffix);
+		result = scriptMatcher.replaceAll(tempScriptBlock);
 		
 		//preserve STYLE tags
-		String styleRule = "<style[^>]*?>.*?</style>";
-		Pattern stylePattern = Pattern.compile(styleRule, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
+		Pattern stylePattern = Pattern.compile("<style[^>]*?>.*?</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		Matcher styleMatcher = stylePattern.matcher(result);
 		while(styleMatcher.find()) {
 			styleBlocks.add(styleMatcher.group(0));
 		}
-		
-		result = styleMatcher.replaceAll(tempPrefix + "STYLE" + tempSuffix);
+		result = styleMatcher.replaceAll(tempStyleBlock);
 		
 		//process pure html
 		result = processHtml(result);
@@ -142,8 +133,8 @@ public class HtmlCompressor implements Compressor {
 		String result = html;
 		
 		//put preserved blocks back
-		while(result.contains(tempPrefix + "PRE" + tempSuffix)) {
-			result = result.replaceFirst(tempPrefix + "PRE" + tempSuffix, Matcher.quoteReplacement(blocks.remove(0)));
+		while(result.contains(tempPreBlock)) {
+			result = result.replaceFirst(tempPreBlock, Matcher.quoteReplacement(blocks.remove(0)));
 		}
 		
 		return result;
@@ -153,8 +144,8 @@ public class HtmlCompressor implements Compressor {
 		String result = html;
 		
 		//put preserved blocks back
-		while(result.contains(tempPrefix + "TEXTAREA" + tempSuffix)) {
-			result = result.replaceFirst(tempPrefix + "TEXTAREA" + tempSuffix, Matcher.quoteReplacement(blocks.remove(0)));
+		while(result.contains(tempTextAreaBlock)) {
+			result = result.replaceFirst(tempTextAreaBlock, Matcher.quoteReplacement(blocks.remove(0)));
 		}
 		
 		return result;
@@ -170,8 +161,8 @@ public class HtmlCompressor implements Compressor {
 		}
 		
 		//put preserved blocks back
-		while(result.contains(tempPrefix + "SCRIPT" + tempSuffix)) {
-			result = result.replaceFirst(tempPrefix + "SCRIPT" + tempSuffix, Matcher.quoteReplacement(blocks.remove(0)));
+		while(result.contains(tempScriptBlock)) {
+			result = result.replaceFirst(tempScriptBlock, Matcher.quoteReplacement(blocks.remove(0)));
 		}
 		
 		return result;
@@ -187,8 +178,8 @@ public class HtmlCompressor implements Compressor {
 		}
 		
 		//put preserved blocks back
-		while(result.contains(tempPrefix + "STYLE" + tempSuffix)) {
-			result = result.replaceFirst(tempPrefix + "STYLE" + tempSuffix, Matcher.quoteReplacement(blocks.remove(0)));
+		while(result.contains(tempStyleBlock)) {
+			result = result.replaceFirst(tempStyleBlock, Matcher.quoteReplacement(blocks.remove(0)));
 		}
 		
 		return result;
@@ -196,8 +187,7 @@ public class HtmlCompressor implements Compressor {
 	
 	private String compressJavaScript(String source) throws Exception {
 		
-		String scriptRule = "<script[^>]*?>(.+?)</script>";
-		Pattern scriptPattern = Pattern.compile(scriptRule, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+		Pattern scriptPattern = Pattern.compile("<script[^>]*?>(.+?)</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		
 		//check if block is not empty
 		Matcher scriptMatcher = scriptPattern.matcher(source);
@@ -208,7 +198,8 @@ public class HtmlCompressor implements Compressor {
 			JavaScriptCompressor compressor = new JavaScriptCompressor(new StringReader(scriptMatcher.group(1)), null);
 			compressor.compress(result, yuiJsLineBreak, !yuiJsNoMunge, false, yuiJsPreserveAllSemiColons, yuiJsDisableOptimizations);
 			
-			return source.substring(0, scriptMatcher.start(1)) + result.toString() + source.substring(scriptMatcher.end(1));
+			return (new StringBuilder(source.substring(0, scriptMatcher.start(1))).append(result.toString()).append(source.substring(scriptMatcher.end(1)))).toString();
+			//return source.substring(0, scriptMatcher.start(1)) + result.toString() + source.substring(scriptMatcher.end(1));
 		
 		} else {
 			return source;
@@ -217,8 +208,7 @@ public class HtmlCompressor implements Compressor {
 	
 	private String compressCssStyles(String source) throws Exception {
 		
-		String styleRule = "<style[^>]*?>(.+?)</style>";
-		Pattern stylePattern = Pattern.compile(styleRule, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+		Pattern stylePattern = Pattern.compile("<style[^>]*?>(.+?)</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		
 		//check if block is not empty
 		Matcher styleMatcher = stylePattern.matcher(source);
@@ -229,7 +219,8 @@ public class HtmlCompressor implements Compressor {
 			CssCompressor compressor = new CssCompressor(new StringReader(styleMatcher.group(1)));
 			compressor.compress(result, yuiCssLineBreak);
 			
-			return source.substring(0, styleMatcher.start(1)) + result.toString() + source.substring(styleMatcher.end(1));
+			return (new StringBuilder(source.substring(0, styleMatcher.start(1))).append(result.toString()).append(source.substring(styleMatcher.end(1)))).toString();
+			//return source.substring(0, styleMatcher.start(1)) + result.toString() + source.substring(styleMatcher.end(1));
 		
 		} else {
 			return source;
