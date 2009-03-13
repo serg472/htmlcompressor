@@ -17,7 +17,6 @@ package com.googlecode.htmlcompressor.compressor;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +36,7 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  */
 public class HtmlCompressor implements Compressor {
 	
+	private boolean removeQuotes = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
 	
@@ -125,6 +125,25 @@ public class HtmlCompressor implements Compressor {
 		
 		//remove extra whitespace characters
 		result = result.replaceAll("\\s{2,}"," ");
+		
+		//remove quotes from tag attributes
+		if(removeQuotes) {
+			//find all tags with quoted attributes
+			Pattern quotedTagPattern = Pattern.compile("<[^>]*?[\"'][^>]*?>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			
+			Pattern attrPattern = Pattern.compile("([\"'])([a-z0-9-_]+?)\\1", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			
+			Matcher quotedTagMatcher = quotedTagPattern.matcher(result);
+			while(quotedTagMatcher.find()) {
+				String quotedTag = quotedTagMatcher.group(0);
+				
+				//strip quotes and put back
+				Matcher attrMatcher = attrPattern.matcher(quotedTag);
+				String strippedTag = attrMatcher.replaceAll("$2");
+				
+				result = result.replaceAll(quotedTag, Matcher.quoteReplacement(strippedTag));
+			}
+		}
 		
 		return result;
 	}
@@ -239,7 +258,7 @@ public class HtmlCompressor implements Compressor {
 	/**
 	 * Enables JavaScript compression within &lt;script> tags using 
 	 * <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> 
-	 * if set to <code>true</code>. Default is false for performance reasons.
+	 * if set to <code>true</code>. Default is <code>false</code> for performance reasons.
 	 *  
 	 * <p><b>Note:</b> Compressing JavaScript is not recommended if pages are 
 	 * compressed dynamically on-the-fly because of performance impact. 
@@ -268,7 +287,7 @@ public class HtmlCompressor implements Compressor {
 	/**
 	 * Enables CSS compression within &lt;style> tags using 
 	 * <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> 
-	 * if set to <code>true</code>. Default is false for performance reasons.
+	 * if set to <code>true</code>. Default is <code>false</code> for performance reasons.
 	 *  
 	 * <p><b>Note:</b> Compressing CSS is not recommended if pages are 
 	 * compressed dynamically on-the-fly because of performance impact. 
@@ -423,6 +442,29 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public void setYuiCssLineBreak(int yuiCssLineBreak) {
 		this.yuiCssLineBreak = yuiCssLineBreak;
+	}
+
+	/**
+	 * Returns <code>true</code> if all unnecessary quotes will be removed 
+	 * from tag attributes. 
+	 *   
+	 */
+	public boolean isRemoveQuotes() {
+		return removeQuotes;
+	}
+
+	/**
+	 * If set to <code>true</code> all unnecessary quotes will be removed  
+	 * from tag attributes. Default is <code>false</code>.
+	 * 
+	 * <p><b>Note:</b> Even though quotes are removed only when it is safe to do so, 
+	 * it still might break strict HTML validation. Turn this option on only if 
+	 * a page validation is not very important or to squeeze the most out of the compression.
+	 * 
+	 * @param removeQuotes set <code>true</code> to remove unnecessary quotes from tag attributes
+	 */
+	public void setRemoveQuotes(boolean removeQuotes) {
+		this.removeQuotes = removeQuotes;
 	}
 	
 }
