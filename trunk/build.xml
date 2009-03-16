@@ -20,7 +20,8 @@
                includes="**/*.java"
                deprecation="off"
                debug="on"
-               source="1.5">
+               source="1.5"
+        	   target="1.5">
             <classpath>
                 <pathelement location="${lib.dir}/yuicompressor-2.4.2.jar"/>
             	<pathelement location="${lib.dir}/jsp-api.jar"/>
