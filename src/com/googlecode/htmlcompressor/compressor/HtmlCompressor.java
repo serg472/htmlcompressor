@@ -36,6 +36,14 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  */
 public class HtmlCompressor implements Compressor {
 	
+	private boolean enabled = true;
+	
+	//default settings
+	private boolean removeComments = true;
+	private boolean removeMultiSpaces = true;
+	
+	//optional settings
+	private boolean removeIntertagSpaces = false;
 	private boolean removeQuotes = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
@@ -61,7 +69,7 @@ public class HtmlCompressor implements Compressor {
 	 */
 	@Override
 	public String compress(String html) throws Exception {
-		if(html == null || html.length() == 0) {
+		if(!enabled || html == null || html.length() == 0) {
 			return html;
 		}
 		
@@ -120,11 +128,21 @@ public class HtmlCompressor implements Compressor {
 		String result = html;
 		
 		//remove comments
-		Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		result = commentPattern.matcher(result).replaceAll("");
+		if(removeComments) {
+			Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			result = commentPattern.matcher(result).replaceAll("");
+		}
 		
-		//remove extra whitespace characters
-		result = result.replaceAll("\\s{2,}"," ");
+		//remove inter-tag spaces
+		if(removeIntertagSpaces) {
+			Pattern commentPattern = Pattern.compile(">\\s+?<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			result = commentPattern.matcher(result).replaceAll("><");
+		}
+		
+		//remove multi whitespace characters
+		if(removeMultiSpaces) {
+			result = result.replaceAll("\\s{2,}"," ");
+		}
 		
 		//remove quotes from tag attributes
 		if(removeQuotes) {
@@ -462,11 +480,93 @@ public class HtmlCompressor implements Compressor {
 	 * <p><b>Note:</b> Even though quotes are removed only when it is safe to do so, 
 	 * it still might break strict HTML validation. Turn this option on only if 
 	 * a page validation is not very important or to squeeze the most out of the compression.
+	 * Turning this option on will also have significant performance impact.
 	 * 
 	 * @param removeQuotes set <code>true</code> to remove unnecessary quotes from tag attributes
 	 */
 	public void setRemoveQuotes(boolean removeQuotes) {
 		this.removeQuotes = removeQuotes;
+	}
+
+	/**
+	 * Returns <code>true</code> if compression is enabled.  
+	 * 
+	 * @return <code>true</code> if compression is enabled.
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/**
+	 * If set to <code>false</code> all compression will be bypassed. Might be useful for testing purposes. 
+	 * Default is <code>true</code>.
+	 * 
+	 * @param enabled set <code>false</code> to bypass all compression
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	/**
+	 * Returns <code>true</code> if all HTML comments will be removed.
+	 * 
+	 * @return <code>true</code> if all HTML comments will be removed
+	 */
+	public boolean isRemoveComments() {
+		return removeComments;
+	}
+
+	/**
+	 * If set to <code>true</code> all HTML comments will be removed.   
+	 * Default is <code>true</code>.
+	 * 
+	 * @param removeComments set <code>true</code> to remove all HTML comments
+	 */
+	public void setRemoveComments(boolean removeComments) {
+		this.removeComments = removeComments;
+	}
+
+	/**
+	 * Returns <code>true</code> if all multiple whitespace characters will be replaced with single spaces.
+	 * 
+	 * @return <code>true</code> if all multiple whitespace characters will be replaced with single spaces.
+	 */
+	public boolean isRemoveMultiSpaces() {
+		return removeMultiSpaces;
+	}
+
+	/**
+	 * If set to <code>true</code> all multiple whitespace characters will be replaced with single spaces.
+	 * Default is <code>true</code>.
+	 * 
+	 * @param removeMultiSpaces set <code>true</code> to replace all multiple whitespace characters 
+	 * will single spaces.
+	 */
+	public void setRemoveMultiSpaces(boolean removeMultiSpaces) {
+		this.removeMultiSpaces = removeMultiSpaces;
+	}
+
+	/**
+	 * Returns <code>true</code> if all inter-tag whitespace characters will be removed.
+	 * 
+	 * @return <code>true</code> if all inter-tag whitespace characters will be removed.
+	 */
+	public boolean isRemoveIntertagSpaces() {
+		return removeIntertagSpaces;
+	}
+
+	/**
+	 * If set to <code>true</code> all inter-tag whitespace characters will be removed.
+	 * Default is <code>false</code>.
+	 * 
+	 * <p><b>Note:</b> It is fairly safe to turn this option on unless you 
+	 * rely on spaces for page formatting. Even if you do, you can always preserve 
+	 * required spaces with <code>&amp;nbsp;</code>. This option has no performance impact.    
+	 * 
+	 * @param removeIntertagSpaces set <code>true</code> to remove all inter-tag whitespace characters
+	 */
+	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
+		this.removeIntertagSpaces = removeIntertagSpaces;
 	}
 	
 }

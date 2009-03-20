@@ -27,8 +27,13 @@ import java.util.regex.Pattern;
  */
 public class XmlCompressor implements Compressor {
 	
-	private String tempPrefix = "%%%COMPRESS~";
-	private String tempSuffix = "%%%";
+	private boolean enabled = true;
+	
+	//default settings
+	private boolean removeComments = true;
+	private boolean removeIntertagSpaces = true;
+	
+	private final String tempCdataBlock = "%%%COMPRESS~CDATA%%%";
 	
 	/**
 	 * The main method that compresses given XML source and returns compressed result.
@@ -39,7 +44,7 @@ public class XmlCompressor implements Compressor {
 	 */
 	@Override
 	public String compress(String xml) throws Exception {
-		if(xml == null || xml.length() == 0) {
+		if(!enabled || xml == null || xml.length() == 0) {
 			return xml;
 		}
 		
@@ -56,7 +61,7 @@ public class XmlCompressor implements Compressor {
 			cdataBlocks.add(cdataMatcher.group(0));
 		}
 		
-		result = cdataMatcher.replaceAll(tempPrefix + "CDATA" + tempSuffix);
+		result = cdataMatcher.replaceAll(tempCdataBlock);
 		
 		//process pure xml
 		result = processXml(result);
@@ -71,12 +76,15 @@ public class XmlCompressor implements Compressor {
 		String result = xml;
 		
 		//remove comments
-		Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		result = commentPattern.matcher(result).replaceAll("");
+		if(removeComments) {
+			Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			result = commentPattern.matcher(result).replaceAll("");
+		}
 		
-		//remove whitespace characters between tags
-		result = result.replaceAll(">\\s+<","><");
-		
+		//remove inter-tag spaces
+		if(removeIntertagSpaces) {
+			result = result.replaceAll(">\\s+<","><");
+		}
 		return result;
 	}
 	
@@ -84,10 +92,68 @@ public class XmlCompressor implements Compressor {
 		String result = xml;
 		
 		//put preserved blocks back
-		while(result.contains(tempPrefix + "CDATA" + tempSuffix)) {
-			result = result.replaceFirst(tempPrefix + "CDATA" + tempSuffix, Matcher.quoteReplacement(blocks.remove(0)));
+		while(result.contains(tempCdataBlock)) {
+			result = result.replaceFirst(tempCdataBlock, Matcher.quoteReplacement(blocks.remove(0)));
 		}
 		
 		return result;
 	}
+
+	/**
+	 * Returns <code>true</code> if compression is enabled.  
+	 * 
+	 * @return <code>true</code> if compression is enabled.
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/**
+	 * If set to <code>false</code> all compression will be bypassed. Might be useful for testing purposes. 
+	 * Default is <code>true</code>.
+	 * 
+	 * @param enabled set <code>false</code> to bypass all compression
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	/**
+	 * Returns <code>true</code> if all XML comments will be removed.
+	 * 
+	 * @return <code>true</code> if all XML comments will be removed
+	 */
+	public boolean isRemoveComments() {
+		return removeComments;
+	}
+
+	/**
+	 * If set to <code>true</code> all XML comments will be removed.   
+	 * Default is <code>true</code>.
+	 * 
+	 * @param removeComments set <code>true</code> to remove all XML comments
+	 */
+	public void setRemoveComments(boolean removeComments) {
+		this.removeComments = removeComments;
+	}
+
+	/**
+	 * Returns <code>true</code> if all inter-tag whitespace characters will be removed.
+	 * 
+	 * @return <code>true</code> if all inter-tag whitespace characters will be removed.
+	 */
+	public boolean isRemoveIntertagSpaces() {
+		return removeIntertagSpaces;
+	}
+
+	/**
+	 * If set to <code>true</code> all inter-tag whitespace characters will be removed.
+	 * Default is <code>true</code>.
+	 * 
+	 * @param removeIntertagSpaces set <code>true</code> to remove all inter-tag whitespace characters
+	 */
+	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
+		this.removeIntertagSpaces = removeIntertagSpaces;
+	}
+	
 }
