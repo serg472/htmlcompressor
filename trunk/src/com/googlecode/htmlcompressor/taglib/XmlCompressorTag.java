@@ -20,7 +20,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.googlecode.htmlcompressor.compressor.Compressor;
 import com.googlecode.htmlcompressor.compressor.XmlCompressor;
 
 /**
@@ -33,6 +32,12 @@ import com.googlecode.htmlcompressor.compressor.XmlCompressor;
  */
 @SuppressWarnings("serial")
 public class XmlCompressorTag extends BodyTagSupport {
+	
+	private boolean enabled = true;
+	
+	//default settings
+	private boolean removeComments = true;
+	private boolean removeIntertagSpaces = true;
 
 	@Override
 	public int doEndTag() throws JspException {
@@ -40,7 +45,10 @@ public class XmlCompressorTag extends BodyTagSupport {
 		BodyContent bodyContent = getBodyContent();
 		String content = bodyContent.getString();
 		
-		Compressor compressor = new XmlCompressor();
+		XmlCompressor compressor = new XmlCompressor();
+		compressor.setEnabled(enabled);
+		compressor.setRemoveComments(removeComments);
+		compressor.setRemoveIntertagSpaces(removeIntertagSpaces);
 		
 		try {
 			bodyContent.clear();
@@ -53,5 +61,26 @@ public class XmlCompressorTag extends BodyTagSupport {
 		}
 		
 		return super.doEndTag();
+	}
+	
+	/**
+	 * @see XmlCompressor#setEnabled(boolean)
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	/**
+	 * @see XmlCompressor#setRemoveComments(boolean)
+	 */
+	public void setRemoveComments(boolean removeComments) {
+		this.removeComments = removeComments;
+	}
+
+	/**
+	 * @see XmlCompressor#setRemoveIntertagSpaces(boolean)
+	 */
+	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
+		this.removeIntertagSpaces = removeIntertagSpaces;
 	}
 }
