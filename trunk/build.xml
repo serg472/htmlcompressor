@@ -67,7 +67,7 @@
                 <include name="build.properties"/>
                 <include name="build.xml"/>
                 <include name="doc/**/*"/>
-                <!--<include name="lib/**/*"/>-->
+                <include name="lib/**/*"/>
                 <include name="src/**/*"/>
                 <exclude name="**/.svn"/>
             </fileset>

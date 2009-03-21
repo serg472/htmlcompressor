@@ -48,11 +48,11 @@ public class JavaScriptCompressorTag extends BodyTagSupport {
 	@Override
 	public int doEndTag() throws JspException {
 		
-		if(enabled) {
-			BodyContent bodyContent = getBodyContent();
-			String content = bodyContent.getString();
-		
-			try {
+		BodyContent bodyContent = getBodyContent();
+		String content = bodyContent.getString();
+	
+		try {
+			if(enabled) {
 				//call YUICompressor
 				StringWriter result = new StringWriter();
 				JavaScriptCompressor compressor = new JavaScriptCompressor(new StringReader(content), null);
@@ -61,13 +61,18 @@ public class JavaScriptCompressorTag extends BodyTagSupport {
 				bodyContent.clear();
 				bodyContent.append(result.toString());
 				bodyContent.writeOut(pageContext.getOut());
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
+			} else {
+				bodyContent.clear();
+				bodyContent.append(content);
+				bodyContent.writeOut(pageContext.getOut());
 			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
 		return super.doEndTag();
 	}
 	
