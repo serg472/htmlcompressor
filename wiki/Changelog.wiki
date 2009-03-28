@@ -1,15 +1,15 @@
 #labels Featured
 *0.4*
-  * Added `removeIntertagSpaces` parameter to HTML compressor that will remove inter-tag whitespaces (default is off)
-  * Added `removeComments` parameter to HTML and XML compressors to control comments removal (default is on, was always on in previous releases)
-  * Added `removeMultiSpaces` parameter to HTML compressor to control removal of multiple whitespace characters (default is on, was always on in previous releases)
+  * Added `removeIntertagSpaces` parameter to HTML compressor that will remove inter-tag whitespaces (default is `false`)
+  * Added `removeComments` parameter to HTML and XML compressors to control comments removal (default is `true`, was always on in previous releases)
+  * Added `removeMultiSpaces` parameter to HTML compressor to control removal of multiple whitespace characters (default is `true`, was always on in previous releases)
   * Taglib compressor tags now support all attributes from corresponding compressor classes, so you have full control over compression parameters from both java and jsp.
   * Added new jsp tags `<compress:js>` and `<compress:css>` that will call YUI Compressor directly (these tags also support attributes)
-  * Added `enabled` parameter to HTML and XML compressors to completely bypass any compression (default is off)
+  * Added `enabled` parameter to HTML and XML compressors which will completely bypass any compression if set to `false` (default is `true`)
   * Dependency libs are now included in the source package, JAR file is made Java 5 compatible.
 
 *0.3*
-  * Added `removeQuotes` parameter to HTML compressor that will remove unnecessary quotes from tag attributes (dafault is off)
+  * Added `removeQuotes` parameter to HTML compressor that will remove unnecessary quotes from tag attributes (dafault is `false`)
   * Performance tweaks
 
 *0.2*
