@@ -64,7 +64,7 @@ public class CssCompressorDirective extends Directive {
 		log = rs.getLog();
 		
 		//set compressor properties
-		enabled = rs.getBoolean("userdirective.compressJs.enabled", true);
+		enabled = rs.getBoolean("userdirective.compressCss.enabled", true);
 		yuiCssLineBreak = rs.getInt("userdirective.compressCss.yuiCssLineBreak", -1);
 	}
 
