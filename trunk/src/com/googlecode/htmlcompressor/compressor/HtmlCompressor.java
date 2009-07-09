@@ -129,7 +129,7 @@ public class HtmlCompressor implements Compressor {
 		
 		//remove comments
 		if(removeComments) {
-			Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 			result = commentPattern.matcher(result).replaceAll("");
 		}
 		
