@@ -1,7 +1,7 @@
 #labels Featured
 *0.5*
   * Added Velocity compressor directives `#compressHtml`, `#compressXml`, `#compressJs`, `#compressCss` that allow compressing selected blocks within Velocity templates. Directives support all attributes from corresponding compressor classes.
-  * Fixed bug with not preserving conditional IE comments in html (<!--[if IE]><![endif]-->) when `removeComments` is `true`
+  * Fixed bug with not preserving conditional IE comments in html (`<!--[if IE]><![endif]-->`) when `removeComments` is `true`
 
 *0.4*
   * Added `removeIntertagSpaces` parameter to HTML compressor that will remove inter-tag whitespaces (default is `false`)
