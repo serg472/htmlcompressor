@@ -44,6 +44,7 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	private boolean removeQuotes = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
+	private int threads = 1;
 	
 	//YUICompressor settings
 	private boolean yuiJsNoMunge = false;
@@ -64,6 +65,7 @@ public class HtmlCompressorTag extends BodyTagSupport {
 		compressor.setRemoveMultiSpaces(removeMultiSpaces);
 		compressor.setRemoveIntertagSpaces(removeIntertagSpaces);
 		compressor.setRemoveQuotes(removeQuotes);
+		compressor.setThreads(threads);
 		compressor.setCompressJavaScript(compressJavaScript);
 		compressor.setCompressCss(compressCss);
 		compressor.setYuiJsNoMunge(yuiJsNoMunge);
@@ -167,6 +169,13 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	 */
 	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
 		this.removeIntertagSpaces = removeIntertagSpaces;
+	}
+
+	/**
+	 * @see HtmlCompressor#setThreads(int)
+	 */
+	public void setThreads(int threads) {
+		this.threads = threads;
 	}
 	
 }

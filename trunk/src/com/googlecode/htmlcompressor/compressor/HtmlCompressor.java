@@ -18,6 +18,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +50,7 @@ public class HtmlCompressor implements Compressor {
 	private boolean removeQuotes = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
+	private int threads = 1;
 	
 	//YUICompressor settings
 	private boolean yuiJsNoMunge = false;
@@ -55,165 +59,261 @@ public class HtmlCompressor implements Compressor {
 	private int yuiJsLineBreak = -1;
 	private int yuiCssLineBreak = -1;
 	
-	private final String tempPreBlock = "%%%COMPRESS~PRE%%%";
-	private final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA%%%";
-	private final String tempScriptBlock = "%%%COMPRESS~SCRIPT%%%";
-	private final String tempStyleBlock = "%%%COMPRESS~STYLE%%%";
+	//temp replacements for preserved blocks 
+	private static final String tempPreBlock = "%%%COMPRESS~PRE%%%";
+	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA%%%";
+	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT%%%";
+	private static final String tempStyleBlock = "%%%COMPRESS~STYLE%%%";
+	
+	//preserved block containers
+	private List<String> preBlocks = new ArrayList<String>();
+	private List<String> taBlocks = new ArrayList<String>();
+	private List<String> scriptBlocks = new ArrayList<String>();
+	private List<String> styleBlocks = new ArrayList<String>();
+	
+	//compiled regex patterns
+	private static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern intertagPattern = Pattern.compile(">\\s+?<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern multispacePattern = Pattern.compile("\\s{2,}", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern prePattern = Pattern.compile("<pre[^>]*?>.*?</pre>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern taPattern = Pattern.compile("<textarea[^>]*?>.*?</textarea>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern tagquotePattern = Pattern.compile("\\s*=\\s*([\"'])([a-z0-9-_]+?)\\1(?=[^<]*?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern scriptPattern = Pattern.compile("<script[^>]*?>.*?</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern stylePattern = Pattern.compile("<style[^>]*?>.*?</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern scriptPatternNonEmpty = Pattern.compile("<script[^>]*?>(.+?)</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern stylePatternNonEmpty = Pattern.compile("<style[^>]*?>(.+?)</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	
+	private String html = null;
+	private List<String> htmlParts = new ArrayList<String>();
+	private enum Task {
+		HTML, SCRIPT, STYLE;
+	}
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed result.
 	 * 
-	 * @param html HTML content to compress
+	 * @param source HTML content to compress
 	 * @return compressed content.
 	 * @throws Exception
 	 */
 	@Override
-	public String compress(String html) throws Exception {
-		if(!enabled || html == null || html.length() == 0) {
-			return html;
+	public String compress(String source) throws Exception {
+		if(!enabled || source == null || source.length() == 0) {
+			return source;
+		}
+		html = source;
+		
+		//preserve blocks
+		preserveBlocks();
+		
+		if(threads <=1) {
+			//process pure html
+			html = processHtml(html);
+			
+			//process preserved blocks
+			processScriptBlocks();
+			processStyleBlocks();
+		} else {
+			//split html into parts to divide between threads
+			splitHtml();
+			
+			ExecutorService taskExecutor = Executors.newFixedThreadPool(threads);
+			
+			//submit js tasks
+			if(compressJavaScript) {
+				for(int i=0; i<scriptBlocks.size(); i++) {
+					taskExecutor.execute(new CompressorTask(Task.SCRIPT, i));
+				}
+			}
+			
+			//submit css tasks
+			if(compressCss) {
+				for(int i=0; i<styleBlocks.size(); i++) {
+					taskExecutor.execute(new CompressorTask(Task.STYLE, i));
+				}
+			}
+			
+			//submit html tasks
+			for(int i=0; i<htmlParts.size(); i++) {
+				taskExecutor.execute(new CompressorTask(Task.HTML, i));
+			}
+			
+			//wait for completion
+			taskExecutor.shutdown();
+			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+			
+			//merge compressed parts 
+			mergeHtml();
 		}
 		
-		List<String> preBlocks = new ArrayList<String>();
-		List<String> taBlocks = new ArrayList<String>();
-		List<String> scriptBlocks = new ArrayList<String>();
-		List<String> styleBlocks = new ArrayList<String>();
+		//put blocks back
+		returnBlocks();
 		
-		String result = html;
-		
+		return this.html.trim();
+	}
+
+	private void preserveBlocks() {
 		//preserve PRE tags
-		Pattern prePattern = Pattern.compile("<pre[^>]*?>.*?</pre>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		Matcher preMatcher = prePattern.matcher(result);
+		Matcher preMatcher = prePattern.matcher(html);
 		while(preMatcher.find()) {
 			preBlocks.add(preMatcher.group(0));
 		}
-		result = preMatcher.replaceAll(tempPreBlock);
+		html = preMatcher.replaceAll(tempPreBlock);
 		
 		//preserve TEXTAREA tags
-		Pattern taPattern = Pattern.compile("<textarea[^>]*?>.*?</textarea>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		Matcher taMatcher = taPattern.matcher(result);
+		Matcher taMatcher = taPattern.matcher(html);
 		while(taMatcher.find()) {
 			taBlocks.add(taMatcher.group(0));
 		}
-		result = taMatcher.replaceAll(tempTextAreaBlock);
+		html = taMatcher.replaceAll(tempTextAreaBlock);
 		
 		//preserve SCRIPT tags
-		Pattern scriptPattern = Pattern.compile("<script[^>]*?>.*?</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		Matcher scriptMatcher = scriptPattern.matcher(result);
+		Matcher scriptMatcher = scriptPattern.matcher(html);
 		while(scriptMatcher.find()) {
 			scriptBlocks.add(scriptMatcher.group(0));
 		}
-		result = scriptMatcher.replaceAll(tempScriptBlock);
+		html = scriptMatcher.replaceAll(tempScriptBlock);
 		
 		//preserve STYLE tags
-		Pattern stylePattern = Pattern.compile("<style[^>]*?>.*?</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		Matcher styleMatcher = stylePattern.matcher(result);
+		Matcher styleMatcher = stylePattern.matcher(html);
 		while(styleMatcher.find()) {
 			styleBlocks.add(styleMatcher.group(0));
 		}
-		result = styleMatcher.replaceAll(tempStyleBlock);
+		html = styleMatcher.replaceAll(tempStyleBlock);
+	}
+	
+	private void returnBlocks() {
+		int index = 0;
 		
-		//process pure html
-		result = processHtml(result);
+		StringBuilder source = new StringBuilder(html);
 		
-		//process preserved blocks
-		result = processPreBlocks(result, preBlocks);
-		result = processTextareaBlocks(result, taBlocks);
-		result = processScriptBlocks(result, scriptBlocks);
-		result = processStyleBlocks(result, styleBlocks);
+		//put pre blocks back
+		int prevIndex = 0;
+		while(preBlocks.size() > 0) {
+			index = source.indexOf(tempPreBlock, prevIndex);
+			String replacement = preBlocks.remove(0);
+			source.replace(index, index+tempPreBlock.length(), replacement);
+			prevIndex = index + replacement.length();
+		}
 		
-		return result.trim();
+		//put textarea blocks back
+		prevIndex = 0;
+		while(taBlocks.size() > 0) {
+			index = source.indexOf(tempTextAreaBlock, prevIndex);
+			String replacement = taBlocks.remove(0);
+			source.replace(index, index+tempTextAreaBlock.length(), replacement);
+			prevIndex = index + replacement.length();
+		}
+		
+		//put script blocks back
+		prevIndex = 0;
+		while(scriptBlocks.size() > 0) {
+			index = source.indexOf(tempScriptBlock, prevIndex);
+			String replacement = scriptBlocks.remove(0);
+			source.replace(index, index+tempScriptBlock.length(), replacement);
+			prevIndex = index + replacement.length();
+		}
+		
+		//put style blocks back
+		prevIndex = 0;
+		while(styleBlocks.size() > 0) {
+			index = source.indexOf(tempStyleBlock, prevIndex);
+			String replacement = styleBlocks.remove(0);
+			source.replace(index, index+tempStyleBlock.length(), replacement);
+			prevIndex = index + replacement.length();
+		}
+		
+		html = source.toString();
 	}
 	
 	private String processHtml(String html) throws Exception {
-		String result = html;
-		
 		//remove comments
 		if(removeComments) {
-			Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-			result = commentPattern.matcher(result).replaceAll("");
+			html = commentPattern.matcher(html).replaceAll("");
 		}
 		
 		//remove inter-tag spaces
 		if(removeIntertagSpaces) {
-			Pattern commentPattern = Pattern.compile(">\\s+?<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-			result = commentPattern.matcher(result).replaceAll("><");
+			html = intertagPattern.matcher(html).replaceAll("><");
 		}
 		
 		//remove multi whitespace characters
 		if(removeMultiSpaces) {
-			result = result.replaceAll("\\s{2,}"," ");
+			html = multispacePattern.matcher(html).replaceAll(" ");
 		}
 		
 		//remove quotes from tag attributes
 		if(removeQuotes) {
-			result = result.replaceAll("\\s*=\\s*([\"'])([a-zA-Z0-9-_]+?)\\1(?=[^<]*?>)","=$2");
+			html = tagquotePattern.matcher(html).replaceAll("=$2");
 		}
 		
-		return result;
+		return html;
 	}
 	
-	private String processPreBlocks(String html, List<String> blocks) throws Exception {
-		String result = html;
+	private void splitHtml() {
+
+		htmlParts.clear();
 		
-		//put preserved blocks back
-		while(result.contains(tempPreBlock)) {
-			result = result.replaceFirst(tempPreBlock, Matcher.quoteReplacement(blocks.remove(0)));
+		int partSize = (int)((double)html.length() / threads);
+		//if number of threads more than symbols in html
+		if(partSize == 0) {
+			htmlParts.add(html);
+			return;
 		}
 		
-		return result;
+		int startPos = 0;
+		int endPos = 0;
+		for(int i=0; i<threads; i++) {
+			if(startPos == html.length()) {
+				break;
+			}
+			
+			endPos = startPos + partSize;
+			
+			//try to find closest tag
+			if(endPos < html.length()) {
+				int tagPos = html.indexOf("<", endPos);
+				endPos = tagPos != 1 ? tagPos : html.length();
+			} else {
+				endPos = html.length();
+			}
+			
+			htmlParts.add(html.substring(startPos, endPos));
+			
+			startPos = endPos;
+		}
 	}
 	
-	private String processTextareaBlocks(String html, List<String> blocks) throws Exception {
-		String result = html;
+	private void mergeHtml() {
+		StringBuilder source = new StringBuilder();
 		
-		//put preserved blocks back
-		while(result.contains(tempTextAreaBlock)) {
-			result = result.replaceFirst(tempTextAreaBlock, Matcher.quoteReplacement(blocks.remove(0)));
+		for(String part : htmlParts) {
+			source.append(part);
 		}
 		
-		return result;
+		html = source.toString();
 	}
 	
-	private String processScriptBlocks(String html, List<String> blocks) throws Exception {
-		String result = html;
-		
+	private void processScriptBlocks() throws Exception {
 		if(compressJavaScript) {
-			for(int i = 0; i < blocks.size(); i++) {
-				blocks.set(i, compressJavaScript(blocks.get(i)));
+			for(int i = 0; i < scriptBlocks.size(); i++) {
+				scriptBlocks.set(i, compressJavaScript(scriptBlocks.get(i)));
 			}
 		}
-		
-		//put preserved blocks back
-		while(result.contains(tempScriptBlock)) {
-			result = result.replaceFirst(tempScriptBlock, Matcher.quoteReplacement(blocks.remove(0)));
-		}
-		
-		return result;
 	}
 	
-	private String processStyleBlocks(String html, List<String> blocks) throws Exception {
-		String result = html;
-		
+	private void processStyleBlocks() throws Exception {
 		if(compressCss) {
-			for(int i = 0; i < blocks.size(); i++) {
-				blocks.set(i, compressCssStyles(blocks.get(i)));
+			for(int i = 0; i < styleBlocks.size(); i++) {
+				styleBlocks.set(i, compressCssStyles(styleBlocks.get(i)));
 			}
 		}
-		
-		//put preserved blocks back
-		while(result.contains(tempStyleBlock)) {
-			result = result.replaceFirst(tempStyleBlock, Matcher.quoteReplacement(blocks.remove(0)));
-		}
-		
-		return result;
 	}
 	
 	private String compressJavaScript(String source) throws Exception {
 		
-		Pattern scriptPattern = Pattern.compile("<script[^>]*?>(.+?)</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
 		//check if block is not empty
-		Matcher scriptMatcher = scriptPattern.matcher(source);
+		Matcher scriptMatcher = scriptPatternNonEmpty.matcher(source);
 		if(scriptMatcher.find()) {
 			
 			//call YUICompressor
@@ -230,10 +330,8 @@ public class HtmlCompressor implements Compressor {
 	
 	private String compressCssStyles(String source) throws Exception {
 		
-		Pattern stylePattern = Pattern.compile("<style[^>]*?>(.+?)</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
 		//check if block is not empty
-		Matcher styleMatcher = stylePattern.matcher(source);
+		Matcher styleMatcher = stylePatternNonEmpty.matcher(source);
 		if(styleMatcher.find()) {
 			
 			//call YUICompressor
@@ -248,10 +346,52 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	private String escRegEx(String inStr) {
-		return inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1");
+	private class CompressorTask implements Runnable  {
+		private Task task;
+		private int index;
+		
+		public CompressorTask(Task task, int index) {
+			this.task = task;
+			this.index = index;
+		}
+		
+		public void run() {
+			String source = null;
+			
+			if(task.equals(Task.HTML)) {
+				synchronized(HtmlCompressor.this.htmlParts) {
+					source = HtmlCompressor.this.htmlParts.get(index);
+				}
+				try {
+					source = HtmlCompressor.this.processHtml(source);
+				} catch (Exception e) {}
+				synchronized(HtmlCompressor.this.htmlParts) {
+					HtmlCompressor.this.htmlParts.set(index, source);
+				}
+			} else if(task.equals(Task.SCRIPT)) {
+				synchronized(HtmlCompressor.this.scriptBlocks) {
+					source = HtmlCompressor.this.scriptBlocks.get(index);
+				}
+				try {
+					source = HtmlCompressor.this.compressJavaScript(source);
+				} catch (Exception e) {}
+				synchronized(HtmlCompressor.this.scriptBlocks) {
+					HtmlCompressor.this.scriptBlocks.set(index, source);
+				}
+			} else if(task.equals(Task.STYLE)) {
+				synchronized(HtmlCompressor.this.styleBlocks) {
+					source = HtmlCompressor.this.styleBlocks.get(index);
+				}
+				try {
+					source = HtmlCompressor.this.compressCssStyles(source);
+				} catch (Exception e) {}
+				synchronized(HtmlCompressor.this.styleBlocks) {
+					HtmlCompressor.this.styleBlocks.set(index, source);
+				}
+			}
+		}
 	}
-
+	
 	/**
 	 * Returns <code>true</code> if JavaScript compression is enabled.
 	 * 
@@ -553,6 +693,29 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
 		this.removeIntertagSpaces = removeIntertagSpaces;
+	}
+	
+	/**
+	 * Returns number of threads that are used during a compression.
+	 * 
+	 * @return number of threads that are used during a compression.
+	 */
+	public int getThreads() {
+		return threads;
+	}
+
+	/**
+	 * If set to more than 1, the Compressor will try to split internal compression tasks 
+	 * into provided number of threads and process them in parallel. It is recommended to use 
+	 * this option on multicore systems to improve performance while processing 
+	 * large files or if using javascript/style inline compression (as it is time consuming). 
+	 * Usually optimal number of threads equals to a number of processor cores in the system.
+	 * Default value is 1 (no threading, everything is done in the main thread).
+	 * 
+	 * @param threads number of threads that are used during a compression 
+	 */
+	public void setThreads(int threads) {
+		this.threads = threads;
 	}
 	
 }

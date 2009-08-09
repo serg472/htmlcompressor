@@ -63,6 +63,7 @@ public class HtmlCompressorDirective extends Directive {
 		htmlCompressor.setRemoveMultiSpaces(rs.getBoolean("userdirective.compressHtml.removeMultiSpaces", true));
 		htmlCompressor.setRemoveIntertagSpaces(rs.getBoolean("userdirective.compressHtml.removeIntertagSpaces", false));
 		htmlCompressor.setRemoveQuotes(rs.getBoolean("userdirective.compressHtml.removeQuotes", false));
+		htmlCompressor.setThreads(rs.getInt("userdirective.compressHtml.threads", 1));
 		htmlCompressor.setCompressJavaScript(rs.getBoolean("userdirective.compressHtml.compressJavaScript", false));
 		htmlCompressor.setCompressCss(rs.getBoolean("userdirective.compressHtml.compressCss", false));
 		htmlCompressor.setYuiJsNoMunge(rs.getBoolean("userdirective.compressHtml.yuiJsNoMunge", false));
