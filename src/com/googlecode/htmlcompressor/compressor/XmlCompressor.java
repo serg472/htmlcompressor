@@ -16,6 +16,9 @@ package com.googlecode.htmlcompressor.compressor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,72 +36,174 @@ public class XmlCompressor implements Compressor {
 	private boolean removeComments = true;
 	private boolean removeIntertagSpaces = true;
 	
-	private final String tempCdataBlock = "%%%COMPRESS~CDATA%%%";
+	//optional settings
+	private int threads = 1;
+	
+	//temp replacements for preserved blocks 
+	private static final String tempCdataBlock = "%%%COMPRESS~CDATA%%%";
+	
+	//preserved block containers
+	private List<String> cdataBlocks = new ArrayList<String>();
+	
+	//compiled regex patterns
+	private static final Pattern cdataPattern = Pattern.compile("<!\\[CDATA\\[.*?\\]\\]>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	
+	private String xml = null;
+	private List<String> xmlParts = new ArrayList<String>();
 	
 	/**
 	 * The main method that compresses given XML source and returns compressed result.
 	 * 
-	 * @param xml XML content to compress
+	 * @param source XML content to compress
 	 * @return compressed content.
 	 * @throws Exception
 	 */
 	@Override
-	public String compress(String xml) throws Exception {
-		if(!enabled || xml == null || xml.length() == 0) {
-			return xml;
+	public String compress(String source) throws Exception {
+		if(!enabled || source == null || source.length() == 0) {
+			return source;
 		}
 		
-		List<String> cdataBlocks = new ArrayList<String>();
+		xml = source;
 		
-		String result = xml;
+		//preserve blocks
+		preserveBlocks();
 		
+		if(threads <=1) {
+			//process pure xml
+			xml = processXml(xml);
+		} else {
+			//split xml into parts to divide between threads
+			splitXml();
+			
+			ExecutorService taskExecutor = Executors.newFixedThreadPool(threads);
+			
+			//submit tasks
+			for(int i=0; i<xmlParts.size(); i++) {
+				taskExecutor.execute(new CompressorTask(i));
+			}
+			
+			//wait for completion
+			taskExecutor.shutdown();
+			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+			
+			//merge compressed parts 
+			mergeXml();
+		}
+		
+		//return preserved blocks
+		returnBlocks();
+		
+		return this.xml.trim();
+	}
+
+	private void preserveBlocks() {
 		//preserve CDATA blocks
-		String cdataRule = "<!\\[CDATA\\[.*?\\]\\]>";
-		Pattern cdataPattern = Pattern.compile(cdataRule, Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
-		Matcher cdataMatcher = cdataPattern.matcher(result);
+		Matcher cdataMatcher = cdataPattern.matcher(xml);
 		while(cdataMatcher.find()) {
 			cdataBlocks.add(cdataMatcher.group(0));
 		}
+		xml = cdataMatcher.replaceAll(tempCdataBlock);
+	}
+	
+	private void returnBlocks() {
+		int index = 0;
 		
-		result = cdataMatcher.replaceAll(tempCdataBlock);
+		StringBuilder source = new StringBuilder(xml);
 		
-		//process pure xml
-		result = processXml(result);
+		//put CDATA blocks back
+		int prevIndex = 0;
+		while(cdataBlocks.size() > 0) {
+			index = source.indexOf(tempCdataBlock, prevIndex);
+			String replacement = cdataBlocks.remove(0);
+			source.replace(index, index+tempCdataBlock.length(), replacement);
+			prevIndex = index + replacement.length();
+		}
 		
-		//process preserved blocks
-		result = processCdataBlocks(result, cdataBlocks);
+		xml = source.toString();
+	}
+	
+	private void splitXml() {
+
+		xmlParts.clear();
 		
-		return result.trim();
+		int partSize = (int)((double)xml.length() / threads);
+		//if number of threads more than symbols in xml
+		if(partSize == 0) {
+			xmlParts.add(xml);
+			return;
+		}
+		
+		int startPos = 0;
+		int endPos = 0;
+		for(int i=0; i<threads; i++) {
+			if(startPos == xml.length()) {
+				break;
+			}
+			
+			endPos = startPos + partSize;
+			
+			//try to find closest tag
+			if(endPos < xml.length()) {
+				int tagPos = xml.indexOf("<", endPos);
+				endPos = tagPos != 1 ? tagPos : xml.length();
+			} else {
+				endPos = xml.length();
+			}
+			
+			xmlParts.add(xml.substring(startPos, endPos));
+			
+			startPos = endPos;
+		}
+	}
+	
+	private void mergeXml() {
+		StringBuilder source = new StringBuilder();
+		
+		for(String part : xmlParts) {
+			source.append(part);
+		}
+		
+		xml = source.toString();
 	}
 	
 	private String processXml(String xml) throws Exception {
-		String result = xml;
-		
 		//remove comments
 		if(removeComments) {
-			Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-			result = commentPattern.matcher(result).replaceAll("");
+			xml = commentPattern.matcher(xml).replaceAll("");
 		}
 		
 		//remove inter-tag spaces
 		if(removeIntertagSpaces) {
-			result = result.replaceAll(">\\s+<","><");
+			xml = intertagPattern.matcher(xml).replaceAll("><");
 		}
-		return result;
+		return xml;
 	}
 	
-	private String processCdataBlocks(String xml, List<String> blocks) throws Exception {
-		String result = xml;
+	private class CompressorTask implements Runnable  {
+		private int index;
 		
-		//put preserved blocks back
-		while(result.contains(tempCdataBlock)) {
-			result = result.replaceFirst(tempCdataBlock, Matcher.quoteReplacement(blocks.remove(0)));
+		public CompressorTask(int index) {
+			this.index = index;
 		}
 		
-		return result;
+		public void run() {
+			String source = null;
+			
+			synchronized(XmlCompressor.this.xmlParts) {
+				source = XmlCompressor.this.xmlParts.get(index);
+			}
+			try {
+				source = XmlCompressor.this.processXml(source);
+			} catch (Exception e) {}
+			synchronized(XmlCompressor.this.xmlParts) {
+				XmlCompressor.this.xmlParts.set(index, source);
+			}
+		}
 	}
-
+	
 	/**
 	 * Returns <code>true</code> if compression is enabled.  
 	 * 
@@ -156,4 +261,26 @@ public class XmlCompressor implements Compressor {
 		this.removeIntertagSpaces = removeIntertagSpaces;
 	}
 	
+	/**
+	 * Returns number of threads that are used during a compression.
+	 * 
+	 * @return number of threads that are used during a compression.
+	 */
+	public int getThreads() {
+		return threads;
+	}
+
+	/**
+	 * If set to more than 1, the Compressor will try to split internal compression tasks 
+	 * into provided number of threads and process them in parallel. It is recommended to use 
+	 * this option on multicore systems to improve performance while processing 
+	 * large files. 
+	 * Usually optimal number of threads equals to a number of processor cores in the system.
+	 * Default value is 1 (no threading, everything is done in the main thread).
+	 * 
+	 * @param threads number of threads that are used during a compression 
+	 */
+	public void setThreads(int threads) {
+		this.threads = threads;
+	}
 }

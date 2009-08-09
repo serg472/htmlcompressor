@@ -38,6 +38,9 @@ public class XmlCompressorTag extends BodyTagSupport {
 	//default settings
 	private boolean removeComments = true;
 	private boolean removeIntertagSpaces = true;
+	
+	//optional settings
+	private int threads = 1;
 
 	@Override
 	public int doEndTag() throws JspException {
@@ -49,6 +52,7 @@ public class XmlCompressorTag extends BodyTagSupport {
 		compressor.setEnabled(enabled);
 		compressor.setRemoveComments(removeComments);
 		compressor.setRemoveIntertagSpaces(removeIntertagSpaces);
+		compressor.setThreads(threads);
 		
 		try {
 			bodyContent.clear();
@@ -82,5 +86,12 @@ public class XmlCompressorTag extends BodyTagSupport {
 	 */
 	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
 		this.removeIntertagSpaces = removeIntertagSpaces;
+	}
+	
+	/**
+	 * @see XmlCompressor#setThreads(int)
+	 */
+	public void setThreads(int threads) {
+		this.threads = threads;
 	}
 }

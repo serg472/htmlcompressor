@@ -61,6 +61,7 @@ public class XmlCompressorDirective extends Directive {
 		xmlCompressor.setEnabled(rs.getBoolean("userdirective.compressXml.enabled", true));
 		xmlCompressor.setRemoveComments(rs.getBoolean("userdirective.compressXml.removeComments", true));
 		xmlCompressor.setRemoveIntertagSpaces(rs.getBoolean("userdirective.compressXml.removeIntertagSpaces", true));
+		xmlCompressor.setThreads(rs.getInt("userdirective.compressXml.threads", 1));
 	}
 
     public boolean render(InternalContextAdapter context, Writer writer, Node node) 
