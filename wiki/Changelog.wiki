@@ -1,8 +1,4 @@
 #labels Featured
-*0.7* (not released)
-  * Added `setThreads(int numberOfThreads)` methods to both HtmlCompressor and XmlCompressor that will tell compressors to try and split internal compression tasks into provided number of threads and process them in parallel. This parameter can be also passed from JSP or Velocity templates. Default value is 1 (no threading).
-  * Numerous performance tweaks, both HTML and XML should be compressed about 5 times faster even without using threads.
-
 *0.6*
   * Improved algorithm of removing unnecessary quotes from tag attributes for `HtmlCompressor` so there is no performance impact when enabled (`setRemoveQuotes(true)`)
 
