@@ -1,4 +1,7 @@
 #labels Featured
+*0.7*
+  * Performance tweaks
+
 *0.6*
   * Improved algorithm of removing unnecessary quotes from tag attributes for `HtmlCompressor` so there is no performance impact when enabled (`setRemoveQuotes(true)`)
 
