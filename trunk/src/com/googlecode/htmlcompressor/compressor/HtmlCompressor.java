@@ -18,9 +18,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +47,6 @@ public class HtmlCompressor implements Compressor {
 	private boolean removeQuotes = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
-	private int threads = 1;
 	
 	//YUICompressor settings
 	private boolean yuiJsNoMunge = false;
@@ -65,12 +61,6 @@ public class HtmlCompressor implements Compressor {
 	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT%%%";
 	private static final String tempStyleBlock = "%%%COMPRESS~STYLE%%%";
 	
-	//preserved block containers
-	private List<String> preBlocks = new ArrayList<String>();
-	private List<String> taBlocks = new ArrayList<String>();
-	private List<String> scriptBlocks = new ArrayList<String>();
-	private List<String> styleBlocks = new ArrayList<String>();
-	
 	//compiled regex patterns
 	private static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern intertagPattern = Pattern.compile(">\\s+?<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -83,76 +73,43 @@ public class HtmlCompressor implements Compressor {
 	private static final Pattern scriptPatternNonEmpty = Pattern.compile("<script[^>]*?>(.+?)</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern stylePatternNonEmpty = Pattern.compile("<style[^>]*?>(.+?)</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
-	private String html = null;
-	private List<String> htmlParts = new ArrayList<String>();
-	private enum Task {
-		HTML, SCRIPT, STYLE;
-	}
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed result.
 	 * 
-	 * @param source HTML content to compress
+	 * @param html HTML content to compress
 	 * @return compressed content.
 	 * @throws Exception
 	 */
 	@Override
-	public String compress(String source) throws Exception {
-		if(!enabled || source == null || source.length() == 0) {
-			return source;
+	public String compress(String html) throws Exception {
+		if(!enabled || html == null || html.length() == 0) {
+			return html;
 		}
-		html = source;
+		
+		//preserved block containers
+		List<String> preBlocks = new ArrayList<String>();
+		List<String> taBlocks = new ArrayList<String>();
+		List<String> scriptBlocks = new ArrayList<String>();
+		List<String> styleBlocks = new ArrayList<String>();
 		
 		//preserve blocks
-		preserveBlocks();
+		html = preserveBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks);
 		
-		if(threads <=1) {
-			//process pure html
-			html = processHtml(html);
-			
-			//process preserved blocks
-			processScriptBlocks();
-			processStyleBlocks();
-		} else {
-			//split html into parts to divide between threads
-			splitHtml();
-			
-			ExecutorService taskExecutor = Executors.newFixedThreadPool(threads);
-			
-			//submit js tasks
-			if(compressJavaScript) {
-				for(int i=0; i<scriptBlocks.size(); i++) {
-					taskExecutor.execute(new CompressorTask(Task.SCRIPT, i));
-				}
-			}
-			
-			//submit css tasks
-			if(compressCss) {
-				for(int i=0; i<styleBlocks.size(); i++) {
-					taskExecutor.execute(new CompressorTask(Task.STYLE, i));
-				}
-			}
-			
-			//submit html tasks
-			for(int i=0; i<htmlParts.size(); i++) {
-				taskExecutor.execute(new CompressorTask(Task.HTML, i));
-			}
-			
-			//wait for completion
-			taskExecutor.shutdown();
-			taskExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-			
-			//merge compressed parts 
-			mergeHtml();
-		}
+		//process pure html
+		html = processHtml(html);
+
+		//process preserved blocks
+		processScriptBlocks(scriptBlocks);
+		processStyleBlocks(styleBlocks);
 		
 		//put blocks back
-		returnBlocks();
+		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks);
 		
-		return this.html.trim();
+		return html.trim();
 	}
 
-	private void preserveBlocks() {
+	private String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks) {
 		//preserve PRE tags
 		Matcher preMatcher = prePattern.matcher(html);
 		while(preMatcher.find()) {
@@ -180,15 +137,17 @@ public class HtmlCompressor implements Compressor {
 			styleBlocks.add(styleMatcher.group(0));
 		}
 		html = styleMatcher.replaceAll(tempStyleBlock);
+		
+		return html;
 	}
 	
-	private void returnBlocks() {
+	private String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks) {
 		int index = 0;
 		
 		StringBuilder source = new StringBuilder(html);
-		
-		//put pre blocks back
 		int prevIndex = 0;
+		//put pre blocks back
+		
 		while(preBlocks.size() > 0) {
 			index = source.indexOf(tempPreBlock, prevIndex);
 			String replacement = preBlocks.remove(0);
@@ -222,8 +181,9 @@ public class HtmlCompressor implements Compressor {
 			source.replace(index, index+tempStyleBlock.length(), replacement);
 			prevIndex = index + replacement.length();
 		}
-		
 		html = source.toString();
+		
+		return html;
 	}
 	
 	private String processHtml(String html) throws Exception {
@@ -250,51 +210,7 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	private void splitHtml() {
-
-		htmlParts.clear();
-		
-		int partSize = (int)((double)html.length() / threads);
-		//if number of threads more than symbols in html
-		if(partSize == 0) {
-			htmlParts.add(html);
-			return;
-		}
-		
-		int startPos = 0;
-		int endPos = 0;
-		for(int i=0; i<threads; i++) {
-			if(startPos == html.length()) {
-				break;
-			}
-			
-			endPos = startPos + partSize;
-			
-			//try to find closest tag
-			if(endPos < html.length()) {
-				int tagPos = html.indexOf("<", endPos);
-				endPos = tagPos != 1 ? tagPos : html.length();
-			} else {
-				endPos = html.length();
-			}
-			
-			htmlParts.add(html.substring(startPos, endPos));
-			
-			startPos = endPos;
-		}
-	}
-	
-	private void mergeHtml() {
-		StringBuilder source = new StringBuilder();
-		
-		for(String part : htmlParts) {
-			source.append(part);
-		}
-		
-		html = source.toString();
-	}
-	
-	private void processScriptBlocks() throws Exception {
+	private void processScriptBlocks(List<String> scriptBlocks) throws Exception {
 		if(compressJavaScript) {
 			for(int i = 0; i < scriptBlocks.size(); i++) {
 				scriptBlocks.set(i, compressJavaScript(scriptBlocks.get(i)));
@@ -302,7 +218,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	private void processStyleBlocks() throws Exception {
+	private void processStyleBlocks(List<String> styleBlocks) throws Exception {
 		if(compressCss) {
 			for(int i = 0; i < styleBlocks.size(); i++) {
 				styleBlocks.set(i, compressCssStyles(styleBlocks.get(i)));
@@ -343,52 +259,6 @@ public class HtmlCompressor implements Compressor {
 		
 		} else {
 			return source;
-		}
-	}
-	
-	private class CompressorTask implements Runnable  {
-		private Task task;
-		private int index;
-		
-		public CompressorTask(Task task, int index) {
-			this.task = task;
-			this.index = index;
-		}
-		
-		public void run() {
-			String source = null;
-			
-			if(task.equals(Task.HTML)) {
-				synchronized(HtmlCompressor.this.htmlParts) {
-					source = HtmlCompressor.this.htmlParts.get(index);
-				}
-				try {
-					source = HtmlCompressor.this.processHtml(source);
-				} catch (Exception e) {}
-				synchronized(HtmlCompressor.this.htmlParts) {
-					HtmlCompressor.this.htmlParts.set(index, source);
-				}
-			} else if(task.equals(Task.SCRIPT)) {
-				synchronized(HtmlCompressor.this.scriptBlocks) {
-					source = HtmlCompressor.this.scriptBlocks.get(index);
-				}
-				try {
-					source = HtmlCompressor.this.compressJavaScript(source);
-				} catch (Exception e) {}
-				synchronized(HtmlCompressor.this.scriptBlocks) {
-					HtmlCompressor.this.scriptBlocks.set(index, source);
-				}
-			} else if(task.equals(Task.STYLE)) {
-				synchronized(HtmlCompressor.this.styleBlocks) {
-					source = HtmlCompressor.this.styleBlocks.get(index);
-				}
-				try {
-					source = HtmlCompressor.this.compressCssStyles(source);
-				} catch (Exception e) {}
-				synchronized(HtmlCompressor.this.styleBlocks) {
-					HtmlCompressor.this.styleBlocks.set(index, source);
-				}
-			}
 		}
 	}
 	
@@ -693,29 +563,6 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
 		this.removeIntertagSpaces = removeIntertagSpaces;
-	}
-	
-	/**
-	 * Returns number of threads that are used during a compression.
-	 * 
-	 * @return number of threads that are used during a compression.
-	 */
-	public int getThreads() {
-		return threads;
-	}
-
-	/**
-	 * If set to more than 1, the Compressor will try to split internal compression tasks 
-	 * into provided number of threads and process them in parallel. It is recommended to use 
-	 * this option on multicore systems to improve performance while processing 
-	 * large files or if using javascript/style inline compression (as it is time consuming). 
-	 * Usually optimal number of threads equals to a number of processor cores in the system.
-	 * Default value is 1 (no threading, everything is done in the main thread).
-	 * 
-	 * @param threads number of threads that are used during a compression 
-	 */
-	public void setThreads(int threads) {
-		this.threads = threads;
 	}
 	
 }

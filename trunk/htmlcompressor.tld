@@ -36,11 +36,6 @@
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>threads</name>
-			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
-		</attribute>
-		<attribute>
 			<name>compressJavaScript</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
@@ -93,11 +88,6 @@
 		</attribute>
 		<attribute>
 			<name>removeIntertagSpaces</name>
-			<required>false</required>
-			<rtexprvalue>false</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>threads</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
