@@ -117,13 +117,6 @@ public class HtmlCompressor implements Compressor {
 		}
 		html = preMatcher.replaceAll(tempPreBlock);
 		
-		//preserve TEXTAREA tags
-		Matcher taMatcher = taPattern.matcher(html);
-		while(taMatcher.find()) {
-			taBlocks.add(taMatcher.group(0));
-		}
-		html = taMatcher.replaceAll(tempTextAreaBlock);
-		
 		//preserve SCRIPT tags
 		Matcher scriptMatcher = scriptPattern.matcher(html);
 		while(scriptMatcher.find()) {
@@ -138,6 +131,13 @@ public class HtmlCompressor implements Compressor {
 		}
 		html = styleMatcher.replaceAll(tempStyleBlock);
 		
+		//preserve TEXTAREA tags
+		Matcher taMatcher = taPattern.matcher(html);
+		while(taMatcher.find()) {
+			taBlocks.add(taMatcher.group(0));
+		}
+		html = taMatcher.replaceAll(tempTextAreaBlock);
+		
 		return html;
 	}
 	
@@ -145,31 +145,13 @@ public class HtmlCompressor implements Compressor {
 		int index = 0;
 		
 		StringBuilder source = new StringBuilder(html);
-		int prevIndex = 0;
-		//put pre blocks back
-		
-		while(preBlocks.size() > 0) {
-			index = source.indexOf(tempPreBlock, prevIndex);
-			String replacement = preBlocks.remove(0);
-			source.replace(index, index+tempPreBlock.length(), replacement);
-			prevIndex = index + replacement.length();
-		}
 		
 		//put textarea blocks back
-		prevIndex = 0;
+		int prevIndex = 0;
 		while(taBlocks.size() > 0) {
 			index = source.indexOf(tempTextAreaBlock, prevIndex);
 			String replacement = taBlocks.remove(0);
 			source.replace(index, index+tempTextAreaBlock.length(), replacement);
-			prevIndex = index + replacement.length();
-		}
-		
-		//put script blocks back
-		prevIndex = 0;
-		while(scriptBlocks.size() > 0) {
-			index = source.indexOf(tempScriptBlock, prevIndex);
-			String replacement = scriptBlocks.remove(0);
-			source.replace(index, index+tempScriptBlock.length(), replacement);
 			prevIndex = index + replacement.length();
 		}
 		
@@ -181,6 +163,25 @@ public class HtmlCompressor implements Compressor {
 			source.replace(index, index+tempStyleBlock.length(), replacement);
 			prevIndex = index + replacement.length();
 		}
+		
+		//put script blocks back
+		prevIndex = 0;
+		while(scriptBlocks.size() > 0) {
+			index = source.indexOf(tempScriptBlock, prevIndex);
+			String replacement = scriptBlocks.remove(0);
+			source.replace(index, index+tempScriptBlock.length(), replacement);
+			prevIndex = index + replacement.length();
+		}
+
+		//put pre blocks back
+		prevIndex = 0;
+		while(preBlocks.size() > 0) {
+			index = source.indexOf(tempPreBlock, prevIndex);
+			String replacement = preBlocks.remove(0);
+			source.replace(index, index+tempPreBlock.length(), replacement);
+			prevIndex = index + replacement.length();
+		}
+		
 		html = source.toString();
 		
 		return html;
