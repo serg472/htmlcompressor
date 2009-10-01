@@ -56,10 +56,10 @@ public class HtmlCompressor implements Compressor {
 	private int yuiCssLineBreak = -1;
 	
 	//temp replacements for preserved blocks 
-	private static final String tempPreBlock = "%%%COMPRESS~PRE%%%";
-	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA%%%";
-	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT%%%";
-	private static final String tempStyleBlock = "%%%COMPRESS~STYLE%%%";
+	private static final String tempPreBlock = "%%%COMPRESS~PRE~#%%%";
+	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~#%%%";
+	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~#%%%";
+	private static final String tempStyleBlock = "%%%COMPRESS~STYLE~#%%%";
 	
 	//compiled regex patterns
 	private static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -72,6 +72,11 @@ public class HtmlCompressor implements Compressor {
 	private static final Pattern stylePattern = Pattern.compile("<style[^>]*?>.*?</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern scriptPatternNonEmpty = Pattern.compile("<script[^>]*?>(.+?)</script>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern stylePatternNonEmpty = Pattern.compile("<style[^>]*?>(.+?)</style>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	
+	private static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	
 	/**
@@ -111,78 +116,88 @@ public class HtmlCompressor implements Compressor {
 
 	private String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks) {
 		//preserve PRE tags
-		Matcher preMatcher = prePattern.matcher(html);
-		while(preMatcher.find()) {
-			preBlocks.add(preMatcher.group(0));
+		Matcher matcher = prePattern.matcher(html);
+		int index = 0;
+		StringBuffer sb = new StringBuffer();
+		while(matcher.find()) {
+			preBlocks.add(matcher.group(0));
+			matcher.appendReplacement(sb, tempPreBlock.replaceFirst("#", Integer.toString(index++)));
 		}
-		html = preMatcher.replaceAll(tempPreBlock);
+		matcher.appendTail(sb);
+		html = sb.toString();
 		
 		//preserve SCRIPT tags
-		Matcher scriptMatcher = scriptPattern.matcher(html);
-		while(scriptMatcher.find()) {
-			scriptBlocks.add(scriptMatcher.group(0));
+		matcher = scriptPattern.matcher(html);
+		index = 0;
+		sb = new StringBuffer();
+		while(matcher.find()) {
+			scriptBlocks.add(matcher.group(0));
+			matcher.appendReplacement(sb, tempScriptBlock.replaceFirst("#", Integer.toString(index++)));
 		}
-		html = scriptMatcher.replaceAll(tempScriptBlock);
-		
+		matcher.appendTail(sb);
+		html = sb.toString();
+
 		//preserve STYLE tags
-		Matcher styleMatcher = stylePattern.matcher(html);
-		while(styleMatcher.find()) {
-			styleBlocks.add(styleMatcher.group(0));
+		matcher = stylePattern.matcher(html);
+		index = 0;
+		sb = new StringBuffer();
+		while(matcher.find()) {
+			styleBlocks.add(matcher.group(0));
+			matcher.appendReplacement(sb, tempStyleBlock.replaceFirst("#", Integer.toString(index++)));
 		}
-		html = styleMatcher.replaceAll(tempStyleBlock);
+		matcher.appendTail(sb);
+		html = sb.toString();
 		
 		//preserve TEXTAREA tags
-		Matcher taMatcher = taPattern.matcher(html);
-		while(taMatcher.find()) {
-			taBlocks.add(taMatcher.group(0));
+		matcher = taPattern.matcher(html);
+		index = 0;
+		sb = new StringBuffer();
+		while(matcher.find()) {
+			taBlocks.add(matcher.group(0));
+			matcher.appendReplacement(sb, tempTextAreaBlock.replaceFirst("#", Integer.toString(index++)));
 		}
-		html = taMatcher.replaceAll(tempTextAreaBlock);
-		
+		matcher.appendTail(sb);
+		html = sb.toString();
+
 		return html;
 	}
 	
 	private String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks) {
-		int index = 0;
-		
-		StringBuilder source = new StringBuilder(html);
-		
-		//put textarea blocks back
-		int prevIndex = 0;
-		while(taBlocks.size() > 0) {
-			index = source.indexOf(tempTextAreaBlock, prevIndex);
-			String replacement = taBlocks.remove(0);
-			source.replace(index, index+tempTextAreaBlock.length(), replacement);
-			prevIndex = index + replacement.length();
+		//put TEXTAREA blocks back
+		Matcher matcher = tempTextAreaPattern.matcher(html);
+		StringBuffer sb = new StringBuffer();
+		while(matcher.find()) {
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(taBlocks.get(Integer.parseInt(matcher.group(1)))));
 		}
+		matcher.appendTail(sb);
+		html = sb.toString();
 		
-		//put style blocks back
-		prevIndex = 0;
-		while(styleBlocks.size() > 0) {
-			index = source.indexOf(tempStyleBlock, prevIndex);
-			String replacement = styleBlocks.remove(0);
-			source.replace(index, index+tempStyleBlock.length(), replacement);
-			prevIndex = index + replacement.length();
+		//put STYLE blocks back
+		matcher = tempStylePattern.matcher(html);
+		sb = new StringBuffer();
+		while(matcher.find()) {
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(styleBlocks.get(Integer.parseInt(matcher.group(1)))));
 		}
+		matcher.appendTail(sb);
+		html = sb.toString();
 		
-		//put script blocks back
-		prevIndex = 0;
-		while(scriptBlocks.size() > 0) {
-			index = source.indexOf(tempScriptBlock, prevIndex);
-			String replacement = scriptBlocks.remove(0);
-			source.replace(index, index+tempScriptBlock.length(), replacement);
-			prevIndex = index + replacement.length();
+		//put SCRIPT blocks back
+		matcher = tempScriptPattern.matcher(html);
+		sb = new StringBuffer();
+		while(matcher.find()) {
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(scriptBlocks.get(Integer.parseInt(matcher.group(1)))));
 		}
+		matcher.appendTail(sb);
+		html = sb.toString();
 
-		//put pre blocks back
-		prevIndex = 0;
-		while(preBlocks.size() > 0) {
-			index = source.indexOf(tempPreBlock, prevIndex);
-			String replacement = preBlocks.remove(0);
-			source.replace(index, index+tempPreBlock.length(), replacement);
-			prevIndex = index + replacement.length();
+		//put PRE blocks back
+		matcher = tempPrePattern.matcher(html);
+		sb = new StringBuffer();
+		while(matcher.find()) {
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(preBlocks.get(Integer.parseInt(matcher.group(1)))));
 		}
-		
-		html = source.toString();
+		matcher.appendTail(sb);
+		html = sb.toString();
 		
 		return html;
 	}

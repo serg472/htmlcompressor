@@ -34,12 +34,14 @@ public class XmlCompressor implements Compressor {
 	private boolean removeIntertagSpaces = true;
 	
 	//temp replacements for preserved blocks 
-	private static final String tempCdataBlock = "%%%COMPRESS~CDATA%%%";
+	private static final String tempCdataBlock = "%%%COMPRESS~CDATA~#%%%";
 	
 	//compiled regex patterns
 	private static final Pattern cdataPattern = Pattern.compile("<!\\[CDATA\\[.*?\\]\\]>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	
+	private static final Pattern tempCdataPattern = Pattern.compile("%%%COMPRESS~CDATA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	/**
 	 * The main method that compresses given XML source and returns compressed result.
@@ -71,31 +73,30 @@ public class XmlCompressor implements Compressor {
 
 	private String preserveBlocks(String xml, List<String> cdataBlocks) {
 		//preserve CDATA blocks
-		Matcher cdataMatcher = cdataPattern.matcher(xml);
-		while(cdataMatcher.find()) {
-			cdataBlocks.add(cdataMatcher.group(0));
+		Matcher matcher = cdataPattern.matcher(xml);
+		int index = 0;
+		StringBuffer sb = new StringBuffer();
+		while(matcher.find()) {
+			cdataBlocks.add(matcher.group(0));
+			matcher.appendReplacement(sb, tempCdataBlock.replaceFirst("#", Integer.toString(index++)));
 		}
-		xml = cdataMatcher.replaceAll(tempCdataBlock);
+		matcher.appendTail(sb);
+		xml = sb.toString();
 		
 		return xml;
 	}
 	
 	private String returnBlocks(String xml, List<String> cdataBlocks) {
-		int index = 0;
-		
-		StringBuilder source = new StringBuilder(xml);
-		
 		//put CDATA blocks back
-		int prevIndex = 0;
-		while(cdataBlocks.size() > 0) {
-			index = source.indexOf(tempCdataBlock, prevIndex);
-			String replacement = cdataBlocks.remove(0);
-			source.replace(index, index+tempCdataBlock.length(), replacement);
-			prevIndex = index + replacement.length();
+		Matcher matcher = tempCdataPattern.matcher(xml);
+		StringBuffer sb = new StringBuffer();
+		while(matcher.find()) {
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(cdataBlocks.get(Integer.parseInt(matcher.group(1)))));
 		}
+		matcher.appendTail(sb);
+		xml = sb.toString();
 		
-		return source.toString();
-		
+		return xml;
 	}
 	
 	private String processXml(String xml) throws Exception {
