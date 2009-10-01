@@ -1,4 +1,7 @@
 #labels Featured
+*0.7.2*
+  * [http://code.google.com/p/htmlcompressor/issues/detail?id=3 Bug fix]
+
 *0.7.1*
   * [http://code.google.com/p/htmlcompressor/issues/detail?id=2 Bug fix]
 
