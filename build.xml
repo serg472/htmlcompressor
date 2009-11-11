@@ -36,6 +36,10 @@
             <fileset dir="${build.dir}/classes" includes="**/*.class"/>
         </copy>
         <jar destfile="${build.dir}/${jar.name}" basedir="${build.dir}/jar">
+			<manifest>
+				<attribute name="Main-Class" value="com.googlecode.htmlcompressor.CmdLineCompressor"/>
+				<attribute name="Class-Path" value="yuicompressor-2.4.2.jar"/>
+			</manifest>
         </jar>
     </target>
 	
