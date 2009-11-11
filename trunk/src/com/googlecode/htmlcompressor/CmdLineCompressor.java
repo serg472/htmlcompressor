@@ -1,5 +1,22 @@
 package com.googlecode.htmlcompressor;
 
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import jargs.gnu.CmdLineParser;
+
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,235 +26,261 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-import jargs.gnu.CmdLineParser;
+import com.googlecode.htmlcompressor.compressor.Compressor;
+import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
+import com.googlecode.htmlcompressor.compressor.XmlCompressor;
 
+/**
+ * Wrapper for HTML and XML compressor classes that allows using them from a command line.
+ * 
+ * <p>Usage: <code>java -jar htmlcompressor.jar [options] [input file]</code>
+ * <p>To view a list of all available parameters please run with <code>--help</code> option:
+ * <p><code>java -jar htmlcompressor.jar --help</code>
+ * 
+ * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
+ */
 public class CmdLineCompressor {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
+
 		CmdLineParser parser = new CmdLineParser();
-        CmdLineParser.Option typeOpt = parser.addStringOption("type");
-        CmdLineParser.Option verboseOpt = parser.addBooleanOption('v', "verbose");
-        CmdLineParser.Option nomungeOpt = parser.addBooleanOption("nomunge");
-        CmdLineParser.Option linebreakOpt = parser.addStringOption("line-break");
-        CmdLineParser.Option preserveSemiOpt = parser.addBooleanOption("preserve-semi");
-        CmdLineParser.Option disableOptimizationsOpt = parser.addBooleanOption("disable-optimizations");
-        CmdLineParser.Option helpOpt = parser.addBooleanOption('h', "help");
-        CmdLineParser.Option charsetOpt = parser.addStringOption("charset");
-        CmdLineParser.Option outputFilenameOpt = parser.addStringOption('o', "output");
 
-        Reader in = null;
-        Writer out = null;
+		CmdLineParser.Option helpOpt = parser.addBooleanOption('h', "help");
+		CmdLineParser.Option charsetOpt = parser.addStringOption("charset");
+		CmdLineParser.Option outputFilenameOpt = parser.addStringOption('o', "output");
+		CmdLineParser.Option typeOpt = parser.addStringOption("type");
+		CmdLineParser.Option preserveCommentsOpt = parser.addBooleanOption("preserve-comments");
+		CmdLineParser.Option preserveIntertagSpacesOpt = parser.addBooleanOption("preserve-intertag-spaces");
+		CmdLineParser.Option preserveMultiSpacesOpt = parser.addBooleanOption("preserve-multi-spaces");
+		CmdLineParser.Option removeIntertagSpacesOpt = parser.addBooleanOption("remove-intertag-spaces");
+		CmdLineParser.Option removeQuotesOpt = parser.addBooleanOption("remove-quotes");
+		CmdLineParser.Option compressJsOpt = parser.addBooleanOption("compress-js");
+		CmdLineParser.Option compressCssOpt = parser.addBooleanOption("compress-css");
 
-        try {
+		CmdLineParser.Option nomungeOpt = parser.addBooleanOption("nomunge");
+		CmdLineParser.Option linebreakOpt = parser.addStringOption("line-break");
+		CmdLineParser.Option preserveSemiOpt = parser.addBooleanOption("preserve-semi");
+		CmdLineParser.Option disableOptimizationsOpt = parser.addBooleanOption("disable-optimizations");
 
-            parser.parse(args);
+		Reader in = null;
+		Writer out = null;
 
-            Boolean help = (Boolean) parser.getOptionValue(helpOpt);
-            if (help != null && help.booleanValue()) {
-                printUsage();
-                System.exit(0);
-            }
+		try {
 
-            boolean verbose = parser.getOptionValue(verboseOpt) != null;
+			parser.parse(args);
 
-            String charset = (String) parser.getOptionValue(charsetOpt);
-            if (charset == null || !Charset.isSupported(charset)) {
-                charset = System.getProperty("file.encoding");
-                if (charset == null) {
-                    charset = "UTF-8";
-                }
-                if (verbose) {
-                    System.err.println("\n[INFO] Using charset " + charset);
-                }
-            }
+			// help
+			Boolean help = (Boolean) parser.getOptionValue(helpOpt);
+			if (help != null && help.booleanValue()) {
+				printUsage();
+				System.exit(0);
+			}
 
-            String[] fileArgs = parser.getRemainingArgs();
-            String type = (String) parser.getOptionValue(typeOpt);
+			// charset
+			String charset = (String) parser.getOptionValue(charsetOpt);
+			if (charset == null || !Charset.isSupported(charset)) {
+				charset = System.getProperty("file.encoding");
+				if (charset == null) {
+					charset = "UTF-8";
+				}
+			}
 
-            if (fileArgs.length == 0) {
+			// input file
+			String[] fileArgs = parser.getRemainingArgs();
 
-                if (type == null || !type.equalsIgnoreCase("js") && !type.equalsIgnoreCase("css")) {
-                	printUsage();
-                    System.exit(1);
-                }
+			// type
+			String type = (String) parser.getOptionValue(typeOpt);
+			if (type != null && !type.equalsIgnoreCase("html") && !type.equalsIgnoreCase("xml")) {
+				printUsage();
+				System.exit(1);
+			}
 
-                in = new InputStreamReader(System.in, charset);
+			if (fileArgs.length == 0) {
 
-            } else {
+				// html by default for stdin
+				if (type == null) {
+					type = "html";
+				}
 
-                if (type != null && !type.equalsIgnoreCase("js") && !type.equalsIgnoreCase("css")) {
-                	printUsage();
-                    System.exit(1);
-                }
+				in = new InputStreamReader(System.in, charset);
 
-                String inputFilename = fileArgs[0];
+			} else {
 
-                if (type == null) {
-                    int idx = inputFilename.lastIndexOf('.');
-                    if (idx >= 0 && idx < inputFilename.length() - 1) {
-                        type = inputFilename.substring(idx + 1);
-                    }
-                }
+				String inputFilename = fileArgs[0];
 
-                if (type == null || !type.equalsIgnoreCase("js") && !type.equalsIgnoreCase("css")) {
-                	printUsage();
-                    System.exit(1);
-                }
+				// detect type from extension
+				if (type == null) {
+					int idx = inputFilename.lastIndexOf('.');
+					if (idx >= 0 && idx < inputFilename.length() - 1) {
+						type = inputFilename.substring(idx + 1);
+					}
+				}
 
-                in = new InputStreamReader(new FileInputStream(inputFilename), charset);
-            }
+				if (type == null || !type.equalsIgnoreCase("xml")) {
+					type = "html";
+				}
 
-            int linebreakpos = -1;
-            String linebreakstr = (String) parser.getOptionValue(linebreakOpt);
-            if (linebreakstr != null) {
-                try {
-                    linebreakpos = Integer.parseInt(linebreakstr, 10);
-                } catch (NumberFormatException e) {
-                	printUsage();
-                    System.exit(1);
-                }
-            }
+				in = new InputStreamReader(new FileInputStream(inputFilename), charset);
+			}
 
-            String outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
+			//line break
+			int linebreakpos = -1;
+			String linebreakstr = (String) parser.getOptionValue(linebreakOpt);
+			if (linebreakstr != null) {
+				try {
+					linebreakpos = Integer.parseInt(linebreakstr, 10);
+				} catch (NumberFormatException e) {
+					printUsage();
+					System.exit(1);
+				}
+			}
 
-            if (type.equalsIgnoreCase("js")) {
+			//output file
+			String outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
 
-            	/*
-                try {
-                    JavaScriptCompressor compressor = new JavaScriptCompressor(in, new ErrorReporter() {
+			//set compressor options
+			Compressor compressor = null;
+			if (type.equalsIgnoreCase("html")) {
 
-                        public void warning(String message, String sourceName,
-                                int line, String lineSource, int lineOffset) {
-                            if (line < 0) {
-                                System.err.println("\n[WARNING] " + message);
-                            } else {
-                                System.err.println("\n[WARNING] " + line + ':' + lineOffset + ':' + message);
-                            }
-                        }
+				HtmlCompressor htmlCompressor = new HtmlCompressor();
+				htmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
+				htmlCompressor.setRemoveMultiSpaces(parser.getOptionValue(preserveMultiSpacesOpt) == null);
+				htmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(removeIntertagSpacesOpt) != null);
+				htmlCompressor.setRemoveQuotes(parser.getOptionValue(removeQuotesOpt) != null);
+				htmlCompressor.setCompressJavaScript(parser.getOptionValue(compressJsOpt) != null);
+				htmlCompressor.setCompressCss(parser.getOptionValue(compressCssOpt) != null);
 
-                        public void error(String message, String sourceName,
-                                int line, String lineSource, int lineOffset) {
-                            if (line < 0) {
-                                System.err.println("\n[ERROR] " + message);
-                            } else {
-                                System.err.println("\n[ERROR] " + line + ':' + lineOffset + ':' + message);
-                            }
-                        }
+				htmlCompressor.setYuiJsNoMunge(parser.getOptionValue(nomungeOpt) != null);
+				htmlCompressor.setYuiJsPreserveAllSemiColons(parser.getOptionValue(preserveSemiOpt) != null);
+				htmlCompressor.setYuiJsDisableOptimizations(parser.getOptionValue(disableOptimizationsOpt) != null);
+				htmlCompressor.setYuiJsLineBreak(linebreakpos);
+				htmlCompressor.setYuiCssLineBreak(linebreakpos);
 
-                        public EvaluatorException runtimeError(String message, String sourceName,
-                                int line, String lineSource, int lineOffset) {
-                            error(message, sourceName, line, lineSource, lineOffset);
-                            return new EvaluatorException(message);
-                        }
-                    });
+				compressor = htmlCompressor;
 
-                    // Close the input stream first, and then open the output stream,
-                    // in case the output file should override the input file.
-                    in.close(); in = null;
+			} else {
 
-                    if (outputFilename == null) {
-                        out = new OutputStreamWriter(System.out, charset);
-                    } else {
-                        out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
-                    }
+				XmlCompressor xmlCompressor = new XmlCompressor();
+				xmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
+				xmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(preserveIntertagSpacesOpt) == null);
 
-                    boolean munge = parser.getOptionValue(nomungeOpt) == null;
-                    boolean preserveAllSemiColons = parser.getOptionValue(preserveSemiOpt) != null;
-                    boolean disableOptimizations = parser.getOptionValue(disableOptimizationsOpt) != null;
+				compressor = xmlCompressor;
 
-                    compressor.compress(out, linebreakpos, munge, verbose,
-                            preserveAllSemiColons, disableOptimizations);
+			}
 
-                } catch (EvaluatorException e) {
+			BufferedReader input =  new BufferedReader(in);
+			
+			//compress
+			try {
+				
+				//read input file
+				StringBuilder source = new StringBuilder();
+				
+				String line = null;
+				while ((line = input.readLine()) != null){
+					source.append(line);
+					source.append(System.getProperty("line.separator"));
+				}
+				
 
-                    e.printStackTrace();
-                    // Return a special error code used specifically by the web front-end.
-                    System.exit(2);
+				// Close the input stream first, and then open the output
+				// stream,
+				// in case the output file should override the input file.
+				input.close();
+				input = null;
+				in.close();
+				in = null;
 
-                }
-*/
-            } else if (type.equalsIgnoreCase("css")) {
-/*
-                CssCompressor compressor = new CssCompressor(in);
+				if (outputFilename == null) {
+					out = new OutputStreamWriter(System.out, charset);
+				} else {
+					out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
+				}
 
-                // Close the input stream first, and then open the output stream,
-                // in case the output file should override the input file.
-                in.close(); in = null;
+				String result = compressor.compress(source.toString());
+				out.write(result);
 
-                if (outputFilename == null) {
-                    out = new OutputStreamWriter(System.out, charset);
-                } else {
-                    out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
-                }
+			} catch (Exception e) {
 
-                compressor.compress(out, linebreakpos);
- */
-            }
-        } catch (CmdLineParser.OptionException e) {
+				e.printStackTrace();
+				System.exit(1);
 
-        	printUsage();
-            System.exit(1);
+			} finally {
+				if (input != null) {
+					try {
+						input.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 
-        } catch (IOException e) {
+		} catch (CmdLineParser.OptionException e) {
 
-            e.printStackTrace();
-            System.exit(1);
+			printUsage();
+			System.exit(1);
 
-        } finally {
+		} catch (IOException e) {
 
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+			e.printStackTrace();
+			System.exit(1);
 
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+		} finally {
+
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		System.exit(0);
 	}
 
 	private static void printUsage() {
-		System.out.println(
-				"Usage: java -jar htmlcompressor-x.y.z.jar [options] [input file]\n\n"
+		System.out.println("Usage: java -jar htmlcompressor.jar [options] [input file]\n\n"
 
-						+ "<input file>                   If not provided reads from stdin\n\n"
+						+ "<input file>                  If not provided reads from stdin\n\n"
 
 						+ "Global Options:\n"
-						+ "  -o <output file>             If not provided outputs result to stdout\n"
-						+ "  --type <html|xml>            If not provided autodetects from file extension\n"
-						+ "  --charset <charset>          Read the input file using <charset>\n"
-						+ "  -h, --help                   Display this screen\n\n"
+						+ "  -o <output file>            If not provided outputs result to stdout\n"
+						+ "  --type <html|xml>           If not provided autodetects from file extension\n"
+						+ "  --charset <charset>         Read the input file using <charset>\n"
+						+ "  -h, --help                  Display this screen\n\n"
 
 						+ "XML Options:\n"
-						+ "  --preserve-comments          Preserve comments\n"
-						+ "  --preserve-intertag-spaces   Preserve intertag spaces\n\n"
+						+ "  --preserve-comments         Preserve comments\n"
+						+ "  --preserve-intertag-spaces  Preserve intertag spaces\n\n"
 
 						+ "HTML Options:\n"
-						+ "  --preserve-comments          Preserve comments\n"
-						+ "  --preserve-multi-spaces      Preserve multiple spaces\n"
-						+ "  --remove-intertag-spaces     Remove intertag spaces\n"
-						+ "  --remove-quotes              Remove unneeded quotes\n"
-						+ "  --compress-js                Enable JavaScript compression using YUICompressor\n"
-						+ "  --compress-css               Enable CSS compression using YUICompressor\n\n"
+						+ "  --preserve-comments         Preserve comments\n"
+						+ "  --preserve-multi-spaces     Preserve multiple spaces\n"
+						+ "  --remove-intertag-spaces    Remove intertag spaces\n"
+						+ "  --remove-quotes             Remove unneeded quotes\n"
+						+ "  --compress-js               Enable JavaScript compression using YUICompressor\n"
+						+ "  --compress-css              Enable CSS compression using YUICompressor\n\n"
 
 						+ "JavaScript Options (for YUI Compressor):\n"
-						+ "  --nomunge                    Minify only, do not obfuscate\n"
-						+ "  --preserve-semi              Preserve all semicolons\n"
-						+ "  --disable-optimizations      Disable all micro optimizations\n"
-						+ "  --line-break <column num>    Insert a line break after the specified column\n\n"
+						+ "  --nomunge                   Minify only, do not obfuscate\n"
+						+ "  --preserve-semi             Preserve all semicolons\n"
+						+ "  --disable-optimizations     Disable all micro optimizations\n"
+						+ "  --line-break <column num>   Insert a line break after the specified column\n\n"
 
 						+ "CSS Options (for YUI Compressor):\n"
-						+ "  --line-break <column num>    Insert a line break after the specified column\n\n"
+						+ "  --line-break <column num>   Insert a line break after the specified column\n\n"
+						
+						+ "Please note that if you enable JavaScript or Css compression parameters,\n"
+						+"YUI Compressor jar file must be present at the same directory as this jar."
 
 				);
 	}
