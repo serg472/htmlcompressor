@@ -1,4 +1,7 @@
 #labels Featured
+*0.8*
+  * Added ability to call HTML and XML compressors from a command line. Please see the front page for details.
+
 *0.7.2*
   * [http://code.google.com/p/htmlcompressor/issues/detail?id=3 Bug fix]
 
