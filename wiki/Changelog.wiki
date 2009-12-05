@@ -1,4 +1,8 @@
 #labels Featured
+*0.8.2*
+  * Added ending space removal inside tags (`<br /><p >` => `<br/><p>`) to default behavior for HTML and XML compressors.
+
+
 *0.8*
   * Added ability to call HTML and XML compressors from a command line. Please see the front page for details.
 
