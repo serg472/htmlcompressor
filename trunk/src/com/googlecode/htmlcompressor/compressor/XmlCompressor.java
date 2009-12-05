@@ -40,6 +40,7 @@ public class XmlCompressor implements Compressor {
 	private static final Pattern cdataPattern = Pattern.compile("<!\\[CDATA\\[.*?\\]\\]>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	private static final Pattern tempCdataPattern = Pattern.compile("%%%COMPRESS~CDATA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
@@ -109,6 +110,10 @@ public class XmlCompressor implements Compressor {
 		if(removeIntertagSpaces) {
 			xml = intertagPattern.matcher(xml).replaceAll("><");
 		}
+		
+		//remove ending spaces inside tags
+		xml = tagEndSpacePattern.matcher(xml).replaceAll("$1$2");
+		
 		return xml;
 	}
 	
