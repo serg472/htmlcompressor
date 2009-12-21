@@ -41,6 +41,8 @@ public class XmlCompressor implements Compressor {
 	private static final Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern multispacePattern = Pattern.compile("\\s{2,}(?=[^<]*?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	
 	private static final Pattern tempCdataPattern = Pattern.compile("%%%COMPRESS~CDATA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
@@ -110,6 +112,12 @@ public class XmlCompressor implements Compressor {
 		if(removeIntertagSpaces) {
 			xml = intertagPattern.matcher(xml).replaceAll("><");
 		}
+		
+		//replace miltiple spaces inside tags with single spaces
+		xml = multispacePattern.matcher(xml).replaceAll(" ");
+		
+		//remove spaces around equal sign inside tags
+		xml = tagPropertyPattern.matcher(xml).replaceAll("$1=");
 		
 		//remove ending spaces inside tags
 		xml = tagEndSpacePattern.matcher(xml).replaceAll("$1$2");
