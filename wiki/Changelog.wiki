@@ -1,4 +1,11 @@
 #labels Featured
+*0.9* This build concludes all ideas I've had for compression improvements. If you can think about any further enhancements please let me know. I also wrote some explanation on the main page what this library is for, where it belongs in a web app life cycle, and how to get most out of it (I should have done that long time ago). Cheers.
+  * Inline event handlers (`onclick`,`onload`, etc) now are getting preserved similar to `<pre>`,`<script>` and others, as they might contain javascript that will break tag boundaries detection. 
+  * Added space removal around equals sign inside tags (`<p id = "p1">` => `<p id="p1">`) to default behavior for HTML and XML compressors.
+  * Multiple spaces inside XML tags replaced with single spaces as default behavior.
+  * Improved tag preserving algorithm for `<pre>`,`<script>` and others to preserve only their content, so these tags themselves are treated as regular tags and getting compressed where appropriate (it used to preserve both content and tags).
+
+
 *0.8.2*
   * Added ending space removal inside tags (`<br /><p >` => `<br/><p>`) to default behavior for HTML and XML compressors.
 
