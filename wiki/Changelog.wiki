@@ -1,4 +1,7 @@
 #labels Featured
+*0.9.1* 
+  * Fixed problem with JavaScript blocks wrapped with CDATA not being compressed. See [http://code.google.com/p/htmlcompressor/issues/detail?id=8 this issue] for details.
+
 *0.9* 
   * Inline event handlers (`onclick`,`onload`, etc) now are getting preserved similar to `<pre>`,`<script>` and others, as they might contain javascript that will break tag boundaries detection. 
   * Added space removal around equals sign inside tags (`<p id = "p1">` => `<p id="p1">`) to default behavior for HTML and XML compressors.
