@@ -73,13 +73,12 @@ public class HtmlCompressor implements Compressor {
 	private static final Pattern scriptPattern = Pattern.compile("(<script[^>]*?>)(.*?)(</script>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern stylePattern = Pattern.compile("(<style[^>]*?>)(.*?)(</style>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern cdataPattern = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)\\]\\]>\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	//unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	private static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE);
 	private static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
-	
-	
-	
+
 	private static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -299,12 +298,25 @@ public class HtmlCompressor implements Compressor {
 	}
 	
 	private String compressJavaScript(String source) throws Exception {
+		
+		//detect CDATA wrapper
+		boolean cdataWrapper = false;
+		Matcher matcher = cdataPattern.matcher(source);
+		if(matcher.matches()) {
+			cdataWrapper = true;
+			source = matcher.group(1);
+		}
+		
 		//call YUICompressor
 		StringWriter result = new StringWriter();
 		JavaScriptCompressor compressor = new JavaScriptCompressor(new StringReader(source), null);
 		compressor.compress(result, yuiJsLineBreak, !yuiJsNoMunge, false, yuiJsPreserveAllSemiColons, yuiJsDisableOptimizations);
 		
-		return result.toString();
+		if(cdataWrapper) {
+			return "<![CDATA[" + result.toString() + "]]>";
+		} else {
+			return result.toString();
+		}
 	}
 	
 	private String compressCssStyles(String source) throws Exception {
