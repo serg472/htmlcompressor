@@ -1,4 +1,8 @@
 #labels Featured
+*0.9.2* 
+  * Added ability to set custom preservation rules for HTML compressor by using `setPreservePatterns()` method (see the front page for usage examples)
+  * Implemented default `ErrorReporter` for YUI compressor that would output any errors during JavaScript compression to `System.err` stream (it used to throw null pointer exceptions in case of JavaScript error). You can also provide your own `ErrorReporter` implementation by using `setYuiErrorReporter()` method (see javadocs for details)
+
 *0.9.1* 
   * Fixed problem with JavaScript blocks wrapped with CDATA not being compressed. See [http://code.google.com/p/htmlcompressor/issues/detail?id=8 this issue] for details.
 
