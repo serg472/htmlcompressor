@@ -16,10 +16,14 @@ package com.googlecode.htmlcompressor.compressor;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.mozilla.javascript.ErrorReporter;
+import org.mozilla.javascript.EvaluatorException;
 
 import com.yahoo.platform.yui.compressor.CssCompressor;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
@@ -48,6 +52,8 @@ public class HtmlCompressor implements Compressor {
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
 	
+	private List<Pattern> preservePatterns = null;
+	
 	//YUICompressor settings
 	private boolean yuiJsNoMunge = false;
 	private boolean yuiJsPreserveAllSemiColons = false;
@@ -56,11 +62,12 @@ public class HtmlCompressor implements Compressor {
 	private int yuiCssLineBreak = -1;
 	
 	//temp replacements for preserved blocks 
-	private static final String tempPreBlock = "%%%COMPRESS~PRE~#%%%";
-	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~#%%%";
-	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~#%%%";
-	private static final String tempStyleBlock = "%%%COMPRESS~STYLE~#%%%";
-	private static final String tempEventBlock = "%%%COMPRESS~EVENT~#%%%";
+	private static final String tempPreBlock = "%%%COMPRESS~PRE~{0}%%%";
+	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~{0}%%%";
+	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0}%%%";
+	private static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0}%%%";
+	private static final String tempEventBlock = "%%%COMPRESS~EVENT~{0}%%%";
+	private static final String tempUserBlock = "%%%COMPRESS~USER{0}~{1}%%%";
 	
 	//compiled regex patterns
 	private static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -85,11 +92,37 @@ public class HtmlCompressor implements Compressor {
 	private static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
+	//default error reporting implementation for YUI compressor
+	private ErrorReporter yuiErrorReporter = new ErrorReporter() {
+
+		public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
+			if (line < 0) {
+				System.err.println("\n[WARNING] HtmlCompressor: \"" + message + "\" during JavaScript compression");
+			} else {
+				System.err.println("\n[WARNING] HtmlCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset + "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
+			}
+		}
+
+		public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
+			if (line < 0) {
+				System.err.println("\n[ERROR] HtmlCompressor: \"" + message + "\" during JavaScript compression");
+			} else {
+				System.err.println("\n[ERROR] HtmlCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset + "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
+			}
+		}
+
+		public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
+			error(message, sourceName, line, lineSource, lineOffset);
+			return new EvaluatorException(message);
+		}
+	};
 	
 	/**
-	 * The main method that compresses given HTML source and returns compressed result.
+	 * The main method that compresses given HTML source and returns compressed
+	 * result.
 	 * 
-	 * @param html HTML content to compress
+	 * @param html
+	 *            HTML content to compress
 	 * @return compressed content.
 	 * @throws Exception
 	 */
@@ -105,9 +138,10 @@ public class HtmlCompressor implements Compressor {
 		List<String> scriptBlocks = new ArrayList<String>();
 		List<String> styleBlocks = new ArrayList<String>();
 		List<String> eventBlocks = new ArrayList<String>();
+		List<List<String>> userBlocks = new ArrayList<List<String>>();
 		
 		//preserve blocks
-		html = preserveBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks);
+		html = preserveBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, userBlocks);
 		
 		//process pure html
 		html = processHtml(html);
@@ -117,12 +151,33 @@ public class HtmlCompressor implements Compressor {
 		processStyleBlocks(styleBlocks);
 		
 		//put blocks back
-		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks);
+		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, userBlocks);
 		
 		return html.trim();
 	}
 
-	private String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks) {
+	private String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<List<String>> userBlocks) {
+		
+		//preserve user blocks
+		if(preservePatterns != null) {
+			for(int p=0;p<preservePatterns.size();p++) {
+				List<String> userBlock = new ArrayList<String>();
+			
+				Matcher matcher = preservePatterns.get(p).matcher(html);
+				int index = 0;
+				StringBuffer sb = new StringBuffer();
+				while(matcher.find()) {
+					if(matcher.group(0).trim().length() > 0) {
+						userBlock.add(matcher.group(0));
+						matcher.appendReplacement(sb, MessageFormat.format(tempUserBlock, p, index++));
+					}
+				}
+				matcher.appendTail(sb);
+				html = sb.toString();
+				userBlocks.add(userBlock);
+			}
+		}
+		
 		//preserve inline events
 		Matcher matcher = eventPattern1.matcher(html);
 		int index = 0;
@@ -130,7 +185,7 @@ public class HtmlCompressor implements Compressor {
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
 				eventBlocks.add(matcher.group(2));
-				matcher.appendReplacement(sb, "$1"+tempEventBlock.replaceFirst("#", Integer.toString(index++))+"$3");
+				matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempEventBlock, index++)+"$3");
 			}
 		}
 		matcher.appendTail(sb);
@@ -141,7 +196,7 @@ public class HtmlCompressor implements Compressor {
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
 				eventBlocks.add(matcher.group(2));
-				matcher.appendReplacement(sb, "$1"+tempEventBlock.replaceFirst("#", Integer.toString(index++))+"$3");
+				matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempEventBlock, index++)+"$3");
 			}
 		}
 		matcher.appendTail(sb);
@@ -154,7 +209,7 @@ public class HtmlCompressor implements Compressor {
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
 				preBlocks.add(matcher.group(2));
-				matcher.appendReplacement(sb, "$1"+tempPreBlock.replaceFirst("#", Integer.toString(index++))+"$3");
+				matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempPreBlock, index++)+"$3");
 			}
 		}
 		matcher.appendTail(sb);
@@ -167,7 +222,7 @@ public class HtmlCompressor implements Compressor {
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
 				scriptBlocks.add(matcher.group(2));
-				matcher.appendReplacement(sb, "$1"+tempScriptBlock.replaceFirst("#", Integer.toString(index++))+"$3");
+				matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempScriptBlock, index++)+"$3");
 			}
 		}
 		matcher.appendTail(sb);
@@ -180,7 +235,7 @@ public class HtmlCompressor implements Compressor {
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
 				styleBlocks.add(matcher.group(2));
-				matcher.appendReplacement(sb, "$1"+tempStyleBlock.replaceFirst("#", Integer.toString(index++))+"$3");
+				matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempStyleBlock, index++)+"$3");
 			}
 		}
 		matcher.appendTail(sb);
@@ -193,7 +248,7 @@ public class HtmlCompressor implements Compressor {
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
 				taBlocks.add(matcher.group(2));
-				matcher.appendReplacement(sb, "$1"+tempTextAreaBlock.replaceFirst("#", Integer.toString(index++))+"$3");
+				matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempTextAreaBlock, index++)+"$3");
 			}
 		}
 		matcher.appendTail(sb);
@@ -202,7 +257,7 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	private String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks) {
+	private String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<List<String>> userBlocks) {
 		//put TEXTAREA blocks back
 		Matcher matcher = tempTextAreaPattern.matcher(html);
 		StringBuffer sb = new StringBuffer();
@@ -247,6 +302,20 @@ public class HtmlCompressor implements Compressor {
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
+		
+		//put user blocks back
+		if(preservePatterns != null) {
+			for(int p = preservePatterns.size() - 1; p >= 0; p--) {
+				Pattern tempUserPattern = Pattern.compile("%%%COMPRESS~USER" + p + "~(\\d+?)%%%");
+				matcher = tempUserPattern.matcher(html);
+				sb = new StringBuffer();
+				while(matcher.find()) {
+					matcher.appendReplacement(sb, Matcher.quoteReplacement(userBlocks.get(p).get(Integer.parseInt(matcher.group(1)))));
+				}
+				matcher.appendTail(sb);
+				html = sb.toString();
+			}
+		}
 		
 		return html;
 	}
@@ -309,7 +378,7 @@ public class HtmlCompressor implements Compressor {
 		
 		//call YUICompressor
 		StringWriter result = new StringWriter();
-		JavaScriptCompressor compressor = new JavaScriptCompressor(new StringReader(source), null);
+		JavaScriptCompressor compressor = new JavaScriptCompressor(new StringReader(source), yuiErrorReporter);
 		compressor.compress(result, yuiJsLineBreak, !yuiJsNoMunge, false, yuiJsPreserveAllSemiColons, yuiJsDisableOptimizations);
 		
 		if(cdataWrapper) {
@@ -629,6 +698,57 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
 		this.removeIntertagSpaces = removeIntertagSpaces;
+	}
+
+	/**
+	 * Returns a list of Patterns defining custom preserving block rules  
+	 * 
+	 * @return list of <code>Pattern</code> objects defining rules for preserving block rules
+	 */
+	public List<Pattern> getPreservePatterns() {
+		return preservePatterns;
+	}
+
+	/**
+	 * This method allows setting custom block preservation rules defined by regular 
+	 * expression patterns. Blocks that match provided patterns will be skipped during HTML compression. 
+	 * 
+	 * <p>Custom preservation rules have higher priority than default rules.
+	 * Priority between custom rules are defined by their position in a list 
+	 * (beginning of a list has higher priority).
+	 * 
+	 * @param preservePatterns List of <code>Pattern</code> objects that will be 
+	 * used to skip matched blocks during compression  
+	 */
+	public void setPreservePatterns(List<Pattern> preservePatterns) {
+		this.preservePatterns = preservePatterns;
+	}
+
+	/**
+	 * Returns <code>ErrorReporter</code> used by YUI Compressor to log error messages 
+	 * during JavasSript compression 
+	 * 
+	 * @return <code>ErrorReporter</code> used by YUI Compressor to log error messages 
+	 * during JavasSript compression
+	 * 
+	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+	 * @see <a href="http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ErrorReporter.html">Error Reporter Interface</a>
+	 */
+	public ErrorReporter getYuiErrorReporter() {
+		return yuiErrorReporter;
+	}
+
+	/**
+	 * Sets custom ErrorReporter that YUI Compressor will use for reporting errors during 
+	 * JavaScript compression. By default the standard output stream is used (<code>System.err</code>)
+	 * 
+	 * @param yuiErrorReporter <code>ErrorReporter<code> that will be used by YUI Compressor
+	 * 
+	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+	 * @see <a href="http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ErrorReporter.html">Error Reporter Interface</a>
+	 */
+	public void setYuiErrorReporter(ErrorReporter yuiErrorReporter) {
+		this.yuiErrorReporter = yuiErrorReporter;
 	}
 	
 }
