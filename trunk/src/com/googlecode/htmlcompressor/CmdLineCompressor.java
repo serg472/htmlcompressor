@@ -155,7 +155,7 @@ public class CmdLineCompressor {
 				htmlCompressor.setYuiJsDisableOptimizations(parser.getOptionValue(disableOptimizationsOpt) != null);
 				htmlCompressor.setYuiJsLineBreak(linebreakpos);
 				htmlCompressor.setYuiCssLineBreak(linebreakpos);
-
+				
 				compressor = htmlCompressor;
 
 			} else {

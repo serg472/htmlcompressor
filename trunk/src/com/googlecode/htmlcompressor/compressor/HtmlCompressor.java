@@ -23,8 +23,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
 
+import com.googlecode.htmlcompressor.DefaultErrorReporter;
 import com.yahoo.platform.yui.compressor.CssCompressor;
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
@@ -71,7 +71,7 @@ public class HtmlCompressor implements Compressor {
 	private static final String tempUserBlock = "%%%COMPRESS~USER{0}~{1}%%%";
 	
 	//compiled regex patterns
-	private static final Pattern condCommentPattern = Pattern.compile("<!(?:--)?\\[[^\\]]+?]>.*?<!\\[[^\\]]+]-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern intertagPattern = Pattern.compile(">\\s+?<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern multispacePattern = Pattern.compile("\\s{2,}", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -95,41 +95,17 @@ public class HtmlCompressor implements Compressor {
 	private static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
-	//default error reporting implementation for YUI compressor
-	private ErrorReporter yuiErrorReporter = new ErrorReporter() {
-
-		public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
-			if (line < 0) {
-				System.err.println("\n[WARNING] HtmlCompressor: \"" + message + "\" during JavaScript compression");
-			} else {
-				System.err.println("\n[WARNING] HtmlCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset + "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
-			}
-		}
-
-		public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
-			if (line < 0) {
-				System.err.println("\n[ERROR] HtmlCompressor: \"" + message + "\" during JavaScript compression");
-			} else {
-				System.err.println("\n[ERROR] HtmlCompressor: \"" + message + "\" at line [" + line + ":" + lineOffset + "] during JavaScript compression" + (lineSource != null ? ": " + lineSource : ""));
-			}
-		}
-
-		public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
-			error(message, sourceName, line, lineSource, lineOffset);
-			return new EvaluatorException(message);
-		}
-	};
+	//error reporter implementation for YUI compressor
+	private ErrorReporter yuiErrorReporter = null;
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed
 	 * result.
 	 * 
-	 * @param html
-	 *            HTML content to compress
+	 * @param html HTML content to compress
 	 * @return compressed content.
 	 * @throws Exception
 	 */
-	@Override
 	public String compress(String html) throws Exception {
 		if(!enabled || html == null || html.length() == 0) {
 			return html;
@@ -149,7 +125,7 @@ public class HtmlCompressor implements Compressor {
 		
 		//process pure html
 		html = processHtml(html);
-
+		
 		//process preserved blocks
 		processScriptBlocks(scriptBlocks);
 		processStyleBlocks(styleBlocks);
@@ -160,7 +136,7 @@ public class HtmlCompressor implements Compressor {
 		return html.trim();
 	}
 
-	private String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) {
+	private String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
 		
 		//preserve user blocks
 		if(preservePatterns != null) {
@@ -188,7 +164,7 @@ public class HtmlCompressor implements Compressor {
 		StringBuffer sb = new StringBuffer();
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
-				condCommentBlocks.add(matcher.group(2));
+				condCommentBlocks.add(matcher.group(1) + this.compress(matcher.group(2)) + matcher.group(3));
 				matcher.appendReplacement(sb, MessageFormat.format(tempCondCommentBlock, index++));
 			}
 		}
@@ -419,6 +395,7 @@ public class HtmlCompressor implements Compressor {
 		StringWriter result = new StringWriter();
 		CssCompressor compressor = new CssCompressor(new StringReader(source));
 		compressor.compress(result, yuiCssLineBreak);
+	
 		
 		return result.toString();
 	}
@@ -765,13 +742,18 @@ public class HtmlCompressor implements Compressor {
 	}
 
 	/**
-	 * Sets custom ErrorReporter that YUI Compressor will use for reporting errors during 
-	 * JavaScript compression. By default the standard output stream is used (<code>System.err</code>)
+	 * Sets <code>ErrorReporter</code> that YUI Compressor will use for reporting errors during 
+	 * JavaScript compression. If no <code>ErrorReporter</code> was provided a <code>NullPointerException</code> 
+	 * will be throuwn in case of an error during the compression.
+	 * 
+	 * <p>For simple error reporting that uses <code>System.err</code> stream 
+	 * {@link DefaultErrorReporter} can be used. 
 	 * 
 	 * @param yuiErrorReporter <code>ErrorReporter<code> that will be used by YUI Compressor
 	 * 
+	 * @see DefaultErrorReporter
 	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
-	 * @see <a href="http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ErrorReporter.html">Error Reporter Interface</a>
+	 * @see <a href="http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ErrorReporter.html">ErrorReporter Interface</a>
 	 */
 	public void setYuiErrorReporter(ErrorReporter yuiErrorReporter) {
 		this.yuiErrorReporter = yuiErrorReporter;
