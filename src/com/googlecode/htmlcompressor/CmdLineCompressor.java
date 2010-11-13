@@ -17,6 +17,7 @@ package com.googlecode.htmlcompressor;
 import jargs.gnu.CmdLineParser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -137,6 +138,15 @@ public class CmdLineCompressor {
 
 			//output file
 			String outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
+			
+			//check if yui compressor jar present
+			if(parser.getOptionValue(compressJsOpt) != null || parser.getOptionValue(compressCssOpt) != null) {
+				if(!(new File("yuicompressor-2.4.2.jar")).exists()) {
+					System.err.println("ERROR: For JavaScript or CSS compression \"yuicompressor-2.4.2.jar\" file \n" +
+							"must be present in the same directory as HtmlCompressor jar");
+					System.exit(1);
+				}
+			}
 
 			//set compressor options
 			Compressor compressor = null;
@@ -248,7 +258,7 @@ public class CmdLineCompressor {
 	}
 
 	private static void printUsage() {
-		System.out.println("Usage: java -jar htmlcompressor.jar [options] [input file]\n\n"
+		System.err.println("Usage: java -jar htmlcompressor.jar [options] [input file]\n\n"
 
 						+ "<input file>                  If not provided reads from stdin\n\n"
 
