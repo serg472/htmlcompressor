@@ -1,4 +1,9 @@
 #labels Featured
+*0.9.4* 
+  * Improved extra space removal around conditional comments. See [http://code.google.com/p/htmlcompressor/issues/detail?id=16#c4 this issue] for details.
+  * Compressor taglib TLD file is now bundled with JAR file to eliminate unnecessary web.xml configuration in JSP 2.0 and above (TLD can still be downloaded as separated file for older versions). See [http://code.google.com/p/htmlcompressor/issues/detail?id=19 this issue] for details.
+  * Command line compressor now has more clear error message if required YUI compressor jar file is missing. See [http://code.google.com/p/htmlcompressor/issues/detail?id=17#c3 this issue] for details.
+
 *0.9.3* 
   * Fixed issue with conditional comments. See [http://code.google.com/p/htmlcompressor/issues/detail?id=16 this issue] for details.
   * Because of the changes in v.0.9.2 related to `ErrorReporter`, YUI compressor dependency has become mandatory. In this release this dependency was made optional again,  but at a cost of moving default `ErrorReporter` implementation into external class `DefaultErrorReporter` (see front page for usage example). If no `ErrorReporter` is provided, a null pointer exception will be thrown in case of an error in JavaScript.
