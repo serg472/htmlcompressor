@@ -62,7 +62,7 @@ public class HtmlCompressor implements Compressor {
 	private int yuiCssLineBreak = -1;
 	
 	//temp replacements for preserved blocks 
-	private static final String tempCondCommentBlock = "%%%COMPRESS~COND~{0}%%%";
+	private static final String tempCondCommentBlock = "<%%%COMPRESS~COND~{0}%%%>";
 	private static final String tempPreBlock = "%%%COMPRESS~PRE~{0}%%%";
 	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~{0}%%%";
 	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0}%%%";
@@ -88,7 +88,7 @@ public class HtmlCompressor implements Compressor {
 	private static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE);
 	private static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
 
-	private static final Pattern tempCondCommentPattern = Pattern.compile("%%%COMPRESS~COND~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);

@@ -31,10 +31,17 @@
     </target>
 
     <target name="build.jar" depends="build.classes">
-        <mkdir dir="${build.dir}/jar"/>
+    	
+    	<mkdir dir="${build.dir}/jar"/>
         <copy todir="${build.dir}/jar">
             <fileset dir="${build.dir}/classes" includes="**/*.class"/>
         </copy>
+    	
+    	<mkdir dir="${build.dir}/jar/META-INF"/>
+    	<copy file="${product.name}.tld" todir="${build.dir}/jar/META-INF"/>
+    	<move file="${build.dir}/jar/META-INF/${product.name}.tld" tofile="${build.dir}/jar/META-INF/${product.name}-${version.number}.tld"/>
+    	
+    	
         <jar destfile="${build.dir}/${jar.name}" basedir="${build.dir}/jar">
 			<manifest>
 				<attribute name="Main-Class" value="com.googlecode.htmlcompressor.CmdLineCompressor"/>
