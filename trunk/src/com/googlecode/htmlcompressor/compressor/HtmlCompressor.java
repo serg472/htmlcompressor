@@ -76,7 +76,7 @@ public class HtmlCompressor implements Compressor {
 	private static final Pattern intertagPattern = Pattern.compile(">\\s+?<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern multispacePattern = Pattern.compile("\\s{2,}", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tagQuotePattern = Pattern.compile("\\s*=\\s*([\"'])([a-z0-9-_]+?)\\1(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern tagQuotePattern = Pattern.compile("\\s*=\\s*([\"'])([a-z0-9-_]+?)\\1(/?)(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern prePattern = Pattern.compile("(<pre[^>]*?>)(.*?)(</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern taPattern = Pattern.compile("(<textarea[^>]*?>)(.*?)(</textarea>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private static final Pattern scriptPattern = Pattern.compile("(<script[^>]*?>)(.*?)(</script>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -338,16 +338,28 @@ public class HtmlCompressor implements Compressor {
 			html = multispacePattern.matcher(html).replaceAll(" ");
 		}
 		
-		//remove quotes from tag attributes
-		if(removeQuotes) {
-			html = tagQuotePattern.matcher(html).replaceAll("=$2");
-		}
-		
 		//remove spaces around equal sign inside tags
 		html = tagPropertyPattern.matcher(html).replaceAll("$1=");
 		
 		//remove ending spaces inside tags
 		html = tagEndSpacePattern.matcher(html).replaceAll("$1$2");
+		
+		//remove quotes from tag attributes
+		if(removeQuotes) {
+			Matcher matcher = tagQuotePattern.matcher(html);
+			StringBuffer sb = new StringBuffer();
+			while(matcher.find()) {
+				//if quoted attribute is followed by "/" add extra space
+				if(matcher.group(3).trim().length() == 0) {
+					matcher.appendReplacement(sb, "=$2");
+				} else {
+					matcher.appendReplacement(sb, "=$2 $3");
+				}
+			}
+			matcher.appendTail(sb);
+			html = sb.toString();
+			
+		}
 		
 		return html;
 	}
