@@ -83,6 +83,7 @@
                 <include name="doc/**/*"/>
                 <include name="lib/**/*"/>
                 <include name="src/**/*"/>
+                <include name="test/**/*"/>
                 <exclude name="**/.svn"/>
             </fileset>
         </copy>
