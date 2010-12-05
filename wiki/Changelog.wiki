@@ -1,6 +1,6 @@
 #labels Featured
 *0.9.5* 
-  * Fixed problem caused by removing quotes from tag attributes before `/>`. See [http://code.google.com/p/htmlcompressor/issues/detail?id=20 this issue] for details.
+  * Fixed problem caused by removing quotes from tag attributes before "`/>`". See [http://code.google.com/p/htmlcompressor/issues/detail?id=20 this issue] for details.
   * Added JUnit tests to the zip bundle
 
 
