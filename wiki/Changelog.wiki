@@ -1,4 +1,9 @@
 #labels Featured
+*0.9.5* 
+  * Fixed problem caused by removing quotes from tag attributes before `/>`. See [http://code.google.com/p/htmlcompressor/issues/detail?id=20 this issue] for details.
+  * Added JUnit tests to the zip bundle
+
+
 *0.9.4* 
   * Improved extra space removal around conditional comments. See [http://code.google.com/p/htmlcompressor/issues/detail?id=16#c4 this issue] for details.
   * Compressor taglib TLD file is now bundled with JAR file to eliminate unnecessary web.xml configuration in JSP 2.0 and above (TLD can still be downloaded as separated file for older versions). See [http://code.google.com/p/htmlcompressor/issues/detail?id=19 this issue] for details.
