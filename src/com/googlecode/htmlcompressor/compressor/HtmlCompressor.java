@@ -40,6 +40,18 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  */
 public class HtmlCompressor implements Compressor {
 	
+	/**
+	 * Predefined pattern that matches <code>&lt;?php ... ?></code> tags. 
+	 * Could be passed inside a list to {@link #setPreservePatterns(List) setPreservePatterns} method.
+	 */
+	public static final Pattern PHP_TAG_PATTERN = Pattern.compile("<\\?php.*?\\?>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Predefined pattern that matches <code>&lt;% ... %></code> tags. 
+	 * Could be passed inside a list to {@link #setPreservePatterns(List) setPreservePatterns} method.
+	 */
+	public static final Pattern SERVER_SCRIPT_TAG_PATTERN = Pattern.compile("<%.*?%>", Pattern.DOTALL);
+	
 	private boolean enabled = true;
 	
 	//default settings
@@ -68,7 +80,7 @@ public class HtmlCompressor implements Compressor {
 	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0}%%%";
 	private static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0}%%%";
 	private static final String tempEventBlock = "%%%COMPRESS~EVENT~{0}%%%";
-	private static final String tempUserBlock = "%%%COMPRESS~USER{0}~{1}%%%";
+	private static final String tempUserBlock = "<%%%COMPRESS~USER{0}~{1}%%%>";
 	
 	//compiled regex patterns
 	private static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -308,7 +320,7 @@ public class HtmlCompressor implements Compressor {
 		//put user blocks back
 		if(preservePatterns != null) {
 			for(int p = preservePatterns.size() - 1; p >= 0; p--) {
-				Pattern tempUserPattern = Pattern.compile("%%%COMPRESS~USER" + p + "~(\\d+?)%%%");
+				Pattern tempUserPattern = Pattern.compile("<%%%COMPRESS~USER" + p + "~(\\d+?)%%%>");
 				matcher = tempUserPattern.matcher(html);
 				sb = new StringBuffer();
 				while(matcher.find()) {
