@@ -1,4 +1,10 @@
 #labels Featured
+*0.9.6* 
+  * Added `--preserve-php`, `--preserve-server-script` and `-p <regexp patterns file>` optional parameters to a command line compressor that allow preserving `<?php ... ?>`, `<% ... %>` and custom blocks defined in a file. See front page for more details.
+  * `HtmlCompresor` class currently has 2 predefined patterns for most often used custom preservation rules: `PHP_TAG_PATTERN` and `SERVER_SCRIPT_TAG_PATTERN` that can be passed to `setPreservePatterns()` method. See front page for details.
+  * Spaces between custom preserved blocks will be collapsed if `setRemoveIntertagSpaces` option is set to `true`.
+
+
 *0.9.5* 
   * Fixed problem caused by removing quotes from tag attributes before "`/>`". See [http://code.google.com/p/htmlcompressor/issues/detail?id=20 this issue] for details.
   * Added JUnit tests to the zip bundle
