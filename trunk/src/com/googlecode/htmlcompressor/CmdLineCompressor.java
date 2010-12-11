@@ -26,6 +26,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.googlecode.htmlcompressor.compressor.Compressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
@@ -49,12 +53,15 @@ public class CmdLineCompressor {
 		CmdLineParser.Option helpOpt = parser.addBooleanOption('h', "help");
 		CmdLineParser.Option charsetOpt = parser.addStringOption("charset");
 		CmdLineParser.Option outputFilenameOpt = parser.addStringOption('o', "output");
+		CmdLineParser.Option patternsFilenameOpt = parser.addStringOption('p', "preserve-patterns");
 		CmdLineParser.Option typeOpt = parser.addStringOption("type");
 		CmdLineParser.Option preserveCommentsOpt = parser.addBooleanOption("preserve-comments");
 		CmdLineParser.Option preserveIntertagSpacesOpt = parser.addBooleanOption("preserve-intertag-spaces");
 		CmdLineParser.Option preserveMultiSpacesOpt = parser.addBooleanOption("preserve-multi-spaces");
 		CmdLineParser.Option removeIntertagSpacesOpt = parser.addBooleanOption("remove-intertag-spaces");
 		CmdLineParser.Option removeQuotesOpt = parser.addBooleanOption("remove-quotes");
+		CmdLineParser.Option preservePhpTagsOpt = parser.addBooleanOption("preserve-php");
+		CmdLineParser.Option preserveServerScriptTagsOpt = parser.addBooleanOption("preserve-server-script");
 		CmdLineParser.Option compressJsOpt = parser.addBooleanOption("compress-js");
 		CmdLineParser.Option compressCssOpt = parser.addBooleanOption("compress-css");
 
@@ -64,6 +71,7 @@ public class CmdLineCompressor {
 		CmdLineParser.Option disableOptimizationsOpt = parser.addBooleanOption("disable-optimizations");
 
 		Reader in = null;
+		BufferedReader patternsIn = null;
 		Writer out = null;
 
 		try {
@@ -147,6 +155,36 @@ public class CmdLineCompressor {
 					System.exit(1);
 				}
 			}
+			
+			//custom preserve patterns
+			List<Pattern> preservePatterns = new ArrayList<Pattern>();
+			
+			//predefined
+			if(parser.getOptionValue(preservePhpTagsOpt) != null) {
+				preservePatterns.add(HtmlCompressor.PHP_TAG_PATTERN);
+			}
+			
+			if(parser.getOptionValue(preserveServerScriptTagsOpt) != null) {
+				preservePatterns.add(HtmlCompressor.SERVER_SCRIPT_TAG_PATTERN);
+			}
+			
+			String patternsFilename = (String) parser.getOptionValue(patternsFilenameOpt);
+			if(patternsFilename != null) {
+
+				//read input file
+				patternsIn = new BufferedReader(new InputStreamReader(new FileInputStream(patternsFilename), charset));
+
+				String line = null;
+				while ((line = patternsIn.readLine()) != null){
+					if(line.length() > 0) {
+						try {
+							preservePatterns.add(Pattern.compile(line));
+						} catch (PatternSyntaxException  e) {
+							System.err.println("ERROR: Regular expression compilation error: " + e.getMessage());
+						}
+					}
+				}
+			}
 
 			//set compressor options
 			Compressor compressor = null;
@@ -159,6 +197,8 @@ public class CmdLineCompressor {
 				htmlCompressor.setRemoveQuotes(parser.getOptionValue(removeQuotesOpt) != null);
 				htmlCompressor.setCompressJavaScript(parser.getOptionValue(compressJsOpt) != null);
 				htmlCompressor.setCompressCss(parser.getOptionValue(compressCssOpt) != null);
+				
+				htmlCompressor.setPreservePatterns(preservePatterns);
 
 				htmlCompressor.setYuiJsNoMunge(parser.getOptionValue(nomungeOpt) != null);
 				htmlCompressor.setYuiJsPreserveAllSemiColons(parser.getOptionValue(preserveSemiOpt) != null);
@@ -191,7 +231,6 @@ public class CmdLineCompressor {
 					source.append(line);
 					source.append(System.getProperty("line.separator"));
 				}
-				
 
 				// Close the input stream first, and then open the output
 				// stream,
@@ -245,6 +284,14 @@ public class CmdLineCompressor {
 				}
 			}
 			
+			if (patternsIn != null) {
+				try {
+					patternsIn.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			if (out != null) {
 				try {
 					out.close();
@@ -279,7 +326,7 @@ public class CmdLineCompressor {
 						+ "  --remove-quotes             Remove unneeded quotes\n"
 						+ "  --compress-js               Enable JavaScript compression using YUICompressor\n"
 						+ "  --compress-css              Enable CSS compression using YUICompressor\n\n"
-
+						
 						+ "JavaScript Options (for YUI Compressor):\n"
 						+ "  --nomunge                   Minify only, do not obfuscate\n"
 						+ "  --preserve-semi             Preserve all semicolons\n"
@@ -288,9 +335,15 @@ public class CmdLineCompressor {
 
 						+ "CSS Options (for YUI Compressor):\n"
 						+ "  --line-break <column num>   Insert a line break after the specified column\n\n"
+
+						+ "Custom Block Preservation Options:\n"
+						+ "  --preserve-php              Preserve <?php ... ?> tags\n"
+						+ "  --preserve-server-script    Preserve <% ... %> tags\n"
+						+ "  -p <regexp patterns file>   Read regular expressions that define\n"
+						+ "                              custom preservation rules from a file\n\n"
 						
 						+ "Please note that if you enable JavaScript or Css compression parameters,\n"
-						+"YUI Compressor jar file must be present at the same directory as this jar."
+						+ "YUI Compressor jar file must be present at the same directory as this jar."
 
 				);
 	}

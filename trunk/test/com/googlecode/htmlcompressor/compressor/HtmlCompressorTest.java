@@ -94,13 +94,14 @@ public class HtmlCompressorTest {
 		String result = readResource("testPreservePatternsResult.html");
 		
 		List<Pattern> preservePatterns = new ArrayList<Pattern>();
-		preservePatterns.add(Pattern.compile("<\\?php.*?\\?>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE)); //<?php ... ?> blocks
-		preservePatterns.add(Pattern.compile("<%.*?%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE)); //<% ... %> blocks
+		preservePatterns.add(HtmlCompressor.PHP_TAG_PATTERN); //<?php ... ?> blocks
+		preservePatterns.add(HtmlCompressor.SERVER_SCRIPT_TAG_PATTERN); //<% ... %> blocks
 		preservePatterns.add(Pattern.compile("<jsp:.*?>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE)); //<jsp: ... > tags
 
 		HtmlCompressor compressor = new HtmlCompressor();
 		compressor.setPreservePatterns(preservePatterns);
 		compressor.setRemoveComments(true);
+		compressor.setRemoveIntertagSpaces(true);
 		
 		assertEquals(result, compressor.compress(source));
 	}
