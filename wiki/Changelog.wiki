@@ -1,6 +1,6 @@
 #labels Featured
 *0.9.7* 
-  * Fixed bug with command line compressor not compressing inline JavaScript and CSS in HTML files. Affected versions: 0.9.4, 0.9.5, 0.9.6
+  * Fixed bug introduced in v.0.9.4 with command line compressor not processing inline JavaScript and CSS in HTML files. 
 
 *0.9.6* 
   * Added `--preserve-php`, `--preserve-server-script` and `-p <regexp patterns file>` optional parameters to a command line compressor that allow preserving `<?php ... ?>`, `<% ... %>` and custom blocks defined in a file. See front page for more details.
