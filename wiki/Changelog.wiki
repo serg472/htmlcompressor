@@ -1,4 +1,7 @@
 #labels Featured
+*0.9.7* 
+  * Fixed bug with command line compressor not compressing inline JavaScript and CSS in HTML files. Affected versions: 0.9.4, 0.9.5, 0.9.6
+
 *0.9.6* 
   * Added `--preserve-php`, `--preserve-server-script` and `-p <regexp patterns file>` optional parameters to a command line compressor that allow preserving `<?php ... ?>`, `<% ... %>` and custom blocks defined in a file. See front page for more details.
   * `HtmlCompresor` class currently has 2 predefined patterns for most often used custom preservation rules: `PHP_TAG_PATTERN` and `SERVER_SCRIPT_TAG_PATTERN` that can be passed to `setPreservePatterns()` method. See front page for details.
