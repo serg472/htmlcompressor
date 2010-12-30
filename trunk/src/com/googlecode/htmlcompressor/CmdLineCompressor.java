@@ -150,6 +150,8 @@ public class CmdLineCompressor {
 			//check if yui compressor jar present
 			boolean compressJavaScript = (parser.getOptionValue(compressJsOpt) != null);
 			boolean compressCss = parser.getOptionValue(compressCssOpt) != null;
+			
+			/*
 			if(compressJavaScript || compressCss) {
 				if(!(new File("yuicompressor-2.4.2.jar")).exists()) {
 					System.err.println("ERROR: For JavaScript or CSS compression \"yuicompressor-2.4.2.jar\" file \n" +
@@ -157,6 +159,7 @@ public class CmdLineCompressor {
 					System.exit(1);
 				}
 			}
+			*/
 			
 			//custom preserve patterns
 			List<Pattern> preservePatterns = new ArrayList<Pattern>();
@@ -248,8 +251,14 @@ public class CmdLineCompressor {
 					out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
 				}
 
-				String result = compressor.compress(source.toString());
-				out.write(result);
+				try {
+					String result = compressor.compress(source.toString());
+					out.write(result);
+				} catch (NoClassDefFoundError e){
+					System.err.println("ERROR: For JavaScript or CSS compression YUI compressor jar file \n" +
+						"must be present in the same directory as HtmlCompressor jar");
+					System.exit(1);
+				}
 
 			} catch (Exception e) {
 

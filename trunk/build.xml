@@ -45,7 +45,7 @@
         <jar destfile="${build.dir}/${jar.name}" basedir="${build.dir}/jar">
 			<manifest>
 				<attribute name="Main-Class" value="com.googlecode.htmlcompressor.CmdLineCompressor"/>
-				<attribute name="Class-Path" value="yuicompressor-2.4.2.jar"/>
+				<attribute name="Class-Path" value="yuicompressor-2.4.2.jar yuicompressor-2.4.4.jar"/>
 			</manifest>
         </jar>
     </target>
