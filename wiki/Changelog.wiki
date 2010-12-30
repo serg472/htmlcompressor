@@ -1,4 +1,8 @@
 #labels Featured
+*0.9.8* 
+  * Command line compressor supports YUI compressor v.2.4.4 (jar file must be named yuicompressor-2.4.4.jar and put at the same folder as HtmlCompressor jar)
+
+
 *0.9.7* 
   * Fixed bug introduced in v.0.9.4 with command line compressor not processing inline JavaScript and CSS in HTML files. 
 
