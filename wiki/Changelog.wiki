@@ -1,4 +1,8 @@
 #labels Featured
+*0.9.9* (Feb 02, 2011)
+  * Fixed bug in HtmlCompressor that causes incorrect compression of big files (if number of preserved blocks exceeds 1000). See [http://code.google.com/p/htmlcompressor/issues/detail?id=26 this issue] for details.
+
+
 *0.9.8* (Dec 30, 2010)
   * Command line compressor supports YUI compressor v.2.4.4 (jar file must be named yuicompressor-2.4.4.jar and put at the same folder as HtmlCompressor jar)
 
