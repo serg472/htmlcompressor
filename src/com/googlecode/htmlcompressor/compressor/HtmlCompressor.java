@@ -74,13 +74,13 @@ public class HtmlCompressor implements Compressor {
 	private int yuiCssLineBreak = -1;
 	
 	//temp replacements for preserved blocks 
-	private static final String tempCondCommentBlock = "<%%%COMPRESS~COND~{0}%%%>";
-	private static final String tempPreBlock = "%%%COMPRESS~PRE~{0}%%%";
-	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~{0}%%%";
-	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0}%%%";
-	private static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0}%%%";
-	private static final String tempEventBlock = "%%%COMPRESS~EVENT~{0}%%%";
-	private static final String tempUserBlock = "<%%%COMPRESS~USER{0}~{1}%%%>";
+	private static final String tempCondCommentBlock = "<%%%COMPRESS~COND~{0,number,#}%%%>";
+	private static final String tempPreBlock = "%%%COMPRESS~PRE~{0,number,#}%%%";
+	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~{0,number,#}%%%";
+	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0,number,#}%%%";
+	private static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0,number,#}%%%";
+	private static final String tempEventBlock = "%%%COMPRESS~EVENT~{0,number,#}%%%";
+	private static final String tempUserBlock = "<%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%>";
 	
 	//compiled regex patterns
 	private static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
