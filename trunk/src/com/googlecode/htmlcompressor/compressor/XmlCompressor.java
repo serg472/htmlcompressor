@@ -14,6 +14,7 @@ package com.googlecode.htmlcompressor.compressor;
  * limitations under the License.
  */
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -34,7 +35,7 @@ public class XmlCompressor implements Compressor {
 	private boolean removeIntertagSpaces = true;
 	
 	//temp replacements for preserved blocks 
-	private static final String tempCdataBlock = "%%%COMPRESS~CDATA~#%%%";
+	private static final String tempCdataBlock = "%%%COMPRESS~CDATA~{0,number,#}%%%";
 	
 	//compiled regex patterns
 	private static final Pattern cdataPattern = Pattern.compile("<!\\[CDATA\\[.*?\\]\\]>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -81,7 +82,7 @@ public class XmlCompressor implements Compressor {
 		StringBuffer sb = new StringBuffer();
 		while(matcher.find()) {
 			cdataBlocks.add(matcher.group(0));
-			matcher.appendReplacement(sb, tempCdataBlock.replaceFirst("#", Integer.toString(index++)));
+			matcher.appendReplacement(sb, MessageFormat.format(tempCdataBlock, index++));
 		}
 		matcher.appendTail(sb);
 		xml = sb.toString();
