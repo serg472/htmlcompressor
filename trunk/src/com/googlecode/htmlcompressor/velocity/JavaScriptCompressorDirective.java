@@ -15,7 +15,6 @@ package com.googlecode.htmlcompressor.velocity;
  */
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -29,8 +28,10 @@ import org.apache.velocity.runtime.directive.Directive;
 import org.apache.velocity.runtime.log.Log;
 import org.apache.velocity.runtime.parser.node.Node;
 
+import com.google.javascript.jscomp.CompilationLevel;
+import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
-import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
+import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
 
 /**
  * Velocity directive that compresses an JavaScript content within #compressJs ... #end block.
@@ -47,11 +48,16 @@ public class JavaScriptCompressorDirective extends Directive {
 	
 	private boolean enabled = true;
 	
+	private String jsCompressor = HtmlCompressor.JS_COMPRESSOR_YUI;
+	
 	//YUICompressor settings
 	private boolean yuiJsNoMunge = false;
 	private boolean yuiJsPreserveAllSemiColons = false;
 	private boolean yuiJsDisableOptimizations = false;
 	private int yuiJsLineBreak = -1;
+	
+	//Closure compressor settings
+	private String closureOptLevel = ClosureJavaScriptCompressor.COMPILATION_LEVEL_SIMPLE;
 
 	public String getName() {
 		return "compressJs";
@@ -68,9 +74,11 @@ public class JavaScriptCompressorDirective extends Directive {
 		
 		//set compressor properties
 		enabled = rs.getBoolean("userdirective.compressJs.enabled", true);
+		jsCompressor = rs.getString("userdirective.compressHtml.jsCompressor", "yui");
 		yuiJsNoMunge = rs.getBoolean("userdirective.compressJs.yuiJsNoMunge", false);
 		yuiJsPreserveAllSemiColons = rs.getBoolean("userdirective.compressJs.yuiJsPreserveAllSemiColons", false);
 		yuiJsLineBreak = rs.getInt("userdirective.compressJs.yuiJsLineBreak", -1);
+		closureOptLevel = rs.getString("userdirective.compressHtml.closureOptLevel", "simple");
 	}
 
     public boolean render(InternalContextAdapter context, Writer writer, Node node) 
@@ -83,10 +91,34 @@ public class JavaScriptCompressorDirective extends Directive {
 		//compress
 		if(enabled) {
 			try {
-				StringWriter result = new StringWriter();
-				JavaScriptCompressor compressor = new JavaScriptCompressor(new StringReader(content.toString()), null);
-				compressor.compress(result, yuiJsLineBreak, !yuiJsNoMunge, false, yuiJsPreserveAllSemiColons, yuiJsDisableOptimizations);
-				writer.write(result.toString());
+				String result = content.toString();
+				
+				if(jsCompressor.equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
+					//call Closure compressor
+					ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
+					if(closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
+						closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
+					} else if(closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
+						closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
+					} else {
+						closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
+					}
+					
+					result = closureCompressor.compress(result);
+					
+				} else {
+					//call YUICompressor
+					YuiJavaScriptCompressor yuiCompressor = new YuiJavaScriptCompressor();
+					yuiCompressor.setDisableOptimizations(yuiJsDisableOptimizations);
+					yuiCompressor.setLineBreak(yuiJsLineBreak);
+					yuiCompressor.setNoMunge(yuiJsNoMunge);
+					yuiCompressor.setPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
+					yuiCompressor.setErrorReporter(new YuiJavaScriptCompressor.DefaultErrorReporter());
+					
+					result = yuiCompressor.compress(result);
+				}
+				
+				writer.write(result);
 			} catch (Exception e) {
 				writer.write(content.toString());
 				String msg = "Failed to compress content: "+content.toString();
