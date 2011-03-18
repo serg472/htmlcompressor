@@ -14,8 +14,6 @@ package com.googlecode.htmlcompressor.compressor;
  * limitations under the License.
  */
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.mozilla.javascript.ErrorReporter;
-
-import com.googlecode.htmlcompressor.DefaultErrorReporter;
-import com.yahoo.platform.yui.compressor.CssCompressor;
-import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
 /**
  * Class that compresses given HTML source by removing comments, extra spaces and 
@@ -39,6 +33,9 @@ import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
  * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
  */
 public class HtmlCompressor implements Compressor {
+	
+	public static final String JS_COMPRESSOR_YUI = "yui"; 
+	public static final String JS_COMPRESSOR_CLOSURE = "closure"; 
 	
 	/**
 	 * Predefined pattern that matches <code>&lt;?php ... ?></code> tags. 
@@ -110,6 +107,9 @@ public class HtmlCompressor implements Compressor {
 	//error reporter implementation for YUI compressor
 	private ErrorReporter yuiErrorReporter = null;
 	
+	private Compressor javaScriptCompressor = null;
+	private Compressor cssCompressor = null;
+	
 	/**
 	 * The main method that compresses given HTML source and returns compressed
 	 * result.
@@ -121,6 +121,29 @@ public class HtmlCompressor implements Compressor {
 	public String compress(String html) throws Exception {
 		if(!enabled || html == null || html.length() == 0) {
 			return html;
+		}
+		
+		//set default javascript compressor
+		if(compressJavaScript && javaScriptCompressor == null) {
+			YuiJavaScriptCompressor yuiJsCompressor = new YuiJavaScriptCompressor();
+			yuiJsCompressor.setNoMunge(yuiJsNoMunge);
+			yuiJsCompressor.setPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
+			yuiJsCompressor.setDisableOptimizations(yuiJsDisableOptimizations);
+			yuiJsCompressor.setLineBreak(yuiJsLineBreak);
+			
+			if(yuiErrorReporter != null) {
+				yuiJsCompressor.setErrorReporter(yuiErrorReporter);
+			}
+			
+			javaScriptCompressor = yuiJsCompressor;
+		}
+		
+		//set default css compressor
+		if(compressCss && cssCompressor == null) {
+			YuiCssCompressor yuiCssCompressor = new YuiCssCompressor();
+			yuiCssCompressor.setLineBreak(yuiCssLineBreak);
+			
+			cssCompressor = yuiCssCompressor;
 		}
 		
 		//preserved block containers
@@ -394,6 +417,10 @@ public class HtmlCompressor implements Compressor {
 	
 	private String compressJavaScript(String source) throws Exception {
 		
+		if(javaScriptCompressor == null) {
+			return source;
+		}
+		
 		//detect CDATA wrapper
 		boolean cdataWrapper = false;
 		Matcher matcher = cdataPattern.matcher(source);
@@ -402,19 +429,27 @@ public class HtmlCompressor implements Compressor {
 			source = matcher.group(1);
 		}
 		
-		//call YUICompressor
-		StringWriter result = new StringWriter();
-		JavaScriptCompressor compressor = new JavaScriptCompressor(new StringReader(source), yuiErrorReporter);
-		compressor.compress(result, yuiJsLineBreak, !yuiJsNoMunge, false, yuiJsPreserveAllSemiColons, yuiJsDisableOptimizations);
+		String result = javaScriptCompressor.compress(source);
 		
 		if(cdataWrapper) {
-			return "<![CDATA[" + result.toString() + "]]>";
+			return "<![CDATA[" + result + "]]>";
 		} else {
 			return result.toString();
 		}
+		
 	}
 	
 	private String compressCssStyles(String source) throws Exception {
+		
+		if(cssCompressor == null) {
+			return source;
+		}
+		
+		return cssCompressor.compress(source);
+		
+		
+		
+		/*
 		//call YUICompressor
 		StringWriter result = new StringWriter();
 		CssCompressor compressor = new CssCompressor(new StringReader(source));
@@ -422,6 +457,7 @@ public class HtmlCompressor implements Compressor {
 	
 		
 		return result.toString();
+		*/
 	}
 	
 	/**
@@ -767,20 +803,89 @@ public class HtmlCompressor implements Compressor {
 
 	/**
 	 * Sets <code>ErrorReporter</code> that YUI Compressor will use for reporting errors during 
-	 * JavaScript compression. If no <code>ErrorReporter</code> was provided a <code>NullPointerException</code> 
-	 * will be throuwn in case of an error during the compression.
-	 * 
-	 * <p>For simple error reporting that uses <code>System.err</code> stream 
-	 * {@link DefaultErrorReporter} can be used. 
+	 * JavaScript compression. If no <code>ErrorReporter</code> was provided 
+	 * {@link YuiJavaScriptCompressor.DefaultErrorReporter} will be used 
+	 * which reports errors to <code>System.err</code> stream. 
 	 * 
 	 * @param yuiErrorReporter <code>ErrorReporter<code> that will be used by YUI Compressor
 	 * 
-	 * @see DefaultErrorReporter
+	 * @see YuiJavaScriptCompressor.DefaultErrorReporter
 	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
 	 * @see <a href="http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ErrorReporter.html">ErrorReporter Interface</a>
 	 */
 	public void setYuiErrorReporter(ErrorReporter yuiErrorReporter) {
 		this.yuiErrorReporter = yuiErrorReporter;
+	}
+
+	/**
+	 * Returns JavaScript compressor implementation that will be used 
+	 * to compress inline JavaScript in HTML.
+	 * 
+	 * @return <code>Compressor</code> implementation that will be used 
+	 * to compress inline JavaScript in HTML.
+	 * 
+ 	 * @see YuiJavaScriptCompressor
+ 	 * @see ClosureJavaScriptCompressor
+	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+	 * @see <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
+	 */
+	public Compressor getJavaScriptCompressor() {
+		return javaScriptCompressor;
+	}
+
+	/**
+	 * Sets JavaScript compressor implementation that will be used 
+	 * to compress inline JavaScript in HTML. 
+	 * 
+	 * <p>HtmlCompressor currently 
+	 * comes with basic implementations for <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> (called {@link YuiJavaScriptCompressor})
+	 * and <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a> (called {@link ClosureJavaScriptCompressor}) that should be enough for most cases, 
+	 * but users can also create their own JavaScript compressors for custom needs.
+	 * 
+	 * <p>If no compressor is set {@link YuiJavaScriptCompressor} will be used by default.  
+	 * 
+	 * @param javaScriptCompressor {@link Compressor} implementation that will be used for inline JavaScript compression
+	 * 
+ 	 * @see YuiJavaScriptCompressor
+ 	 * @see ClosureJavaScriptCompressor
+	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+	 * @see <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
+	 */
+	public void setJavaScriptCompressor(Compressor javaScriptCompressor) {
+		this.javaScriptCompressor = javaScriptCompressor;
+	}
+
+	/**
+	 * Returns CSS compressor implementation that will be used 
+	 * to compress inline CSS in HTML.
+	 * 
+	 * @return <code>Compressor</code> implementation that will be used 
+	 * to compress inline CSS in HTML.
+	 * 
+ 	 * @see YuiCssCompressor
+	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+	 */
+	public Compressor getCssCompressor() {
+		return cssCompressor;
+	}
+	
+	/**
+	 * Sets CSS compressor implementation that will be used 
+	 * to compress inline CSS in HTML. 
+	 * 
+	 * <p>HtmlCompressor currently 
+	 * comes with basic implementation for <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> (called {@link YuiCssCompressor}), 
+	 * but users can also create their own CSS compressors for custom needs. 
+	 * 
+	 * <p>If no compressor is set {@link YuiCssCompressor} will be used by default.  
+	 * 
+	 * @param cssCompressor {@link Compressor} implementation that will be used for inline CSS compression
+	 * 
+ 	 * @see YuiCssCompressor
+	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+	 */
+	public void setCssCompressor(Compressor cssCompressor) {
+		this.cssCompressor = cssCompressor;
 	}
 	
 }
