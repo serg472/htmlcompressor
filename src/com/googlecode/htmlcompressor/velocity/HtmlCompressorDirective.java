@@ -28,6 +28,8 @@ import org.apache.velocity.runtime.directive.Directive;
 import org.apache.velocity.runtime.parser.node.Node;
 import org.apache.velocity.runtime.log.Log;
 
+import com.google.javascript.jscomp.CompilationLevel;
+import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
 /**
@@ -57,18 +59,35 @@ public class HtmlCompressorDirective extends Directive {
 		super.init(rs, context, node);
 		log = rs.getLog();
 		
+		boolean compressJavaScript = rs.getBoolean("userdirective.compressHtml.compressJavaScript", false);
+		
 		//set compressor properties
 		htmlCompressor.setEnabled(rs.getBoolean("userdirective.compressHtml.enabled", true));
 		htmlCompressor.setRemoveComments(rs.getBoolean("userdirective.compressHtml.removeComments", true));
 		htmlCompressor.setRemoveMultiSpaces(rs.getBoolean("userdirective.compressHtml.removeMultiSpaces", true));
 		htmlCompressor.setRemoveIntertagSpaces(rs.getBoolean("userdirective.compressHtml.removeIntertagSpaces", false));
 		htmlCompressor.setRemoveQuotes(rs.getBoolean("userdirective.compressHtml.removeQuotes", false));
-		htmlCompressor.setCompressJavaScript(rs.getBoolean("userdirective.compressHtml.compressJavaScript", false));
+		htmlCompressor.setCompressJavaScript(compressJavaScript);
 		htmlCompressor.setCompressCss(rs.getBoolean("userdirective.compressHtml.compressCss", false));
 		htmlCompressor.setYuiJsNoMunge(rs.getBoolean("userdirective.compressHtml.yuiJsNoMunge", false));
 		htmlCompressor.setYuiJsPreserveAllSemiColons(rs.getBoolean("userdirective.compressHtml.yuiJsPreserveAllSemiColons", false));
 		htmlCompressor.setYuiJsLineBreak(rs.getInt("userdirective.compressHtml.yuiJsLineBreak", -1));
 		htmlCompressor.setYuiCssLineBreak(rs.getInt("userdirective.compressHtml.yuiCssLineBreak", -1));
+		
+		if(compressJavaScript && rs.getString("userdirective.compressHtml.jsCompressor", "yui").equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
+			String closureOptLevel = rs.getString("userdirective.compressHtml.closureOptLevel", "simple");
+			
+			ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
+			if(closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
+				closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
+			} else if(closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
+				closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
+			} else {
+				closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
+			}
+			
+			htmlCompressor.setJavaScriptCompressor(closureCompressor);
+		}
 	}
 
     public boolean render(InternalContextAdapter context, Writer writer, Node node) 

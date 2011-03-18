@@ -20,7 +20,10 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.google.javascript.jscomp.CompilationLevel;
+import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
+import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
 
 /**
  * JSP tag that compresses an HTML content within &lt;compress:html>.
@@ -45,12 +48,17 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
 	
+	private String jsCompressor = HtmlCompressor.JS_COMPRESSOR_YUI;
+	
 	//YUICompressor settings
 	private boolean yuiJsNoMunge = false;
 	private boolean yuiJsPreserveAllSemiColons = false;
 	private boolean yuiJsDisableOptimizations = false;
 	private int yuiJsLineBreak = -1;
 	private int yuiCssLineBreak = -1;
+	
+	//Closure compressor settings
+	private String closureOptLevel = ClosureJavaScriptCompressor.COMPILATION_LEVEL_SIMPLE;
 
 	@Override
 	public int doEndTag() throws JspException {
@@ -71,6 +79,18 @@ public class HtmlCompressorTag extends BodyTagSupport {
 		compressor.setYuiJsDisableOptimizations(yuiJsDisableOptimizations);
 		compressor.setYuiJsLineBreak(yuiJsLineBreak);
 		compressor.setYuiCssLineBreak(yuiCssLineBreak);
+		
+		if(compressJavaScript && jsCompressor.equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
+			ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
+			if(closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
+				closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
+			} else if(closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
+				closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
+			} else {
+				closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
+			}
+			compressor.setJavaScriptCompressor(closureCompressor);
+		}
 		
 		try {
 			bodyContent.clear();
@@ -167,6 +187,35 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	 */
 	public void setRemoveIntertagSpaces(boolean removeIntertagSpaces) {
 		this.removeIntertagSpaces = removeIntertagSpaces;
+	}
+	
+	/**
+	 * Sets JavaScript compressor implementation that will be used 
+	 * to compress inline JavaScript in HTML. 
+	 * 
+	 * @param jsCompressor Could be either <code>"yui"</code> for using {@link YuiJavaScriptCompressor} (used by default if none provided) or
+	 * <code>"closure"</code> for using {@link ClosureJavaScriptCompressor}
+	 * 
+	 * @see YuiJavaScriptCompressor
+ 	 * @see ClosureJavaScriptCompressor
+	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+	 * @see <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
+
+	 */
+	public void setJsCompressor(String jsCompressor) {
+		this.jsCompressor = jsCompressor;
+	}
+	
+	/**
+	 * Sets level of optimization if <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a> is used 
+	 * for compressing inline JavaScript.
+	 * 
+	 * @param closureOptLevel Could be either <code>"simple"</code> (used by default), <code>"whitespace"</code> or <code>"advanced"</code>
+	 * 
+	 * @see ClosureJavaScriptCompressor#setCompilationLevel(CompilationLevel)
+	 */
+	public void setClosureOptLevel(String closureOptLevel) {
+		this.closureOptLevel = closureOptLevel;
 	}
 
 }

@@ -15,15 +15,13 @@ package com.googlecode.htmlcompressor.taglib;
  */
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
-import com.yahoo.platform.yui.compressor.CssCompressor;
+import com.googlecode.htmlcompressor.compressor.YuiCssCompressor;
 
 /**
  * JSP tag that compresses an CSS content within &lt;compress:css> using <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>.
@@ -51,12 +49,12 @@ public class CssCompressorTag extends BodyTagSupport {
 		try {
 			if(enabled) {
 				//call YUICompressor
-				StringWriter result = new StringWriter();
-				CssCompressor compressor = new CssCompressor(new StringReader(content));
-				compressor.compress(result, yuiCssLineBreak);
+				YuiCssCompressor compressor = new YuiCssCompressor();
+				compressor.setLineBreak(yuiCssLineBreak);
+				String result = compressor.compress(content);
 
 				bodyContent.clear();
-				bodyContent.append(result.toString());
+				bodyContent.append(result);
 				bodyContent.writeOut(pageContext.getOut());
 			} else {
 				bodyContent.clear();

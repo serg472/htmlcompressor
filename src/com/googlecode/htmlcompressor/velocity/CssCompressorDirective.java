@@ -15,7 +15,6 @@ package com.googlecode.htmlcompressor.velocity;
  */
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -30,7 +29,7 @@ import org.apache.velocity.runtime.log.Log;
 import org.apache.velocity.runtime.parser.node.Node;
 
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
-import com.yahoo.platform.yui.compressor.CssCompressor;
+import com.googlecode.htmlcompressor.compressor.YuiCssCompressor;
 
 /**
  * Velocity directive that compresses an CSS content within #compressCss ... #end block.
@@ -78,10 +77,12 @@ public class CssCompressorDirective extends Directive {
 		//compress
 		if(enabled) {
 			try {
-				StringWriter result = new StringWriter();
-				CssCompressor compressor = new CssCompressor(new StringReader(content.toString()));
-				compressor.compress(result, yuiCssLineBreak);
-				writer.write(result.toString());
+				
+				YuiCssCompressor compressor = new YuiCssCompressor();
+				compressor.setLineBreak(yuiCssLineBreak);
+				String result = compressor.compress(content.toString());
+				
+				writer.write(result);
 			} catch (Exception e) {
 				writer.write(content.toString());
 				String msg = "Failed to compress content: "+content.toString();

@@ -22,6 +22,7 @@ import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.JSSourceFile;
 import com.google.javascript.jscomp.Result;
+import com.google.javascript.jscomp.WarningLevel;
 
 /**
  * Basic JavaScript compressor implementation using <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a> 
@@ -42,6 +43,7 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	private CompilerOptions compilerOptions = new CompilerOptions();
 	private CompilationLevel compilationLevel = CompilationLevel.SIMPLE_OPTIMIZATIONS;
 	private Level loggingLevel = Level.SEVERE;
+	private WarningLevel warningLevel = WarningLevel.DEFAULT;
 	
 	private JSSourceFile externs = JSSourceFile.fromCode("externs.js", "");
 
@@ -65,6 +67,7 @@ public class ClosureJavaScriptCompressor implements Compressor {
 		compiler.disableThreads();
 		
 		compilationLevel.setOptionsForCompilationLevel(compilerOptions);
+		warningLevel.setOptionsForWarningLevel(compilerOptions);
 		
 		Result result = compiler.compile(externs, input, compilerOptions);
 		
@@ -99,6 +102,7 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	 * @param compilationLevel Optimization level to use, could be set to <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code>, <code>CompilationLevel.SIMPLE_OPTIMIZATIONS</code>, <code>CompilationLevel.WHITESPACE_ONLY</code> 
 	 * 
 	 * @see <a href="http://code.google.com/closure/compiler/docs/api-tutorial3.html">Advanced Compilation and Externs</a>
+	 * @see <a href="http://code.google.com/closure/compiler/docs/compilation_levels.html">Closure Compiler Compilation Levels</a>
 	 * @see <a href="http://closure-compiler.googlecode.com/svn/trunk/javadoc/com/google/javascript/jscomp/CompilationLevel.html">CompilationLevel</a>
 	 */
 	public void setCompilationLevel(CompilationLevel compilationLevel) {
@@ -172,6 +176,26 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	 */
 	public void setExterns(JSSourceFile externs) {
 		this.externs = externs;
+	}
+
+	/**
+	 * Returns <code>WarningLevel</code> used by the Closure compiler
+	 *  
+	 * @return <code>WarningLevel</code> used by the Closure compiler
+	 */
+	public WarningLevel getWarningLevel() {
+		return warningLevel;
+	}
+
+	/**
+	 * Indicates the amount of information you want from the compiler about possible problems in your code. 
+	 * 
+	 * @param warningLevel <code>WarningLevel</code> to use
+	 * 
+	 * @see <a href="http://code.google.com/closure/compiler/docs/api-ref.html">
+	 */
+	public void setWarningLevel(WarningLevel warningLevel) {
+		this.warningLevel = warningLevel;
 	}
 
 }
