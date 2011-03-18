@@ -17,7 +17,6 @@ package com.googlecode.htmlcompressor;
 import jargs.gnu.CmdLineParser;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,6 +30,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import com.google.javascript.jscomp.CompilationLevel;
+import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.Compressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import com.googlecode.htmlcompressor.compressor.XmlCompressor;
@@ -64,16 +65,21 @@ public class CmdLineCompressor {
 		CmdLineParser.Option preserveServerScriptTagsOpt = parser.addBooleanOption("preserve-server-script");
 		CmdLineParser.Option compressJsOpt = parser.addBooleanOption("compress-js");
 		CmdLineParser.Option compressCssOpt = parser.addBooleanOption("compress-css");
+		CmdLineParser.Option jsCompressorOpt = parser.addStringOption("js-compressor");
 
 		CmdLineParser.Option nomungeOpt = parser.addBooleanOption("nomunge");
 		CmdLineParser.Option linebreakOpt = parser.addStringOption("line-break");
 		CmdLineParser.Option preserveSemiOpt = parser.addBooleanOption("preserve-semi");
 		CmdLineParser.Option disableOptimizationsOpt = parser.addBooleanOption("disable-optimizations");
+		
+		CmdLineParser.Option closureOptLevelOpt = parser.addStringOption("closure-opt-level");
 
 		Reader in = null;
 		BufferedReader patternsIn = null;
 		Writer out = null;
-
+		
+		boolean useClosureCompressor = false;
+		
 		try {
 
 			parser.parse(args);
@@ -147,19 +153,9 @@ public class CmdLineCompressor {
 			//output file
 			String outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
 			
-			//check if yui compressor jar present
 			boolean compressJavaScript = (parser.getOptionValue(compressJsOpt) != null);
 			boolean compressCss = parser.getOptionValue(compressCssOpt) != null;
-			
-			/*
-			if(compressJavaScript || compressCss) {
-				if(!(new File("yuicompressor-2.4.2.jar")).exists()) {
-					System.err.println("ERROR: For JavaScript or CSS compression \"yuicompressor-2.4.2.jar\" file \n" +
-							"must be present in the same directory as HtmlCompressor jar");
-					System.exit(1);
-				}
-			}
-			*/
+			useClosureCompressor = HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase((String) parser.getOptionValue(jsCompressorOpt));
 			
 			//custom preserve patterns
 			List<Pattern> preservePatterns = new ArrayList<Pattern>();
@@ -211,6 +207,22 @@ public class CmdLineCompressor {
 				htmlCompressor.setYuiJsLineBreak(linebreakpos);
 				htmlCompressor.setYuiCssLineBreak(linebreakpos);
 				
+				//switch js compressor to closure
+				if(compressJavaScript && useClosureCompressor) {
+					ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
+
+					String closureOptLevel = (String) parser.getOptionValue(closureOptLevelOpt);
+					if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
+						closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
+					} else if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
+						closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
+					} else {
+						closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
+					}
+					
+					htmlCompressor.setJavaScriptCompressor(closureCompressor);
+				}
+				
 				compressor = htmlCompressor;
 
 			} else {
@@ -251,14 +263,8 @@ public class CmdLineCompressor {
 					out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
 				}
 
-				try {
-					String result = compressor.compress(source.toString());
-					out.write(result);
-				} catch (NoClassDefFoundError e){
-					System.err.println("ERROR: For JavaScript or CSS compression YUI compressor jar file \n" +
-						"must be present in the same directory as HtmlCompressor jar");
-					System.exit(1);
-				}
+				String result = compressor.compress(source.toString());
+				out.write(result);
 
 			} catch (Exception e) {
 
@@ -275,6 +281,17 @@ public class CmdLineCompressor {
 				}
 			}
 
+		} catch (NoClassDefFoundError e){
+			if(useClosureCompressor) {
+				System.err.println("ERROR: For JavaScript compression using Google Closure Compiler\n" +
+						"additional jar file called compiler.jar must be present\n" +
+						"in the same directory as HtmlCompressor jar");
+			} else {
+				System.err.println("ERROR: For JavaScript compression using YUICompressor additional jar file \n" +
+					"called yuicompressor-2.4.2.jar or yuicompressor-2.4.4.jar must be present\n" +
+					"in the same directory as HtmlCompressor jar");
+			}
+			System.exit(1);
 		} catch (CmdLineParser.OptionException e) {
 
 			printUsage();
@@ -318,43 +335,50 @@ public class CmdLineCompressor {
 	private static void printUsage() {
 		System.err.println("Usage: java -jar htmlcompressor.jar [options] [input file]\n\n"
 
-						+ "<input file>                  If not provided reads from stdin\n\n"
+						+ "<input file>                   If not provided reads from stdin\n\n"
 
 						+ "Global Options:\n"
-						+ "  -o <output file>            If not provided outputs result to stdout\n"
-						+ "  --type <html|xml>           If not provided autodetects from file extension\n"
-						+ "  --charset <charset>         Read the input file using <charset>\n"
-						+ "  -h, --help                  Display this screen\n\n"
+						+ " -o <output file>              If not provided outputs result to stdout\n"
+						+ " --type <html|xml>             If not provided autodetects from file extension\n"
+						+ " --charset <charset>           Read the input file using <charset>\n"
+						+ " -h, --help                    Display this screen\n\n"
 
-						+ "XML Options:\n"
-						+ "  --preserve-comments         Preserve comments\n"
-						+ "  --preserve-intertag-spaces  Preserve intertag spaces\n\n"
+						+ "XML Compression Options:\n"
+						+ " --preserve-comments           Preserve comments\n"
+						+ " --preserve-intertag-spaces    Preserve intertag spaces\n\n"
 
-						+ "HTML Options:\n"
-						+ "  --preserve-comments         Preserve comments\n"
-						+ "  --preserve-multi-spaces     Preserve multiple spaces\n"
-						+ "  --remove-intertag-spaces    Remove intertag spaces\n"
-						+ "  --remove-quotes             Remove unneeded quotes\n"
-						+ "  --compress-js               Enable JavaScript compression using YUICompressor\n"
-						+ "  --compress-css              Enable CSS compression using YUICompressor\n\n"
+						+ "HTML Compression Options:\n"
+						+ " --preserve-comments           Preserve comments\n"
+						+ " --preserve-multi-spaces       Preserve multiple spaces\n"
+						+ " --remove-intertag-spaces      Remove intertag spaces\n"
+						+ " --remove-quotes               Remove unneeded quotes\n"
+						+ " --compress-js                 Enable inline JavaScript compression\n"
+						+ " --compress-css                Enable inline CSS compression using YUICompressor\n"
+						+ " --js-compressor <yui|closure> Switch inline JavaScript compressor between\n"
+						+ "                               YUICompressor (default) and Closure Compiler\n\n"
 						
-						+ "JavaScript Options (for YUI Compressor):\n"
-						+ "  --nomunge                   Minify only, do not obfuscate\n"
-						+ "  --preserve-semi             Preserve all semicolons\n"
-						+ "  --disable-optimizations     Disable all micro optimizations\n"
-						+ "  --line-break <column num>   Insert a line break after the specified column\n\n"
+						+ "JavaScript Compression Options (for YUI Compressor):\n"
+						+ " --nomunge                     Minify only, do not obfuscate\n"
+						+ " --preserve-semi               Preserve all semicolons\n"
+						+ " --disable-optimizations       Disable all micro optimizations\n"
+						+ " --line-break <column num>     Insert a line break after the specified column\n\n"
 
-						+ "CSS Options (for YUI Compressor):\n"
-						+ "  --line-break <column num>   Insert a line break after the specified column\n\n"
+						+ "JavaScript Compression Options (for Google Closure Compiler):\n"
+						+ " --closure-opt-level <simple|advanced|whitespace>\n"
+						+ "                               Sets level of optimization (simple by default)\n"
+						
+						+ "CSS Compression Options (for YUI Compressor):\n"
+						+ " --line-break <column num>     Insert a line break after the specified column\n\n"
 
 						+ "Custom Block Preservation Options:\n"
-						+ "  --preserve-php              Preserve <?php ... ?> tags\n"
-						+ "  --preserve-server-script    Preserve <% ... %> tags\n"
-						+ "  -p <regexp patterns file>   Read regular expressions that define\n"
-						+ "                              custom preservation rules from a file\n\n"
+						+ " --preserve-php                Preserve <?php ... ?> tags\n"
+						+ " --preserve-server-script      Preserve <% ... %> tags\n"
+						+ " -p <path/to/patterns/file>    Read regular expressions that define\n"
+						+ "                               custom preservation rules from a file\n\n"
 						
-						+ "Please note that if you enable JavaScript or Css compression parameters,\n"
-						+ "YUI Compressor jar file must be present at the same directory as this jar."
+						+ "Please note that if you enable JavaScript compression, additional\n"
+						+ "YUI Compressor or Google Closure Compiler jar files must be present\n"
+						+ "at the same directory as this jar."
 
 				);
 	}

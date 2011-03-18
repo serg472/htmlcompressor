@@ -12,7 +12,9 @@ import org.mozilla.javascript.EvaluatorException;
  * 
  * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
  * 
+ * @deprecated  As of release 1.0 replaced by {@link com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor.DefaultErrorReporter}
  */
+@Deprecated
 public class DefaultErrorReporter implements ErrorReporter{
 	
 	public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {

@@ -26,6 +26,7 @@
                 <pathelement location="${lib.dir}/yuicompressor-2.4.2.jar"/>
             	<pathelement location="${lib.dir}/jsp-api.jar"/>
             	<pathelement location="${lib.dir}/velocity-1.6.2.jar"/>
+            	<pathelement location="${lib.dir}/compiler.jar"/>
             </classpath>
         </javac>
     </target>
@@ -45,7 +46,7 @@
         <jar destfile="${build.dir}/${jar.name}" basedir="${build.dir}/jar">
 			<manifest>
 				<attribute name="Main-Class" value="com.googlecode.htmlcompressor.CmdLineCompressor"/>
-				<attribute name="Class-Path" value="yuicompressor-2.4.2.jar yuicompressor-2.4.4.jar"/>
+				<attribute name="Class-Path" value="yuicompressor-2.4.2.jar yuicompressor-2.4.4.jar compiler.jar"/>
 			</manifest>
         </jar>
     </target>
@@ -62,6 +63,7 @@
                 <pathelement location="${lib.dir}/yuicompressor-2.4.2.jar"/>
 	    		<pathelement location="${lib.dir}/jsp-api.jar"/>
 	    		<pathelement location="${lib.dir}/velocity-1.6.2.jar"/>
+	    		<pathelement location="${lib.dir}/compiler.jar"/>
             </classpath>
 	      <sourcepath>
 	        <pathelement path="${src.dir}" />
