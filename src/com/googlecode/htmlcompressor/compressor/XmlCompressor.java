@@ -35,17 +35,17 @@ public class XmlCompressor implements Compressor {
 	private boolean removeIntertagSpaces = true;
 	
 	//temp replacements for preserved blocks 
-	private static final String tempCdataBlock = "%%%COMPRESS~CDATA~{0,number,#}%%%";
+	protected static final String tempCdataBlock = "%%%COMPRESS~CDATA~{0,number,#}%%%";
 	
 	//compiled regex patterns
-	private static final Pattern cdataPattern = Pattern.compile("<!\\[CDATA\\[.*?\\]\\]>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern multispacePattern = Pattern.compile("\\s{2,}(?=[^<]*?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
+	protected static final Pattern cdataPattern = Pattern.compile("<!\\[CDATA\\[.*?\\]\\]>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern multispacePattern = Pattern.compile("\\s{2,}(?=[^<]*?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	
-	private static final Pattern tempCdataPattern = Pattern.compile("%%%COMPRESS~CDATA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempCdataPattern = Pattern.compile("%%%COMPRESS~CDATA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	/**
 	 * The main method that compresses given XML source and returns compressed result.
@@ -75,7 +75,7 @@ public class XmlCompressor implements Compressor {
 		return xml.trim();
 	}
 
-	private String preserveBlocks(String xml, List<String> cdataBlocks) {
+	protected String preserveBlocks(String xml, List<String> cdataBlocks) {
 		//preserve CDATA blocks
 		Matcher matcher = cdataPattern.matcher(xml);
 		int index = 0;
@@ -90,7 +90,7 @@ public class XmlCompressor implements Compressor {
 		return xml;
 	}
 	
-	private String returnBlocks(String xml, List<String> cdataBlocks) {
+	protected String returnBlocks(String xml, List<String> cdataBlocks) {
 		//put CDATA blocks back
 		Matcher matcher = tempCdataPattern.matcher(xml);
 		StringBuffer sb = new StringBuffer();
@@ -103,17 +103,20 @@ public class XmlCompressor implements Compressor {
 		return xml;
 	}
 	
-	private String processXml(String xml) throws Exception {
+	protected String processXml(String xml) throws Exception {
 		//remove comments
-		if(removeComments) {
-			xml = commentPattern.matcher(xml).replaceAll("");
-		}
+		xml = removeComments(xml);
 		
 		//remove inter-tag spaces
-		if(removeIntertagSpaces) {
-			xml = intertagPattern.matcher(xml).replaceAll("><");
-		}
+		xml = removeIntertagSpaces(xml);
 		
+		//remove unneeded spaces inside tags
+		xml = removeSpacesInsideTags(xml);
+		
+		return xml;
+	}
+
+	protected String removeSpacesInsideTags(String xml) {
 		//replace miltiple spaces inside tags with single spaces
 		xml = multispacePattern.matcher(xml).replaceAll(" ");
 		
@@ -122,7 +125,22 @@ public class XmlCompressor implements Compressor {
 		
 		//remove ending spaces inside tags
 		xml = tagEndSpacePattern.matcher(xml).replaceAll("$1$2");
-		
+		return xml;
+	}
+
+	protected String removeIntertagSpaces(String xml) {
+		//remove inter-tag spaces
+		if(removeIntertagSpaces) {
+			xml = intertagPattern.matcher(xml).replaceAll("><");
+		}
+		return xml;
+	}
+
+	protected String removeComments(String xml) {
+		//remove comments
+		if(removeComments) {
+			xml = commentPattern.matcher(xml).replaceAll("");
+		}
 		return xml;
 	}
 	

@@ -74,8 +74,8 @@ public class HtmlCompressorDirective extends Directive {
 		htmlCompressor.setYuiJsLineBreak(rs.getInt("userdirective.compressHtml.yuiJsLineBreak", -1));
 		htmlCompressor.setYuiCssLineBreak(rs.getInt("userdirective.compressHtml.yuiCssLineBreak", -1));
 		
-		if(compressJavaScript && rs.getString("userdirective.compressHtml.jsCompressor", "yui").equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
-			String closureOptLevel = rs.getString("userdirective.compressHtml.closureOptLevel", "simple");
+		if(compressJavaScript && rs.getString("userdirective.compressHtml.jsCompressor", HtmlCompressor.JS_COMPRESSOR_YUI).equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
+			String closureOptLevel = rs.getString("userdirective.compressHtml.closureOptLevel", ClosureJavaScriptCompressor.COMPILATION_LEVEL_SIMPLE);
 			
 			ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
 			if(closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {

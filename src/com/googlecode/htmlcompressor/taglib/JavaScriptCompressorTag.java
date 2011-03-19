@@ -26,11 +26,12 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
 
 /**
- * JSP tag that compresses an JavaScript content within &lt;compress:js> using <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>.
+ * JSP tag that compresses an JavaScript content within &lt;compress:js> tags.
  * All JavaScript-related properties from {@link HtmlCompressor} are supported.
  * 
  * @see HtmlCompressor
  * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+ * @see <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
  * 
  * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
  */
@@ -81,7 +82,6 @@ public class JavaScriptCompressorTag extends BodyTagSupport {
 					yuiCompressor.setLineBreak(yuiJsLineBreak);
 					yuiCompressor.setNoMunge(yuiJsNoMunge);
 					yuiCompressor.setPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
-					yuiCompressor.setErrorReporter(new YuiJavaScriptCompressor.DefaultErrorReporter());
 					
 					result = yuiCompressor.compress(content);
 				}

@@ -39,6 +39,7 @@ import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
  * 
  * @see HtmlCompressor
  * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
+ * @see <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
  * 
  * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
  */
@@ -74,11 +75,11 @@ public class JavaScriptCompressorDirective extends Directive {
 		
 		//set compressor properties
 		enabled = rs.getBoolean("userdirective.compressJs.enabled", true);
-		jsCompressor = rs.getString("userdirective.compressHtml.jsCompressor", "yui");
+		jsCompressor = rs.getString("userdirective.compressHtml.jsCompressor", HtmlCompressor.JS_COMPRESSOR_YUI);
 		yuiJsNoMunge = rs.getBoolean("userdirective.compressJs.yuiJsNoMunge", false);
 		yuiJsPreserveAllSemiColons = rs.getBoolean("userdirective.compressJs.yuiJsPreserveAllSemiColons", false);
 		yuiJsLineBreak = rs.getInt("userdirective.compressJs.yuiJsLineBreak", -1);
-		closureOptLevel = rs.getString("userdirective.compressHtml.closureOptLevel", "simple");
+		closureOptLevel = rs.getString("userdirective.compressHtml.closureOptLevel", ClosureJavaScriptCompressor.COMPILATION_LEVEL_SIMPLE);
 	}
 
     public boolean render(InternalContextAdapter context, Writer writer, Node node) 
@@ -113,7 +114,6 @@ public class JavaScriptCompressorDirective extends Directive {
 					yuiCompressor.setLineBreak(yuiJsLineBreak);
 					yuiCompressor.setNoMunge(yuiJsNoMunge);
 					yuiCompressor.setPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
-					yuiCompressor.setErrorReporter(new YuiJavaScriptCompressor.DefaultErrorReporter());
 					
 					result = yuiCompressor.compress(result);
 				}

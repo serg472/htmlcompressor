@@ -70,6 +70,16 @@
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>jsCompressor</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>closureOptLevel</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
 	</tag>
 	<tag>
 		<description>Compresses XML content within tags.</description>
@@ -119,6 +129,16 @@
 		</attribute>
 		<attribute>
 			<name>yuiJsLineBreak</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>jsCompressor</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>closureOptLevel</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
