@@ -57,7 +57,7 @@
 	    <javadoc packagenames="com.googlecode.htmlcompressor.*"
 	             destdir="${doc.dir}"
 	             author="true"
-	             private="false"
+				 access="public"
 	             version="true">
 	    	<classpath>
                 <pathelement location="${lib.dir}/yuicompressor-2.4.2.jar"/>

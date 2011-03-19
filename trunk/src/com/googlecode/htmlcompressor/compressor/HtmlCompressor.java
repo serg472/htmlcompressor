@@ -27,8 +27,8 @@ import org.mozilla.javascript.ErrorReporter;
  * line breaks while preserving content within &lt;pre>, &lt;textarea>, &lt;script> 
  * and &lt;style> tags. Can optionally compress content inside &lt;script> 
  * or &lt;style> tags using 
- * <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> 
- * library.
+ * <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> or <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
+ * libraries.
  * 
  * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
  */
@@ -51,6 +51,10 @@ public class HtmlCompressor implements Compressor {
 	
 	private boolean enabled = true;
 	
+	//javascript and css compressor implementations
+	private Compressor javaScriptCompressor = null;
+	private Compressor cssCompressor = null;
+	
 	//default settings
 	private boolean removeComments = true;
 	private boolean removeMultiSpaces = true;
@@ -70,45 +74,42 @@ public class HtmlCompressor implements Compressor {
 	private int yuiJsLineBreak = -1;
 	private int yuiCssLineBreak = -1;
 	
-	//temp replacements for preserved blocks 
-	private static final String tempCondCommentBlock = "<%%%COMPRESS~COND~{0,number,#}%%%>";
-	private static final String tempPreBlock = "%%%COMPRESS~PRE~{0,number,#}%%%";
-	private static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~{0,number,#}%%%";
-	private static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0,number,#}%%%";
-	private static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0,number,#}%%%";
-	private static final String tempEventBlock = "%%%COMPRESS~EVENT~{0,number,#}%%%";
-	private static final String tempUserBlock = "<%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%>";
-	
-	//compiled regex patterns
-	private static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern multispacePattern = Pattern.compile("\\s+", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tagQuotePattern = Pattern.compile("\\s*=\\s*([\"'])([a-z0-9-_]+?)\\1(/?)(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern prePattern = Pattern.compile("(<pre[^>]*?>)(.*?)(</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern taPattern = Pattern.compile("(<textarea[^>]*?>)(.*?)(</textarea>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern scriptPattern = Pattern.compile("(<script[^>]*?>)(.*?)(</script>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern stylePattern = Pattern.compile("(<style[^>]*?>)(.*?)(</style>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern cdataPattern = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)\\]\\]>\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	
-	//unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
-	private static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE);
-	private static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
-
-	private static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	private static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	
 	//error reporter implementation for YUI compressor
 	private ErrorReporter yuiErrorReporter = null;
 	
-	private Compressor javaScriptCompressor = null;
-	private Compressor cssCompressor = null;
+	//temp replacements for preserved blocks 
+	protected static final String tempCondCommentBlock = "<%%%COMPRESS~COND~{0,number,#}%%%>";
+	protected static final String tempPreBlock = "%%%COMPRESS~PRE~{0,number,#}%%%";
+	protected static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~{0,number,#}%%%";
+	protected static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0,number,#}%%%";
+	protected static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0,number,#}%%%";
+	protected static final String tempEventBlock = "%%%COMPRESS~EVENT~{0,number,#}%%%";
+	protected static final String tempUserBlock = "<%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%>";
+	
+	//compiled regex patterns
+	protected static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern multispacePattern = Pattern.compile("\\s+", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tagQuotePattern = Pattern.compile("\\s*=\\s*([\"'])([a-z0-9-_]+?)\\1(/?)(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
+	protected static final Pattern prePattern = Pattern.compile("(<pre[^>]*?>)(.*?)(</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern taPattern = Pattern.compile("(<textarea[^>]*?>)(.*?)(</textarea>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern scriptPattern = Pattern.compile("(<script[^>]*?>)(.*?)(</script>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern stylePattern = Pattern.compile("(<style[^>]*?>)(.*?)(</style>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
+	protected static final Pattern cdataPattern = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)\\]\\]>\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	
+	//unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
+	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE);
+	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
+
+	protected static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed
@@ -122,30 +123,7 @@ public class HtmlCompressor implements Compressor {
 		if(!enabled || html == null || html.length() == 0) {
 			return html;
 		}
-		
-		//set default javascript compressor
-		if(compressJavaScript && javaScriptCompressor == null) {
-			YuiJavaScriptCompressor yuiJsCompressor = new YuiJavaScriptCompressor();
-			yuiJsCompressor.setNoMunge(yuiJsNoMunge);
-			yuiJsCompressor.setPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
-			yuiJsCompressor.setDisableOptimizations(yuiJsDisableOptimizations);
-			yuiJsCompressor.setLineBreak(yuiJsLineBreak);
-			
-			if(yuiErrorReporter != null) {
-				yuiJsCompressor.setErrorReporter(yuiErrorReporter);
-			}
-			
-			javaScriptCompressor = yuiJsCompressor;
-		}
-		
-		//set default css compressor
-		if(compressCss && cssCompressor == null) {
-			YuiCssCompressor yuiCssCompressor = new YuiCssCompressor();
-			yuiCssCompressor.setLineBreak(yuiCssLineBreak);
-			
-			cssCompressor = yuiCssCompressor;
-		}
-		
+
 		//preserved block containers
 		List<String> condCommentBlocks = new ArrayList<String>();
 		List<String> preBlocks = new ArrayList<String>();
@@ -171,7 +149,7 @@ public class HtmlCompressor implements Compressor {
 		return html.trim();
 	}
 
-	private String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
+	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
 		
 		//preserve user blocks
 		if(preservePatterns != null) {
@@ -285,7 +263,7 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	private String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) {
+	protected String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) {
 		//put TEXTAREA blocks back
 		Matcher matcher = tempTextAreaPattern.matcher(html);
 		StringBuffer sb = new StringBuffer();
@@ -357,28 +335,27 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	private String processHtml(String html) {
+	protected String processHtml(String html) {
+		
 		//remove comments
-		if(removeComments) {
-			html = commentPattern.matcher(html).replaceAll("");
-		}
+		html = removeComments(html);
 		
 		//remove inter-tag spaces
-		if(removeIntertagSpaces) {
-			html = intertagPattern.matcher(html).replaceAll("><");
-		}
+		html = removeIntertagSpaces(html);
 		
 		//remove multi whitespace characters
-		if(removeMultiSpaces) {
-			html = multispacePattern.matcher(html).replaceAll(" ");
-		}
+		html = removeMultiSpaces(html);
 		
-		//remove spaces around equal sign inside tags
-		html = tagPropertyPattern.matcher(html).replaceAll("$1=");
+		//remove spaces around equals sign and ending spaces
+		html = removeSpacesInsideTags(html);
 		
-		//remove ending spaces inside tags
-		html = tagEndSpacePattern.matcher(html).replaceAll("$1$2");
+		//remove quotes from tag attributes
+		html = removeQuotesInsideTags(html);
 		
+		return html;
+	}
+
+	protected String removeQuotesInsideTags(String html) {
 		//remove quotes from tag attributes
 		if(removeQuotes) {
 			Matcher matcher = tagQuotePattern.matcher(html);
@@ -395,11 +372,42 @@ public class HtmlCompressor implements Compressor {
 			html = sb.toString();
 			
 		}
+		return html;
+	}
+
+	protected String removeSpacesInsideTags(String html) {
+		//remove spaces around equals sign inside tags
+		html = tagPropertyPattern.matcher(html).replaceAll("$1=");
 		
+		//remove ending spaces inside tags
+		html = tagEndSpacePattern.matcher(html).replaceAll("$1$2");
+		return html;
+	}
+
+	protected String removeMultiSpaces(String html) {
+		if(removeMultiSpaces) {
+			html = multispacePattern.matcher(html).replaceAll(" ");
+		}
+		return html;
+	}
+
+	protected String removeIntertagSpaces(String html) {
+		//remove inter-tag spaces
+		if(removeIntertagSpaces) {
+			html = intertagPattern.matcher(html).replaceAll("><");
+		}
+		return html;
+	}
+
+	protected String removeComments(String html) {
+		//remove comments
+		if(removeComments) {
+			html = commentPattern.matcher(html).replaceAll("");
+		}
 		return html;
 	}
 	
-	private void processScriptBlocks(List<String> scriptBlocks) throws Exception {
+	protected void processScriptBlocks(List<String> scriptBlocks) throws Exception {
 		if(compressJavaScript) {
 			for(int i = 0; i < scriptBlocks.size(); i++) {
 				scriptBlocks.set(i, compressJavaScript(scriptBlocks.get(i)));
@@ -407,7 +415,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	private void processStyleBlocks(List<String> styleBlocks) throws Exception {
+	protected void processStyleBlocks(List<String> styleBlocks) throws Exception {
 		if(compressCss) {
 			for(int i = 0; i < styleBlocks.size(); i++) {
 				styleBlocks.set(i, compressCssStyles(styleBlocks.get(i)));
@@ -415,10 +423,21 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	private String compressJavaScript(String source) throws Exception {
+	protected String compressJavaScript(String source) throws Exception {
 		
+		//set default javascript compressor
 		if(javaScriptCompressor == null) {
-			return source;
+			YuiJavaScriptCompressor yuiJsCompressor = new YuiJavaScriptCompressor();
+			yuiJsCompressor.setNoMunge(yuiJsNoMunge);
+			yuiJsCompressor.setPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
+			yuiJsCompressor.setDisableOptimizations(yuiJsDisableOptimizations);
+			yuiJsCompressor.setLineBreak(yuiJsLineBreak);
+			
+			if(yuiErrorReporter != null) {
+				yuiJsCompressor.setErrorReporter(yuiErrorReporter);
+			}
+			
+			javaScriptCompressor = yuiJsCompressor;
 		}
 		
 		//detect CDATA wrapper
@@ -434,30 +453,23 @@ public class HtmlCompressor implements Compressor {
 		if(cdataWrapper) {
 			return "<![CDATA[" + result + "]]>";
 		} else {
-			return result.toString();
+			return result;
 		}
 		
 	}
 	
-	private String compressCssStyles(String source) throws Exception {
+	protected String compressCssStyles(String source) throws Exception {
 		
+		//set default css compressor
 		if(cssCompressor == null) {
-			return source;
+			YuiCssCompressor yuiCssCompressor = new YuiCssCompressor();
+			yuiCssCompressor.setLineBreak(yuiCssLineBreak);
+			
+			cssCompressor = yuiCssCompressor;
 		}
 		
 		return cssCompressor.compress(source);
 		
-		
-		
-		/*
-		//call YUICompressor
-		StringWriter result = new StringWriter();
-		CssCompressor compressor = new CssCompressor(new StringReader(source));
-		compressor.compress(result, yuiCssLineBreak);
-	
-		
-		return result.toString();
-		*/
 	}
 	
 	/**

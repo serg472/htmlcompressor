@@ -36,8 +36,6 @@ import java.util.regex.Matcher;
 public class YuiCssCompressor implements Compressor {
 	
 	private int lineBreak = -1;
-
-    private StringBuffer srcsb = new StringBuffer();
     
     public YuiCssCompressor() {
     }
@@ -45,21 +43,13 @@ public class YuiCssCompressor implements Compressor {
     @Override
 	public String compress(String content) throws Exception {
     	StringWriter result = new StringWriter();
-    	YuiCssCompressor compressor = new YuiCssCompressor(new StringReader(content));
-		compressor.compress(result, lineBreak);
+		
+		process(new StringReader(content), result, lineBreak);
 		
 		return result.toString();
 	}
 
-    public YuiCssCompressor(Reader in) throws IOException {
-        // Read the stream...
-        int c;
-        while ((c = in.read()) != -1) {
-            srcsb.append((char) c);
-        }
-    }
-
-    public void compress(Writer out, int linebreakpos)
+    private void process(Reader in, Writer out, int linebreakpos)
             throws IOException {
 
         Pattern p;
@@ -67,6 +57,13 @@ public class YuiCssCompressor implements Compressor {
         String css;
         StringBuffer sb;
         int startIndex, endIndex;
+        
+        // Read the stream...
+        StringBuffer srcsb = new StringBuffer();
+        int c1;
+        while ((c1 = in.read()) != -1) {
+            srcsb.append((char) c1);
+        }
 
         // Remove all comment blocks...
         startIndex = 0;
