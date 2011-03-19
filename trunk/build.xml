@@ -52,8 +52,10 @@
     </target>
 	
 	<target name="build.javadoc" depends="build.classes">
+		<!--
 		<delete dir="${doc.dir}" quiet="true"/>
 		<mkdir dir="${doc.dir}" />
+		-->
 	    <javadoc packagenames="com.googlecode.htmlcompressor.*"
 	             destdir="${doc.dir}"
 	             author="true"
