@@ -1,4 +1,11 @@
 #labels Featured
+*1.0* (Mar 19, 2011)
+  * Added ability to provide custom implementations of JavaScript and CSS compressors using  `setJsCompressor()` and `setCssCompressor()` HtmlCompressor methods. YUI compressor is now treated as just one of possible implementations (if none provided YUI compressor will still be used as a default JavaScript compressor). Custom compressors are currently supported only through Java API.
+  * Added [http://code.google.com/closure/compiler/ Google Closure Compressor] implementation for inline JavaScript compression (also supported in command line compressor and velocity/jsp tags). Thanks to Lexius for providing code samples.
+  * Small part of YUI compressor responsible for CSS compression was integrated into HTML compressor, so compressing inline CSS now doesn't require any external dependencies.
+  * HTML and XML compressors were made much more inheritance-friendly by making all private methods protected and splitting the whole compression process into smaller methods ready for overriding.
+  * Newline characters in html and xml files on Linux systems are now replaced with spaces, to be consistent with Windows compression results (file size is not affected)
+
 *0.9.9* (Feb 02, 2011)
   * Fixed bug in HtmlCompressor that causes incorrect compression of big files (if number of preserved blocks exceeds 1000). See [http://code.google.com/p/htmlcompressor/issues/detail?id=26 this issue] for details.
 
