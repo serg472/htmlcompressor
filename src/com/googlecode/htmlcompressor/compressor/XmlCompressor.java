@@ -42,7 +42,7 @@ public class XmlCompressor implements Compressor {
 	protected static final Pattern commentPattern = Pattern.compile("<!--.*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern multispacePattern = Pattern.compile("\\s{2,}(?=[^<]*?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern multispacePattern = Pattern.compile("\\s+(?=[^<]*?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	
 	protected static final Pattern tempCdataPattern = Pattern.compile("%%%COMPRESS~CDATA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
