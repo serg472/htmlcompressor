@@ -99,11 +99,17 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern stylePattern = Pattern.compile("(<style[^>]*?>)(.*?)(</style>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern cdataPattern = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)\\]\\]>\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern jsTypeAttrPattern = Pattern.compile("<script([^>]*)type\\s*=\\s*([\"'])(?:text|application)/javascript\\2([^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern styleTypeAttrPattern = Pattern.compile("<style([^>]*)type\\s*=\\s*([\"'])text/style\\2([^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern linkTypeAttrPattern = Pattern.compile("<link([^>]*)type\\s*=\\s*([\"'])text/(?:css|plain)\\2([^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern linkRelAttrPattern = Pattern.compile("<link(?:[^>]*)rel\\s*=\\s*([\"']*)(?:alternate\\s+)?stylesheet\\1(?:[^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern doctypePattern = Pattern.compile("<!DOCTYPE[^>]*>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	//unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
-
+	
+	//temporary replacements for preserved blocks
 	protected static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
