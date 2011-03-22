@@ -64,6 +64,14 @@ public class HtmlCompressor implements Compressor {
 	private boolean removeQuotes = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
+	private boolean simpleDoctype = false;
+	private boolean removeScriptAttributes = false;
+	private boolean removeStyleAttributes = false;
+	private boolean removeLinkAttributes = false;
+	private boolean removeFormAttributes = false;
+	private boolean removeInputAttributes = false;
+	private boolean simpleBooleanAttributes = false;
+	private boolean removeJsProtocol = false;
 	
 	private List<Pattern> preservePatterns = null;
 	
@@ -99,14 +107,17 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern stylePattern = Pattern.compile("(<style[^>]*?>)(.*?)(</style>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s=\\s(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern cdataPattern = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)\\]\\]>\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern jsTypeAttrPattern = Pattern.compile("<script([^>]*)type\\s*=\\s*([\"'])(?:text|application)/javascript\\2([^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern styleTypeAttrPattern = Pattern.compile("<style([^>]*)type\\s*=\\s*([\"'])text/style\\2([^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern linkTypeAttrPattern = Pattern.compile("<link([^>]*)type\\s*=\\s*([\"'])text/(?:css|plain)\\2([^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern linkRelAttrPattern = Pattern.compile("<link(?:[^>]*)rel\\s*=\\s*([\"']*)(?:alternate\\s+)?stylesheet\\1(?:[^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern doctypePattern = Pattern.compile("<!DOCTYPE[^>]*>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	
-	//unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
-	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE);
+	protected static final Pattern jsTypeAttrPattern = Pattern.compile("(<script[^>]*)type\\s*=\\s*([\"']*)(?:text|application)/javascript\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern jsLangAttrPattern = Pattern.compile("(<script[^>]*)language\\s*=\\s*([\"']*)javascript\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern styleTypeAttrPattern = Pattern.compile("(<style[^>]*)type\\s*=\\s*([\"']*)text/style\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern linkTypeAttrPattern = Pattern.compile("(<link[^>]*)type\\s*=\\s*([\"']*)text/(?:css|plain)\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern linkRelAttrPattern = Pattern.compile("<link(?:[^>]*)rel\\s*=\\s*([\"']*)(?:alternate\\s+)?stylesheet\\1(?:[^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern formMethodAttrPattern = Pattern.compile("(<form[^>]*)method\\s*=\\s*([\"']*)get\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern inputTypeAttrPattern = Pattern.compile("(<input[^>]*)type\\s*=\\s*([\"']*)text\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern booleanAttrPattern = Pattern.compile("(<\\w+[^>]*)(checked|selected|disabled|readonly)\\s*=\\s*([\"']*)\\w*\\3([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern eventJsProtocolPattern = Pattern.compile("^javascript:\\s*(.+)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE); //unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
 	
 	//temporary replacements for preserved blocks
