@@ -157,13 +157,58 @@ public class HtmlCompressor implements Compressor {
 		html = processHtml(html);
 		
 		//process preserved blocks
-		processScriptBlocks(scriptBlocks);
-		processStyleBlocks(styleBlocks);
+		processPreservedBlocks(preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, userBlocks);
 		
-		//put blocks back
+		//put preserved blocks back
 		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, userBlocks);
 		
 		return html.trim();
+	}
+	
+	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
+		processPreBlocks(preBlocks);
+		processTextAreaBlocks(taBlocks);
+		processScriptBlocks(scriptBlocks);
+		processStyleBlocks(styleBlocks);
+		processEventBlocks(eventBlocks);
+		processCondCommentBlocks(condCommentBlocks);
+		processUserBlocks(userBlocks);
+	}
+	
+	protected void processPreBlocks(List<String> preBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processTextAreaBlocks(List<String> taBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processCondCommentBlocks(List<String> condCommentBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processUserBlocks(List<List<String>> userBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processEventBlocks(List<String> eventBlocks) throws Exception {
+		if(removeJsProtocol) {
+			for(int i = 0; i < eventBlocks.size(); i++) {
+				eventBlocks.set(i, removeJavaScriptProtocol(eventBlocks.get(i)));
+			}
+		}
+	}
+	
+	protected String removeJavaScriptProtocol(String source) throws Exception {
+		//remove javascript: from inline events
+		String result = source;
+		
+		Matcher matcher = eventJsProtocolPattern.matcher(source);
+		if(matcher.matches()) {
+			result = matcher.replaceFirst("$1");
+		}
+		
+		return result;
 	}
 
 	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
@@ -420,6 +465,77 @@ public class HtmlCompressor implements Compressor {
 		//remove comments
 		if(removeComments) {
 			html = commentPattern.matcher(html).replaceAll("");
+		}
+		return html;
+	}
+
+	protected String simpleDoctype(String html) {
+		//simplify doctype
+		if(simpleDoctype) {
+			html = doctypePattern.matcher(html).replaceFirst("<!DOCTYPE html>");
+		}
+		return html;
+	}
+
+	protected String removeScriptAttributes(String html) {
+		
+		if(removeScriptAttributes) {
+			//remove type from script tags
+			html = jsTypeAttrPattern.matcher(html).replaceAll("$1$3");
+
+			//remove language from script tags
+			html = jsLangAttrPattern.matcher(html).replaceAll("$1$3");
+		}
+		return html;
+	}
+
+	protected String removeStyleAttributes(String html) {
+		//remove type from style tags
+		if(removeStyleAttributes) {
+			html = styleTypeAttrPattern.matcher(html).replaceAll("$1$3");
+		}
+		return html;
+	}
+
+	protected String removeLinkAttributes(String html) {
+		//remove type from link tags with rel=stylesheet
+		if(removeLinkAttributes) {
+			Matcher matcher = linkTypeAttrPattern.matcher(html);
+			StringBuffer sb = new StringBuffer();
+			while(matcher.find()) {
+				//if rel=stylesheet
+				if(linkRelAttrPattern.matcher(matcher.group(0)).matches()) {
+					matcher.appendReplacement(sb, "$1$3");
+				} else {
+					matcher.appendReplacement(sb, "$0");
+				}
+			}
+			matcher.appendTail(sb);
+			html = sb.toString();
+		}
+		return html;
+	}
+	
+	protected String removeFormAttributes(String html) {
+		//remove method from form tags
+		if(removeFormAttributes) {
+			html = formMethodAttrPattern.matcher(html).replaceAll("$1$3");
+		}
+		return html;
+	}
+	
+	protected String removeInputAttributes(String html) {
+		//remove type from input tags
+		if(removeInputAttributes) {
+			html = inputTypeAttrPattern.matcher(html).replaceAll("$1$3");
+		}
+		return html;
+	}
+	
+	protected String simpleBooleanAttributes(String html) {
+		//simplify boolean attributes
+		if(simpleBooleanAttributes) {
+			html = booleanAttrPattern.matcher(html).replaceAll("$1$2$4");
 		}
 		return html;
 	}
@@ -915,6 +1031,177 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public void setCssCompressor(Compressor cssCompressor) {
 		this.cssCompressor = cssCompressor;
+	}
+
+	/**
+	 * Returns <code>true</code> if existing DOCTYPE declaration will be replaced with simple <code><!DOCTYPE html></code> declaration.
+	 * 
+	 * @return <code>true</code> if existing DOCTYPE declaration will be replaced with simple <code><!DOCTYPE html></code> declaration.
+	 */
+	public boolean isSimpleDoctype() {
+		return simpleDoctype;
+	}
+
+	/**
+	 * If set to <code>true</code>, existing DOCTYPE declaration will be replaced with simple <code>&lt;!DOCTYPE html></code> declaration.
+	 * Default is <code>false</code>.
+	 * 
+	 * @param simpleDoctype set <code>true</code> to replace existing DOCTYPE declaration with <code>&lt;!DOCTYPE html></code>
+	 */
+	public void setSimpleDoctype(boolean simpleDoctype) {
+		this.simpleDoctype = simpleDoctype;
+	}
+
+	/**
+	 * Returns <code>true</code> if unnecessary attributes wil be removed from <code>&lt;script></code> tags 
+	 * 
+	 * @return <code>true</code> if unnecessary attributes wil be removed from <code>&lt;script></code> tags
+	 */
+	public boolean isRemoveScriptAttributes() {
+		return removeScriptAttributes;
+	}
+
+	/**
+	 * If set to <code>true</code>, following attributes will be removed from <code>&lt;script></code> tags: 
+	 * <ul>
+	 * <li>type="text/javascript"</li>
+	 * <li>type="application/javascript"</li>
+	 * <li>language="javascript"</li>
+	 * </ul>
+	 * 
+	 * <p>Default is <code>false</code>.
+	 * 
+	 * @param removeScriptAttributes set <code>true</code> to remove unnecessary attributes from <code>&lt;script></code> tags 
+	 */
+	public void setRemoveScriptAttributes(boolean removeScriptAttributes) {
+		this.removeScriptAttributes = removeScriptAttributes;
+	}
+
+	/**
+	 * Returns <code>true</code> if <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags
+	 * 
+	 * @return <code>true</code> if <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags
+	 */
+	public boolean isRemoveStyleAttributes() {
+		return removeStyleAttributes;
+	}
+
+	/**
+	 * If set to <code>true</code>, <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags. Default is <code>false</code>.
+	 * 
+	 * @param removeStyleAttributes set <code>true</code> to remove <code>type="text/style"</code> attributes from <code>&lt;style></code> tags
+	 */
+	public void setRemoveStyleAttributes(boolean removeStyleAttributes) {
+		this.removeStyleAttributes = removeStyleAttributes;
+	}
+
+	/**
+	 * Returns <code>true</code> if unnecessary attributes will be removed from <code>&lt;link></code> tags
+	 * 
+	 * @return <code>true</code> if unnecessary attributes will be removed from <code>&lt;link></code> tags
+	 */
+	public boolean isRemoveLinkAttributes() {
+		return removeLinkAttributes;
+	}
+
+	/**
+	 * If set to <code>true</code>, following attributes will be removed from <code>&lt;link rel="stylesheet"></code> and <code>&lt;link rel="alternate stylesheet"></code> tags: 
+	 * <ul>
+	 * <li>type="text/css"</li>
+	 * <li>type="text/plain"</li>
+	 * </ul>
+	 * 
+	 * <p>Default is <code>false</code>.
+	 * 
+	 * @param removeLinkAttributes set <code>true</code> to remove unnecessary attributes from <code>&lt;link></code> tags
+	 */
+	public void setRemoveLinkAttributes(boolean removeLinkAttributes) {
+		this.removeLinkAttributes = removeLinkAttributes;
+	}
+
+	/**
+	 * Returns <code>true</code> if <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags
+	 * 
+	 * @return <code>true</code> if <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags
+	 */
+	public boolean isRemoveFormAttributes() {
+		return removeFormAttributes;
+	}
+
+	/**
+	 * If set to <code>true</code>, <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags. Default is <code>false</code>.
+	 * 
+	 * @param removeFormAttributes set <code>true</code> to remove <code>method="get"</code> attributes from <code>&lt;form></code> tags
+	 */
+	public void setRemoveFormAttributes(boolean removeFormAttributes) {
+		this.removeFormAttributes = removeFormAttributes;
+	}
+
+	/**
+	 * Returns <code>true</code> if <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags
+	 * @return <code>true</code> if <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags
+	 */
+	public boolean isRemoveInputAttributes() {
+		return removeInputAttributes;
+	}
+
+	/**
+	 * If set to <code>true</code>, <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags. Default is <code>false</code>.
+	 * 
+	 * @param removeInputAttributes set <code>true</code> to remove <code>type="text"</code> attributes from <code>&lt;input></code> tags
+	 */
+	public void setRemoveInputAttributes(boolean removeInputAttributes) {
+		this.removeInputAttributes = removeInputAttributes;
+	}
+
+	/**
+	 * Returns <code>true</code> if boolean attributes will be simplified
+	 * 
+	 * @return <code>true</code> if boolean attributes will be simplified
+	 */
+	public boolean isSimpleBooleanAttributes() {
+		return simpleBooleanAttributes;
+	}
+
+	/**
+	 * If set to <code>true</code>, any values of following boolean attributes will be removed:
+	 * <ul>
+	 * <li>checked</li>
+	 * <li>selected</li>
+	 * <li>disabled</li>
+	 * <li>readonly</li>
+	 * </ul>
+	 * 
+	 * <p>For example, <code>&ltinput readonly="readonly"></code> would become <code>&ltinput readonly></code>
+	 * 
+	 * <p>Default is <code>false</code>.
+	 * 
+	 * @param simpleBooleanAttributes set <code>true</code> to simplify boolean attributes
+	 */
+	public void setSimpleBooleanAttributes(boolean simpleBooleanAttributes) {
+		this.simpleBooleanAttributes = simpleBooleanAttributes;
+	}
+
+	/**
+	 * Returns <code>true</code> is <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.
+	 * 
+	 * @return <code>true</code> is <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.
+	 */
+	public boolean isRemoveJsProtocol() {
+		return removeJsProtocol;
+	}
+
+	/**
+	 * If set to <code>true</code>, <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.
+	 * 
+	 * <p>For example, <code>&lta onclick="javascript:alert()"></code> would become <code>&lta onclick="alert()"></code>
+	 * 
+	 * <p>Default is <code>false</code>.
+	 * 
+	 * @param removeJsProtocol set <code>true</code> to remove <code>javascript:</code> pseudo-protocol from inline event handlers.
+	 */
+	public void setRemoveJsProtocol(boolean removeJsProtocol) {
+		this.removeJsProtocol = removeJsProtocol;
 	}
 	
 }
