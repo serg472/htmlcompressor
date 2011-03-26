@@ -45,6 +45,14 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	//optional settings
 	private boolean removeIntertagSpaces = false;
 	private boolean removeQuotes = false;
+	private boolean simpleDoctype = false;
+	private boolean removeScriptAttributes = false;
+	private boolean removeStyleAttributes = false;
+	private boolean removeLinkAttributes = false;
+	private boolean removeFormAttributes = false;
+	private boolean removeInputAttributes = false;
+	private boolean simpleBooleanAttributes = false;
+	private boolean removeJavaScriptProtocol = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
 	
@@ -66,19 +74,29 @@ public class HtmlCompressorTag extends BodyTagSupport {
 		BodyContent bodyContent = getBodyContent();
 		String content = bodyContent.getString();
 		
-		HtmlCompressor compressor = new HtmlCompressor();
-		compressor.setEnabled(enabled);
-		compressor.setRemoveComments(removeComments);
-		compressor.setRemoveMultiSpaces(removeMultiSpaces);
-		compressor.setRemoveIntertagSpaces(removeIntertagSpaces);
-		compressor.setRemoveQuotes(removeQuotes);
-		compressor.setCompressJavaScript(compressJavaScript);
-		compressor.setCompressCss(compressCss);
-		compressor.setYuiJsNoMunge(yuiJsNoMunge);
-		compressor.setYuiJsPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
-		compressor.setYuiJsDisableOptimizations(yuiJsDisableOptimizations);
-		compressor.setYuiJsLineBreak(yuiJsLineBreak);
-		compressor.setYuiCssLineBreak(yuiCssLineBreak);
+		HtmlCompressor htmlCompressor = new HtmlCompressor();
+		htmlCompressor.setEnabled(enabled);
+		htmlCompressor.setRemoveComments(removeComments);
+		htmlCompressor.setRemoveMultiSpaces(removeMultiSpaces);
+		htmlCompressor.setRemoveIntertagSpaces(removeIntertagSpaces);
+		htmlCompressor.setRemoveQuotes(removeQuotes);
+		htmlCompressor.setCompressJavaScript(compressJavaScript);
+		htmlCompressor.setCompressCss(compressCss);
+		htmlCompressor.setYuiJsNoMunge(yuiJsNoMunge);
+		htmlCompressor.setYuiJsPreserveAllSemiColons(yuiJsPreserveAllSemiColons);
+		htmlCompressor.setYuiJsDisableOptimizations(yuiJsDisableOptimizations);
+		htmlCompressor.setYuiJsLineBreak(yuiJsLineBreak);
+		htmlCompressor.setYuiCssLineBreak(yuiCssLineBreak);
+
+		htmlCompressor.setSimpleDoctype(simpleDoctype);
+		htmlCompressor.setRemoveScriptAttributes(removeScriptAttributes);
+		htmlCompressor.setRemoveStyleAttributes(removeStyleAttributes);
+		htmlCompressor.setRemoveLinkAttributes(removeLinkAttributes);
+		htmlCompressor.setRemoveFormAttributes(removeFormAttributes);
+		htmlCompressor.setRemoveInputAttributes(removeInputAttributes);
+		htmlCompressor.setSimpleBooleanAttributes(simpleBooleanAttributes);
+		htmlCompressor.setRemoveJavaScriptProtocol(removeJavaScriptProtocol);
+		
 		
 		if(compressJavaScript && jsCompressor.equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
 			ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
@@ -89,12 +107,12 @@ public class HtmlCompressorTag extends BodyTagSupport {
 			} else {
 				closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
 			}
-			compressor.setJavaScriptCompressor(closureCompressor);
+			htmlCompressor.setJavaScriptCompressor(closureCompressor);
 		}
 		
 		try {
 			bodyContent.clear();
-			bodyContent.append(compressor.compress(content));
+			bodyContent.append(htmlCompressor.compress(content));
 			bodyContent.writeOut(pageContext.getOut());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -216,6 +234,62 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	 */
 	public void setClosureOptLevel(String closureOptLevel) {
 		this.closureOptLevel = closureOptLevel;
+	}
+
+	/**
+	 * @see HtmlCompressor#setSimpleDoctype(boolean)
+	 */
+	public void setSimpleDoctype(boolean simpleDoctype) {
+		this.simpleDoctype = simpleDoctype;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveScriptAttributes(boolean)
+	 */
+	public void setRemoveScriptAttributes(boolean removeScriptAttributes) {
+		this.removeScriptAttributes = removeScriptAttributes;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveStyleAttributes(boolean)
+	 */
+	public void setRemoveStyleAttributes(boolean removeStyleAttributes) {
+		this.removeStyleAttributes = removeStyleAttributes;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveLinkAttributes(boolean)
+	 */
+	public void setRemoveLinkAttributes(boolean removeLinkAttributes) {
+		this.removeLinkAttributes = removeLinkAttributes;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveFormAttributes(boolean)
+	 */
+	public void setRemoveFormAttributes(boolean removeFormAttributes) {
+		this.removeFormAttributes = removeFormAttributes;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveInputAttributes(boolean)
+	 */
+	public void setRemoveInputAttributes(boolean removeInputAttributes) {
+		this.removeInputAttributes = removeInputAttributes;
+	}
+	
+	/**
+	 * @see HtmlCompressor#setSimpleBooleanAttributes(boolean)
+	 */
+	public void setSimpleBooleanAttributes(boolean simpleBooleanAttributes) {
+		this.simpleBooleanAttributes = simpleBooleanAttributes;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveJavaScriptProtocol(boolean)
+	 */
+	public void setRemoveJavaScriptProtocol(boolean removeJavaScriptProtocol) {
+		this.removeJavaScriptProtocol = removeJavaScriptProtocol;
 	}
 
 }

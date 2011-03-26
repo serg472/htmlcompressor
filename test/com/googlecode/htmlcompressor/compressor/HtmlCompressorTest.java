@@ -140,6 +140,83 @@ public class HtmlCompressorTest {
 		assertEquals(result, compressor.compress(source));
 	}
 	
+	@Test
+	public void testSimpleDoctype() throws Exception {
+		String source = readResource("testSimpleDoctype.html");
+		String result = readResource("testSimpleDoctypeResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setSimpleDoctype(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
+	@Test
+	public void testRemoveScriptAttributes() throws Exception {
+		String source = readResource("testRemoveScriptAttributes.html");
+		String result = readResource("testRemoveScriptAttributesResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveScriptAttributes(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
+	@Test
+	public void testRemoveStyleAttributes() throws Exception {
+		String source = readResource("testRemoveStyleAttributes.html");
+		String result = readResource("testRemoveStyleAttributesResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveStyleAttributes(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
+	@Test
+	public void testRemoveLinkAttributes() throws Exception {
+		String source = readResource("testRemoveLinkAttributes.html");
+		String result = readResource("testRemoveLinkAttributesResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveLinkAttributes(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
+	@Test
+	public void testRemoveFormAttributes() throws Exception {
+		String source = readResource("testRemoveFormAttributes.html");
+		String result = readResource("testRemoveFormAttributesResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveFormAttributes(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
+	@Test
+	public void testRemoveInputAttributes() throws Exception {
+		String source = readResource("testRemoveInputAttributes.html");
+		String result = readResource("testRemoveInputAttributesResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveInputAttributes(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
+	@Test
+	public void testRemoveJavaScriptProtocol() throws Exception {
+		String source = readResource("testRemoveJavaScriptProtocol.html");
+		String result = readResource("testRemoveJavaScriptProtocolResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveJavaScriptProtocol(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
 	private String readResource(String filename) {
 		
 		StringBuilder builder = new StringBuilder();
