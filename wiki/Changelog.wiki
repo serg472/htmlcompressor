@@ -1,4 +1,12 @@
 #labels Featured
+*1.1* (Mar 26, 2011)
+  * YUI CSS compressor is depending again on external YUI library as it is still under active development.
+  * HTML compressor option to replace existing doctype declaration with simple `<!DOCTYPE html>` declaration
+  * HTML compressor options to remove default attributes from `<script>`, `<style>`, `<link>`, `<form>`, `<input>` tags
+  * HTML compressor option to remove values from boolean attributes such as `checked`, `selected`, `disabled`, `readonly` (`checked="checked"` would become `checked`)
+  * HTML compressor option to remove `javascript:` pseudo-protocol from inline event handlers
+  * Further inheritance oriented improvements in HtmlCompressor class
+
 *1.0* (Mar 19, 2011)
   * Added ability to provide custom implementations of JavaScript and CSS compressors using  `setJavaScriptCompressor()` and `setCssCompressor()` HtmlCompressor methods. YUI compressor is now treated as just one of possible implementations (if none provided YUI will still be used as a default JavaScript compressor). Custom compressors are currently supported only through Java API.
   * Added [http://code.google.com/closure/compiler/ Google Closure Compiler] implementation for inline JavaScript compression (also supported in command line compressor and velocity/jsp tags). Thanks to Lexius for providing code samples.
