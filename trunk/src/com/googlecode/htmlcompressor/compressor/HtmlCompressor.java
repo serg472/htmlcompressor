@@ -71,7 +71,7 @@ public class HtmlCompressor implements Compressor {
 	private boolean removeFormAttributes = false;
 	private boolean removeInputAttributes = false;
 	private boolean simpleBooleanAttributes = false;
-	private boolean removeJsProtocol = false;
+	private boolean removeJavaScriptProtocol = false;
 	
 	private List<Pattern> preservePatterns = null;
 	
@@ -165,52 +165,6 @@ public class HtmlCompressor implements Compressor {
 		return html.trim();
 	}
 	
-	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
-		processPreBlocks(preBlocks);
-		processTextAreaBlocks(taBlocks);
-		processScriptBlocks(scriptBlocks);
-		processStyleBlocks(styleBlocks);
-		processEventBlocks(eventBlocks);
-		processCondCommentBlocks(condCommentBlocks);
-		processUserBlocks(userBlocks);
-	}
-	
-	protected void processPreBlocks(List<String> preBlocks) throws Exception {
-		//stub
-	}
-	
-	protected void processTextAreaBlocks(List<String> taBlocks) throws Exception {
-		//stub
-	}
-	
-	protected void processCondCommentBlocks(List<String> condCommentBlocks) throws Exception {
-		//stub
-	}
-	
-	protected void processUserBlocks(List<List<String>> userBlocks) throws Exception {
-		//stub
-	}
-	
-	protected void processEventBlocks(List<String> eventBlocks) throws Exception {
-		if(removeJsProtocol) {
-			for(int i = 0; i < eventBlocks.size(); i++) {
-				eventBlocks.set(i, removeJavaScriptProtocol(eventBlocks.get(i)));
-			}
-		}
-	}
-	
-	protected String removeJavaScriptProtocol(String source) throws Exception {
-		//remove javascript: from inline events
-		String result = source;
-		
-		Matcher matcher = eventJsProtocolPattern.matcher(source);
-		if(matcher.matches()) {
-			result = matcher.replaceFirst("$1");
-		}
-		
-		return result;
-	}
-
 	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
 		
 		//preserve user blocks
@@ -402,6 +356,27 @@ public class HtmlCompressor implements Compressor {
 		//remove comments
 		html = removeComments(html);
 		
+		//simplify doctype
+		html = simpleDoctype(html);
+		
+		//remove script attributes
+		html = removeScriptAttributes(html);
+		
+		//remove style attributes
+		html = removeStyleAttributes(html);
+		
+		//remove link attributes
+		html = removeLinkAttributes(html);
+		
+		//remove form attributes
+		html = removeFormAttributes(html);
+		
+		//remove input attributes
+		html = removeInputAttributes(html);
+		
+		//simplify boolean attributes
+		html = simpleBooleanAttributes(html);
+		
 		//remove inter-tag spaces
 		html = removeIntertagSpaces(html);
 		
@@ -472,7 +447,7 @@ public class HtmlCompressor implements Compressor {
 	protected String simpleDoctype(String html) {
 		//simplify doctype
 		if(simpleDoctype) {
-			html = doctypePattern.matcher(html).replaceFirst("<!DOCTYPE html>");
+			html = doctypePattern.matcher(html).replaceAll("<!DOCTYPE html>");
 		}
 		return html;
 	}
@@ -540,6 +515,52 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
+	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
+		processPreBlocks(preBlocks);
+		processTextAreaBlocks(taBlocks);
+		processScriptBlocks(scriptBlocks);
+		processStyleBlocks(styleBlocks);
+		processEventBlocks(eventBlocks);
+		processCondCommentBlocks(condCommentBlocks);
+		processUserBlocks(userBlocks);
+	}
+	
+	protected void processPreBlocks(List<String> preBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processTextAreaBlocks(List<String> taBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processCondCommentBlocks(List<String> condCommentBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processUserBlocks(List<List<String>> userBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processEventBlocks(List<String> eventBlocks) throws Exception {
+		if(removeJavaScriptProtocol) {
+			for(int i = 0; i < eventBlocks.size(); i++) {
+				eventBlocks.set(i, removeJavaScriptProtocol(eventBlocks.get(i)));
+			}
+		}
+	}
+	
+	protected String removeJavaScriptProtocol(String source) throws Exception {
+		//remove javascript: from inline events
+		String result = source;
+		
+		Matcher matcher = eventJsProtocolPattern.matcher(source);
+		if(matcher.matches()) {
+			result = matcher.replaceFirst("$1");
+		}
+		
+		return result;
+	}
+	
 	protected void processScriptBlocks(List<String> scriptBlocks) throws Exception {
 		if(compressJavaScript) {
 			for(int i = 0; i < scriptBlocks.size(); i++) {
@@ -601,7 +622,21 @@ public class HtmlCompressor implements Compressor {
 			cssCompressor = yuiCssCompressor;
 		}
 		
-		return cssCompressor.compress(source);
+		//detect CDATA wrapper
+		boolean cdataWrapper = false;
+		Matcher matcher = cdataPattern.matcher(source);
+		if(matcher.matches()) {
+			cdataWrapper = true;
+			source = matcher.group(1);
+		}
+		
+		String result = cssCompressor.compress(source);
+		
+		if(cdataWrapper) {
+			return "<![CDATA[" + result + "]]>";
+		} else {
+			return result;
+		}
 		
 	}
 	
@@ -1187,8 +1222,8 @@ public class HtmlCompressor implements Compressor {
 	 * 
 	 * @return <code>true</code> is <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.
 	 */
-	public boolean isRemoveJsProtocol() {
-		return removeJsProtocol;
+	public boolean isRemoveJavaScriptProtocol() {
+		return removeJavaScriptProtocol;
 	}
 
 	/**
@@ -1198,10 +1233,10 @@ public class HtmlCompressor implements Compressor {
 	 * 
 	 * <p>Default is <code>false</code>.
 	 * 
-	 * @param removeJsProtocol set <code>true</code> to remove <code>javascript:</code> pseudo-protocol from inline event handlers.
+	 * @param removeJavaScriptProtocol set <code>true</code> to remove <code>javascript:</code> pseudo-protocol from inline event handlers.
 	 */
-	public void setRemoveJsProtocol(boolean removeJsProtocol) {
-		this.removeJsProtocol = removeJsProtocol;
+	public void setRemoveJavaScriptProtocol(boolean removeJavaScriptProtocol) {
+		this.removeJavaScriptProtocol = removeJavaScriptProtocol;
 	}
 	
 }

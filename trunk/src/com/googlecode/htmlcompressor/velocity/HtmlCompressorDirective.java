@@ -73,6 +73,15 @@ public class HtmlCompressorDirective extends Directive {
 		htmlCompressor.setYuiJsPreserveAllSemiColons(rs.getBoolean("userdirective.compressHtml.yuiJsPreserveAllSemiColons", false));
 		htmlCompressor.setYuiJsLineBreak(rs.getInt("userdirective.compressHtml.yuiJsLineBreak", -1));
 		htmlCompressor.setYuiCssLineBreak(rs.getInt("userdirective.compressHtml.yuiCssLineBreak", -1));
+		htmlCompressor.setSimpleDoctype(rs.getBoolean("userdirective.compressHtml.simpleDoctype", false));
+		htmlCompressor.setRemoveScriptAttributes(rs.getBoolean("userdirective.compressHtml.removeScriptAttributes", false));
+		htmlCompressor.setRemoveStyleAttributes(rs.getBoolean("userdirective.compressHtml.removeStyleAttributes", false));
+		htmlCompressor.setRemoveLinkAttributes(rs.getBoolean("userdirective.compressHtml.removeLinkAttributes", false));
+		htmlCompressor.setRemoveFormAttributes(rs.getBoolean("userdirective.compressHtml.removeFormAttributes", false));
+		htmlCompressor.setRemoveInputAttributes(rs.getBoolean("userdirective.compressHtml.removeInputAttributes", false));
+		htmlCompressor.setSimpleBooleanAttributes(rs.getBoolean("userdirective.compressHtml.simpleBooleanAttributes", false));
+		htmlCompressor.setRemoveJavaScriptProtocol(rs.getBoolean("userdirective.compressHtml.removeJavaScriptProtocol", false));
+		
 		
 		if(compressJavaScript && rs.getString("userdirective.compressHtml.jsCompressor", HtmlCompressor.JS_COMPRESSOR_YUI).equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
 			String closureOptLevel = rs.getString("userdirective.compressHtml.closureOptLevel", ClosureJavaScriptCompressor.COMPILATION_LEVEL_SIMPLE);
