@@ -25,8 +25,11 @@ import org.mozilla.javascript.ErrorReporter;
 /**
  * Class that compresses given HTML source by removing comments, extra spaces and 
  * line breaks while preserving content within &lt;pre>, &lt;textarea>, &lt;script> 
- * and &lt;style> tags. Can optionally compress content inside &lt;script> 
- * or &lt;style> tags using 
+ * and &lt;style> tags. 
+ * <p>Blocks that should be additionally preserved could be marked with:
+ * <br><code>&lt;!-- {{{ -->...&lt;!-- }}} --></code> 
+ * <br>or any number of user defined patterns. 
+ * <p>Content inside &lt;script> or &lt;style> tags could be optionally compressed using 
  * <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> or <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
  * libraries.
  * 
@@ -92,9 +95,11 @@ public class HtmlCompressor implements Compressor {
 	protected static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0,number,#}%%%";
 	protected static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0,number,#}%%%";
 	protected static final String tempEventBlock = "%%%COMPRESS~EVENT~{0,number,#}%%%";
+	protected static final String tempSkipBlock = "<%%%COMPRESS~SKIP~{0,number,#}%%%>";
 	protected static final String tempUserBlock = "<%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%>";
 	
 	//compiled regex patterns
+	protected static final Pattern skipPattern = Pattern.compile("<!--\\s*\\{\\{\\{\\s*-->(.*?)<!--\\s*\\}\\}\\}\\s*-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -120,13 +125,14 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE); //unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
 	
-	//temporary replacements for preserved blocks
+	//patterns for searching for temporary replacements
 	protected static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempSkipPattern = Pattern.compile("<%%%COMPRESS~SKIP~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed
@@ -148,24 +154,25 @@ public class HtmlCompressor implements Compressor {
 		List<String> scriptBlocks = new ArrayList<String>();
 		List<String> styleBlocks = new ArrayList<String>();
 		List<String> eventBlocks = new ArrayList<String>();
+		List<String> skipBlocks = new ArrayList<String>();
 		List<List<String>> userBlocks = new ArrayList<List<String>>();
 		
 		//preserve blocks
-		html = preserveBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, userBlocks);
+		html = preserveBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, userBlocks);
 		
 		//process pure html
 		html = processHtml(html);
 		
 		//process preserved blocks
-		processPreservedBlocks(preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, userBlocks);
+		processPreservedBlocks(preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, userBlocks);
 		
 		//put preserved blocks back
-		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, userBlocks);
+		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, userBlocks);
 		
 		return html.trim();
 	}
 	
-	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
+	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<List<String>> userBlocks) throws Exception {
 		
 		//preserve user blocks
 		if(preservePatterns != null) {
@@ -187,10 +194,23 @@ public class HtmlCompressor implements Compressor {
 			}
 		}
 		
-		//preserve conditional comments
-		Matcher matcher = condCommentPattern.matcher(html);
+		//preserve <!-- {{{ ---><!-- }}} ---> skip blocks
+		Matcher matcher = skipPattern.matcher(html);
 		int index = 0;
 		StringBuffer sb = new StringBuffer();
+		while(matcher.find()) {
+			if(matcher.group(1).trim().length() > 0) {
+				skipBlocks.add(matcher.group(1));
+				matcher.appendReplacement(sb, MessageFormat.format(tempSkipBlock, index++));
+			}
+		}
+		matcher.appendTail(sb);
+		html = sb.toString();
+		
+		//preserve conditional comments
+		matcher = condCommentPattern.matcher(html);
+		index = 0;
+		sb = new StringBuffer();
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
 				condCommentBlocks.add(matcher.group(1) + this.compress(matcher.group(2)) + matcher.group(3));
@@ -279,7 +299,7 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	protected String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) {
+	protected String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<List<String>> userBlocks) {
 		//put TEXTAREA blocks back
 		Matcher matcher = tempTextAreaPattern.matcher(html);
 		StringBuffer sb = new StringBuffer();
@@ -330,6 +350,15 @@ public class HtmlCompressor implements Compressor {
 		sb = new StringBuffer();
 		while(matcher.find()) {
 			matcher.appendReplacement(sb, Matcher.quoteReplacement(condCommentBlocks.get(Integer.parseInt(matcher.group(1)))));
+		}
+		matcher.appendTail(sb);
+		html = sb.toString();
+		
+		//put skip blocks back
+		matcher = tempSkipPattern.matcher(html);
+		sb = new StringBuffer();
+		while(matcher.find()) {
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(skipBlocks.get(Integer.parseInt(matcher.group(1)))));
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -515,13 +544,14 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<List<String>> userBlocks) throws Exception {
+	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<List<String>> userBlocks) throws Exception {
 		processPreBlocks(preBlocks);
 		processTextAreaBlocks(taBlocks);
 		processScriptBlocks(scriptBlocks);
 		processStyleBlocks(styleBlocks);
 		processEventBlocks(eventBlocks);
 		processCondCommentBlocks(condCommentBlocks);
+		processSkipBlocks(skipBlocks);
 		processUserBlocks(userBlocks);
 	}
 	
@@ -534,6 +564,10 @@ public class HtmlCompressor implements Compressor {
 	}
 	
 	protected void processCondCommentBlocks(List<String> condCommentBlocks) throws Exception {
+		//stub
+	}
+	
+	protected void processSkipBlocks(List<String> skipBlocks) throws Exception {
 		//stub
 	}
 	

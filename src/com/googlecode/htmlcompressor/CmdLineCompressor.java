@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.google.javascript.jscomp.CompilationLevel;
+import com.googlecode.htmlcompressor.analyzer.HtmlAnalyzer;
 import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.Compressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
@@ -52,6 +54,7 @@ public class CmdLineCompressor {
 		CmdLineParser parser = new CmdLineParser();
 
 		CmdLineParser.Option helpOpt = parser.addBooleanOption('h', "help");
+		CmdLineParser.Option analyzeOpt = parser.addBooleanOption('a', "analyze");
 		CmdLineParser.Option charsetOpt = parser.addStringOption("charset");
 		CmdLineParser.Option outputFilenameOpt = parser.addStringOption('o', "output");
 		CmdLineParser.Option patternsFilenameOpt = parser.addStringOption('p', "preserve-patterns");
@@ -131,167 +134,208 @@ public class CmdLineCompressor {
 
 				// detect type from extension
 				if (type == null) {
-					int idx = inputFilename.lastIndexOf('.');
-					if (idx >= 0 && idx < inputFilename.length() - 1) {
-						type = inputFilename.substring(idx + 1);
+					if(inputFilename.toLowerCase().endsWith(".xml")) {
+						type = "xml";
+					} else {
+						type = "html";
 					}
 				}
-
-				if (type == null || !type.equalsIgnoreCase("xml")) {
-					type = "html";
+				
+				//detect url
+				if(inputFilename.toLowerCase().startsWith("http://") || inputFilename.toLowerCase().startsWith("https://")) {
+					in = new InputStreamReader((new URL(inputFilename)).openConnection().getInputStream());
+				} else {
+					in = new InputStreamReader(new FileInputStream(inputFilename), charset);
 				}
 
-				in = new InputStreamReader(new FileInputStream(inputFilename), charset);
+				
 			}
-
-			//line break
-			int linebreakpos = -1;
-			String linebreakstr = (String) parser.getOptionValue(linebreakOpt);
-			if (linebreakstr != null) {
+			
+			if((parser.getOptionValue(analyzeOpt) != null) && type.equalsIgnoreCase("html")) {
+				BufferedReader input =  new BufferedReader(in);
+				
+				//analyze HTML
 				try {
-					linebreakpos = Integer.parseInt(linebreakstr, 10);
-				} catch (NumberFormatException e) {
-					printUsage();
+					
+					//read input file
+					StringBuilder source = new StringBuilder();
+					
+					String line = null;
+					while ((line = input.readLine()) != null){
+						source.append(line);
+						source.append(System.getProperty("line.separator"));
+					}
+	
+					// Close the input stream first, and then open the output
+					// stream,
+					// in case the output file should override the input file.
+					input.close();
+					input = null;
+					in.close();
+					
+					HtmlAnalyzer analyzer = new HtmlAnalyzer();
+					analyzer.analyze(source.toString());
+	
+				} catch (Exception e) {
+	
+					e.printStackTrace();
 					System.exit(1);
+	
 				}
-			}
+				
+			} else {
+				
+				//HTML compression
 
-			//output file
-			String outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
-			
-			boolean compressJavaScript = (parser.getOptionValue(compressJsOpt) != null);
-			boolean compressCss = parser.getOptionValue(compressCssOpt) != null;
-			useClosureCompressor = HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase((String) parser.getOptionValue(jsCompressorOpt));
-			
-			//custom preserve patterns
-			List<Pattern> preservePatterns = new ArrayList<Pattern>();
-			
-			//predefined
-			if(parser.getOptionValue(preservePhpTagsOpt) != null) {
-				preservePatterns.add(HtmlCompressor.PHP_TAG_PATTERN);
-			}
-			
-			if(parser.getOptionValue(preserveServerScriptTagsOpt) != null) {
-				preservePatterns.add(HtmlCompressor.SERVER_SCRIPT_TAG_PATTERN);
-			}
-			
-			String patternsFilename = (String) parser.getOptionValue(patternsFilenameOpt);
-			if(patternsFilename != null) {
-
-				//read input file
-				patternsIn = new BufferedReader(new InputStreamReader(new FileInputStream(patternsFilename), charset));
-
-				String line = null;
-				while ((line = patternsIn.readLine()) != null){
-					if(line.length() > 0) {
-						try {
-							preservePatterns.add(Pattern.compile(line));
-						} catch (PatternSyntaxException  e) {
-							System.err.println("ERROR: Regular expression compilation error: " + e.getMessage());
+				//line break
+				int linebreakpos = -1;
+				String linebreakstr = (String) parser.getOptionValue(linebreakOpt);
+				if (linebreakstr != null) {
+					try {
+						linebreakpos = Integer.parseInt(linebreakstr, 10);
+					} catch (NumberFormatException e) {
+						printUsage();
+						System.exit(1);
+					}
+				}
+	
+				//output file
+				String outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
+				
+				boolean compressJavaScript = (parser.getOptionValue(compressJsOpt) != null);
+				boolean compressCss = parser.getOptionValue(compressCssOpt) != null;
+				useClosureCompressor = HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase((String) parser.getOptionValue(jsCompressorOpt));
+				
+				//custom preserve patterns
+				List<Pattern> preservePatterns = new ArrayList<Pattern>();
+				
+				//predefined
+				if(parser.getOptionValue(preservePhpTagsOpt) != null) {
+					preservePatterns.add(HtmlCompressor.PHP_TAG_PATTERN);
+				}
+				
+				if(parser.getOptionValue(preserveServerScriptTagsOpt) != null) {
+					preservePatterns.add(HtmlCompressor.SERVER_SCRIPT_TAG_PATTERN);
+				}
+				
+				String patternsFilename = (String) parser.getOptionValue(patternsFilenameOpt);
+				if(patternsFilename != null) {
+	
+					//read input file
+					patternsIn = new BufferedReader(new InputStreamReader(new FileInputStream(patternsFilename), charset));
+	
+					String line = null;
+					while ((line = patternsIn.readLine()) != null){
+						if(line.length() > 0) {
+							try {
+								preservePatterns.add(Pattern.compile(line));
+							} catch (PatternSyntaxException  e) {
+								System.err.println("ERROR: Regular expression compilation error: " + e.getMessage());
+							}
 						}
 					}
 				}
-			}
-
-			//set compressor options
-			Compressor compressor = null;
-			if (type.equalsIgnoreCase("html")) {
-
-				HtmlCompressor htmlCompressor = new HtmlCompressor();
-				htmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
-				htmlCompressor.setRemoveMultiSpaces(parser.getOptionValue(preserveMultiSpacesOpt) == null);
-				htmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(removeIntertagSpacesOpt) != null);
-				htmlCompressor.setRemoveQuotes(parser.getOptionValue(removeQuotesOpt) != null);
-				htmlCompressor.setCompressJavaScript(compressJavaScript);
-				htmlCompressor.setCompressCss(compressCss);
-
-				htmlCompressor.setSimpleDoctype(parser.getOptionValue(simpleDoctypeOpt) != null);
-				htmlCompressor.setRemoveScriptAttributes(parser.getOptionValue(removeScriptAttributesOpt) != null);
-				htmlCompressor.setRemoveStyleAttributes(parser.getOptionValue(removeStyleAttributesOpt) != null);
-				htmlCompressor.setRemoveLinkAttributes(parser.getOptionValue(removeLinkAttributesOpt) != null);
-				htmlCompressor.setRemoveFormAttributes(parser.getOptionValue(removeFormAttributesOpt) != null);
-				htmlCompressor.setRemoveInputAttributes(parser.getOptionValue(removeInputAttributesOpt) != null);
-				htmlCompressor.setSimpleBooleanAttributes(parser.getOptionValue(simpleBooleanAttributesOpt) != null);
-				htmlCompressor.setRemoveJavaScriptProtocol(parser.getOptionValue(removeJavaScriptProtocolOpt) != null);
-				
-				htmlCompressor.setPreservePatterns(preservePatterns);
-
-				htmlCompressor.setYuiJsNoMunge(parser.getOptionValue(nomungeOpt) != null);
-				htmlCompressor.setYuiJsPreserveAllSemiColons(parser.getOptionValue(preserveSemiOpt) != null);
-				htmlCompressor.setYuiJsDisableOptimizations(parser.getOptionValue(disableOptimizationsOpt) != null);
-				htmlCompressor.setYuiJsLineBreak(linebreakpos);
-				htmlCompressor.setYuiCssLineBreak(linebreakpos);
-				
-				//switch js compressor to closure
-				if(compressJavaScript && useClosureCompressor) {
-					ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
-
-					String closureOptLevel = (String) parser.getOptionValue(closureOptLevelOpt);
-					if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
-						closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
-					} else if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
-						closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
-					} else {
-						closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
+	
+				//set compressor options
+				Compressor compressor = null;
+				if (type.equalsIgnoreCase("html")) {
+	
+					HtmlCompressor htmlCompressor = new HtmlCompressor();
+					htmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
+					htmlCompressor.setRemoveMultiSpaces(parser.getOptionValue(preserveMultiSpacesOpt) == null);
+					htmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(removeIntertagSpacesOpt) != null);
+					htmlCompressor.setRemoveQuotes(parser.getOptionValue(removeQuotesOpt) != null);
+					htmlCompressor.setCompressJavaScript(compressJavaScript);
+					htmlCompressor.setCompressCss(compressCss);
+	
+					htmlCompressor.setSimpleDoctype(parser.getOptionValue(simpleDoctypeOpt) != null);
+					htmlCompressor.setRemoveScriptAttributes(parser.getOptionValue(removeScriptAttributesOpt) != null);
+					htmlCompressor.setRemoveStyleAttributes(parser.getOptionValue(removeStyleAttributesOpt) != null);
+					htmlCompressor.setRemoveLinkAttributes(parser.getOptionValue(removeLinkAttributesOpt) != null);
+					htmlCompressor.setRemoveFormAttributes(parser.getOptionValue(removeFormAttributesOpt) != null);
+					htmlCompressor.setRemoveInputAttributes(parser.getOptionValue(removeInputAttributesOpt) != null);
+					htmlCompressor.setSimpleBooleanAttributes(parser.getOptionValue(simpleBooleanAttributesOpt) != null);
+					htmlCompressor.setRemoveJavaScriptProtocol(parser.getOptionValue(removeJavaScriptProtocolOpt) != null);
+					
+					htmlCompressor.setPreservePatterns(preservePatterns);
+	
+					htmlCompressor.setYuiJsNoMunge(parser.getOptionValue(nomungeOpt) != null);
+					htmlCompressor.setYuiJsPreserveAllSemiColons(parser.getOptionValue(preserveSemiOpt) != null);
+					htmlCompressor.setYuiJsDisableOptimizations(parser.getOptionValue(disableOptimizationsOpt) != null);
+					htmlCompressor.setYuiJsLineBreak(linebreakpos);
+					htmlCompressor.setYuiCssLineBreak(linebreakpos);
+					
+					//switch js compressor to closure
+					if(compressJavaScript && useClosureCompressor) {
+						ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
+	
+						String closureOptLevel = (String) parser.getOptionValue(closureOptLevelOpt);
+						if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
+							closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
+						} else if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
+							closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
+						} else {
+							closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
+						}
+						
+						htmlCompressor.setJavaScriptCompressor(closureCompressor);
 					}
 					
-					htmlCompressor.setJavaScriptCompressor(closureCompressor);
-				}
-				
-				compressor = htmlCompressor;
-
-			} else {
-
-				XmlCompressor xmlCompressor = new XmlCompressor();
-				xmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
-				xmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(preserveIntertagSpacesOpt) == null);
-
-				compressor = xmlCompressor;
-
-			}
-
-			BufferedReader input =  new BufferedReader(in);
-			
-			//compress
-			try {
-				
-				//read input file
-				StringBuilder source = new StringBuilder();
-				
-				String line = null;
-				while ((line = input.readLine()) != null){
-					source.append(line);
-					source.append(System.getProperty("line.separator"));
-				}
-
-				// Close the input stream first, and then open the output
-				// stream,
-				// in case the output file should override the input file.
-				input.close();
-				input = null;
-				in.close();
-				in = null;
-
-				if (outputFilename == null) {
-					out = new OutputStreamWriter(System.out, charset);
+					compressor = htmlCompressor;
+	
 				} else {
-					out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
+	
+					XmlCompressor xmlCompressor = new XmlCompressor();
+					xmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
+					xmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(preserveIntertagSpacesOpt) == null);
+	
+					compressor = xmlCompressor;
+	
 				}
-
-				String result = compressor.compress(source.toString());
-				out.write(result);
-
-			} catch (Exception e) {
-
-				e.printStackTrace();
-				System.exit(1);
-
-			} finally {
-				if (input != null) {
-					try {
-						input.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+	
+				BufferedReader input =  new BufferedReader(in);
+				
+				//compress
+				try {
+					
+					//read input file
+					StringBuilder source = new StringBuilder();
+					
+					String line = null;
+					while ((line = input.readLine()) != null){
+						source.append(line);
+						source.append(System.getProperty("line.separator"));
+					}
+	
+					// Close the input stream first, and then open the output
+					// stream,
+					// in case the output file should override the input file.
+					input.close();
+					input = null;
+					in.close();
+					in = null;
+	
+					if (outputFilename == null) {
+						out = new OutputStreamWriter(System.out, charset);
+					} else {
+						out = new OutputStreamWriter(new FileOutputStream(outputFilename), charset);
+					}
+	
+					String result = compressor.compress(source.toString());
+					out.write(result);
+	
+				} catch (Exception e) {
+	
+					e.printStackTrace();
+					System.exit(1);
+	
+				} finally {
+					if (input != null) {
+						try {
+							input.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -350,13 +394,14 @@ public class CmdLineCompressor {
 	private static void printUsage() {
 		System.err.println("Usage: java -jar htmlcompressor.jar [options] [input file]\n\n"
 
-				+ "<input file>                   If not provided reads from stdin\n\n"
+				+ "<input file or URL>            If not provided reads from stdin\n\n"
 	
 				+ "Global Options:\n"
-				+ " -o <output file>              If not provided outputs result to stdout\n"
 				+ " --type <html|xml>             If not provided autodetects from file extension\n"
 				+ " --charset <charset>           Read the input file using <charset>\n"
-				+ " -h, --help                    Display this screen\n\n"
+				+ " -h, --help                    Display this screen\n"
+				+ " -a, --analyze                 Compression report (all settings below ignored)\n"
+				+ " -o <output file>              If not provided outputs result to stdout\n\n"
 	
 				+ "XML Compression Options:\n"
 				+ " --preserve-comments           Preserve comments\n"
