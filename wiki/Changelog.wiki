@@ -1,4 +1,10 @@
 #labels Featured
+*1.2* (April 10, 2011)
+  * JSP compressor taglib is now supporting [http://download.oracle.com/javaee/1.4/tutorial/doc/JSPIntro7.html Expression Language]. TLD file is not provided anymore as a separated download and available only inside JAR file (see [http://code.google.com/p/htmlcompressor/#Taglib_installation_procedure Taglib installation procedure]). Thanks to Erik for providing code samples and extensive testing of this feature.
+  * Command line HTML and XML compressors now can read input source from URLs besides local files (only `http://` and `https://` protocols are currently supported). 
+  * Added ability to easily preserve any blocks inside HTML by wrapping them in `<!-- {{{ -->...<-- }}} -->` comments. Such skip blocks have the highest priority after user defined blocks. Please leave your feedback on this feature in [http://code.google.com/p/htmlcompressor/issues/detail?id=35 this thread].
+  * Added command line HTML analyzer which tries to compress provided source with different settings and displays results in a report table. Please leave your feedback on this feature in [http://code.google.com/p/htmlcompressor/issues/detail?id=35 this thread].
+
 *1.1* (Mar 26, 2011)
   * YUI CSS compressor is depending again on external YUI library as it is still under active development.
   * Added HTML compressor option to replace existing doctype declaration with simple `<!DOCTYPE html>` declaration
