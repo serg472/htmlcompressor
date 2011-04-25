@@ -1,4 +1,9 @@
 #labels Featured
+*1.3* (April 24, 2011)
+  * Added ability to replace `http://` or `https://` protocols with the  `//` (current protocol) inside `href`, `src`, `cite`, and `action` tag attributes by using `setRemoveHttpProtocol(true)` and `setRemoveHttpsProtocol(true)` setting accordingly. For example: `<a href="http://example.com">` would become `<a href="//example.com">`.   Corresponding settings were also added to command line compressor, HTML Analyzer, Velocity and JSP taglibs. 
+  * Added ability to programmatically retreive HTML compression statistics. See [#Retrieving_HTML_compression_statistics front page] for details.
+  * Deprecated `DefaultErrorReporter` class was removed (use `YuiJavaScriptCompressor.DefaultErrorReporter` instead)
+
 *1.2* (April 10, 2011)
   * JSP compressor taglib is now supporting [http://download.oracle.com/javaee/1.4/tutorial/doc/JSPIntro7.html Expression Language]. TLD file is not provided anymore as a separated download and available only inside JAR file (see [http://code.google.com/p/htmlcompressor/#Taglib_installation_procedure Taglib installation procedure]). Thanks to Erik for providing code samples and extensive testing of this feature.
   * Command line HTML and XML compressors now can read input source from URLs besides local files (only `http://` and `https://` protocols are currently supported). 
