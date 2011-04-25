@@ -118,6 +118,18 @@ public class HtmlAnalyzer {
 		System.out.println(formatLine("Remove js pseudo-protocol", originalSize, compResult.length(), prevSize));
 		prevSize = compResult.length();
 
+		//http protocol
+		compressor.setRemoveHttpProtocol(true);
+		compResult = compressor.compress(source);
+		System.out.println(formatLine("Remove http protocol", originalSize, compResult.length(), prevSize));
+		prevSize = compResult.length();
+
+		//https protocol
+		compressor.setRemoveHttpsProtocol(true);
+		compResult = compressor.compress(source);
+		System.out.println(formatLine("Remove https protocol", originalSize, compResult.length(), prevSize));
+		prevSize = compResult.length();
+
 		
 		//inline css
 		try {

@@ -44,6 +44,17 @@ public class HtmlCompressorTest {
 	}
 	
 	@Test
+	public void tesåRemoveSpacesInsideTags() throws Exception {
+		String source = readResource("testRemoveSpacesInsideTags.html");
+		String result = readResource("testRemoveSpacesInsideTagsResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveMultiSpaces(false);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	
+	@Test
 	public void testRemoveComments() throws Exception {
 		String source = readResource("testRemoveComments.html");
 		String result = readResource("testRemoveCommentsResult.html");
@@ -216,7 +227,29 @@ public class HtmlCompressorTest {
 		
 		assertEquals(result, compressor.compress(source));
 	}
-	
+
+	@Test
+	public void testRemoveHttpProtocol() throws Exception {
+		String source = readResource("testRemoveHttpProtocol.html");
+		String result = readResource("testRemoveHttpProtocolResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveHttpProtocol(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+
+	@Test
+	public void testRemoveHttpsProtocol() throws Exception {
+		String source = readResource("testRemoveHttpsProtocol.html");
+		String result = readResource("testRemoveHttpsProtocolResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveHttpsProtocol(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+
 	private String readResource(String filename) {
 		
 		StringBuilder builder = new StringBuilder();

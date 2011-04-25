@@ -81,6 +81,8 @@ public class HtmlCompressorDirective extends Directive {
 		htmlCompressor.setRemoveInputAttributes(rs.getBoolean("userdirective.compressHtml.removeInputAttributes", false));
 		htmlCompressor.setSimpleBooleanAttributes(rs.getBoolean("userdirective.compressHtml.simpleBooleanAttributes", false));
 		htmlCompressor.setRemoveJavaScriptProtocol(rs.getBoolean("userdirective.compressHtml.removeJavaScriptProtocol", false));
+		htmlCompressor.setRemoveHttpProtocol(rs.getBoolean("userdirective.compressHtml.removeHttpProtocol", false));
+		htmlCompressor.setRemoveHttpsProtocol(rs.getBoolean("userdirective.compressHtml.removeHttpsProtocol", false));
 		
 		
 		if(compressJavaScript && rs.getString("userdirective.compressHtml.jsCompressor", HtmlCompressor.JS_COMPRESSOR_YUI).equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
