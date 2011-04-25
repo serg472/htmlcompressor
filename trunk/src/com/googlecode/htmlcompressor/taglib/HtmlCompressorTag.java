@@ -53,6 +53,8 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	private boolean removeInputAttributes = false;
 	private boolean simpleBooleanAttributes = false;
 	private boolean removeJavaScriptProtocol = false;
+	private boolean removeHttpProtocol = false;
+	private boolean removeHttpsProtocol = false;
 	private boolean compressJavaScript = false;
 	private boolean compressCss = false;
 	
@@ -96,7 +98,8 @@ public class HtmlCompressorTag extends BodyTagSupport {
 		htmlCompressor.setRemoveInputAttributes(removeInputAttributes);
 		htmlCompressor.setSimpleBooleanAttributes(simpleBooleanAttributes);
 		htmlCompressor.setRemoveJavaScriptProtocol(removeJavaScriptProtocol);
-		
+		htmlCompressor.setRemoveHttpProtocol(removeHttpProtocol);
+		htmlCompressor.setRemoveHttpsProtocol(removeHttpsProtocol);
 		
 		if(compressJavaScript && jsCompressor.equalsIgnoreCase(HtmlCompressor.JS_COMPRESSOR_CLOSURE)) {
 			ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
@@ -290,6 +293,20 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	 */
 	public void setRemoveJavaScriptProtocol(boolean removeJavaScriptProtocol) {
 		this.removeJavaScriptProtocol = removeJavaScriptProtocol;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveHttpProtocol(boolean)
+	 */
+	public void setRemoveHttpProtocol(boolean removeHttpProtocol) {
+		this.removeHttpProtocol = removeHttpProtocol;
+	}
+
+	/**
+	 * @see HtmlCompressor#setRemoveHttpsProtocol(boolean)
+	 */
+	public void setRemoveHttpsProtocol(boolean removeHttpsProtocol) {
+		this.removeHttpsProtocol = removeHttpsProtocol;
 	}
 
 }

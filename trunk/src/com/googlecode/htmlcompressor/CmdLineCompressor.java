@@ -78,6 +78,8 @@ public class CmdLineCompressor {
 		CmdLineParser.Option removeInputAttributesOpt = parser.addBooleanOption("remove-input-attr");
 		CmdLineParser.Option simpleBooleanAttributesOpt = parser.addBooleanOption("simple-bool-attr");
 		CmdLineParser.Option removeJavaScriptProtocolOpt = parser.addBooleanOption("remove-js-protocol");
+		CmdLineParser.Option removeHttpProtocolOpt = parser.addBooleanOption("remove-http-protocol");
+		CmdLineParser.Option removeHttpsProtocolOpt = parser.addBooleanOption("remove-https-protocol");
 
 		CmdLineParser.Option nomungeOpt = parser.addBooleanOption("nomunge");
 		CmdLineParser.Option linebreakOpt = parser.addStringOption("line-break");
@@ -256,6 +258,8 @@ public class CmdLineCompressor {
 					htmlCompressor.setRemoveInputAttributes(parser.getOptionValue(removeInputAttributesOpt) != null);
 					htmlCompressor.setSimpleBooleanAttributes(parser.getOptionValue(simpleBooleanAttributesOpt) != null);
 					htmlCompressor.setRemoveJavaScriptProtocol(parser.getOptionValue(removeJavaScriptProtocolOpt) != null);
+					htmlCompressor.setRemoveHttpProtocol(parser.getOptionValue(removeHttpProtocolOpt) != null);
+					htmlCompressor.setRemoveHttpsProtocol(parser.getOptionValue(removeHttpsProtocolOpt) != null);
 					
 					htmlCompressor.setPreservePatterns(preservePatterns);
 	
@@ -420,6 +424,8 @@ public class CmdLineCompressor {
 				+ " --remove-input-attr           Remove TYPE=\"TEXT\" from INPUT tags\n"
 				+ " --simple-bool-attr            Remove values from boolean tag attributes\n"
 				+ " --remove-js-protocol          Remove \"javascript:\" from inline event handlers\n"
+				+ " --remove-http-protocol        Remove \"http:\" from tag attributes\n"
+				+ " --remove-https-protocol       Remove \"https:\" from tag attributes\n"
 				+ " --compress-js                 Enable inline JavaScript compression\n"
 				+ " --compress-css                Enable inline CSS compression using YUICompressor\n"
 				+ " --js-compressor <yui|closure> Switch inline JavaScript compressor between\n"
