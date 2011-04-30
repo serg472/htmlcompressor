@@ -1,4 +1,9 @@
 #labels Featured
+*1.3.1* (April 30, 2011)
+  * When using advanced level of Google Closure compilation, a set of default built-in into `compiler.jar` externs is used. Default externs could be skipped by setting `ClosureJavaScriptCompressor.setCustomExternsOnly(false)` or `--closure-custom-externs-only` command line parameter
+  * A list of custom externs could be passed to the command line compressor using `[--closure-externs <file>], ...` parameters
+  * `ClosureJavaScriptCompressor.setExterns(JSSourceFile)` method signature is changed to `ClosureJavaScriptCompressor.setExterns(List<JSSourceFile>)` to support several custom externs. 
+
 *1.3* (April 24, 2011)
   * Added ability to replace `http://` or `https://` protocols with the  `//` (current protocol) inside `href`, `src`, `cite`, and `action` tag attributes by using `setRemoveHttpProtocol(true)` and `setRemoveHttpsProtocol(true)` setting accordingly. For example: `<a href="http://example.com">` would become `<a href="//example.com">`.   Corresponding settings were also added to command line compressor, HTML Analyzer, Velocity and JSP taglibs. 
   * Added ability to programmatically retreive HTML compression statistics. See [http://code.google.com/p/htmlcompressor/#Retrieving_HTML_compression_statistics front page] for details.
