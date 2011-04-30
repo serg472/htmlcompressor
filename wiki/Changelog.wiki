@@ -130,5 +130,5 @@
   * Created JSP taglib for <compress:html> and <compress:xml> tags
 
 
-*0.1*
+*0.1* (Mar 08, 2009)
   * Initial release
