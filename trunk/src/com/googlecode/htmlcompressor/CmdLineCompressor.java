@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.JSSourceFile;
 import com.googlecode.htmlcompressor.analyzer.HtmlAnalyzer;
 import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.Compressor;
@@ -87,6 +88,8 @@ public class CmdLineCompressor {
 		CmdLineParser.Option disableOptimizationsOpt = parser.addBooleanOption("disable-optimizations");
 		
 		CmdLineParser.Option closureOptLevelOpt = parser.addStringOption("closure-opt-level");
+		CmdLineParser.Option closureCustomExternsOnly = parser.addBooleanOption("closure-custom-externs-only");
+		CmdLineParser.Option closureExterns = parser.addStringOption("closure-externs");
 
 		Reader in = null;
 		BufferedReader patternsIn = null;
@@ -276,6 +279,17 @@ public class CmdLineCompressor {
 						String closureOptLevel = (String) parser.getOptionValue(closureOptLevelOpt);
 						if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
 							closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
+							closureCompressor.setCustomExternsOnly(parser.getOptionValue(closureCustomExternsOnly) != null);
+							
+							//get externs
+							List<String> externFiles = parser.getOptionValues(closureExterns);
+							if(externFiles.size() > 0) {
+								List<JSSourceFile> externs = new ArrayList<JSSourceFile>();
+								for(String externFile : externFiles) {
+									externs.add(JSSourceFile.fromFile(externFile));
+								}
+								closureCompressor.setExterns(externs);
+							}
 						} else if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
 							closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
 						} else {
@@ -439,7 +453,9 @@ public class CmdLineCompressor {
 	
 				+ "JavaScript Compression Options for Google Closure Compiler:\n"
 				+ " --closure-opt-level <simple|advanced|whitespace>\n"
-				+ "                               Sets level of optimization (simple by default)\n\n"
+				+ "                               Sets level of optimization (simple by default)\n"
+				+ " --closure-externs <file>      Sets custom externs file, repeat for each file\n"
+				+ " --closure-custom-externs-only Disable default built-in externs\n\n"
 				
 				+ "CSS Compression Options for YUI Compressor:\n"
 				+ " --line-break <column num>     Insert a line break after the specified column\n\n"

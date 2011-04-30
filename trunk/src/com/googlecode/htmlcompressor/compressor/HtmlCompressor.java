@@ -256,6 +256,7 @@ public class HtmlCompressor implements Compressor {
 		matcher.appendTail(sb);
 		html = sb.toString();
 		
+		//TODO
 		//preserve conditional comments
 		HtmlCompressor condCommentCompressor = createCompressorClone(); 
 		matcher = condCommentPattern.matcher(html);

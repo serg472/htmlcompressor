@@ -14,9 +14,17 @@ package com.googlecode.htmlcompressor.compressor;
  * limitations under the License.
  */
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import com.google.common.collect.Lists;
+import com.google.common.io.LimitInputStream;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
@@ -44,8 +52,8 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	private CompilationLevel compilationLevel = CompilationLevel.SIMPLE_OPTIMIZATIONS;
 	private Level loggingLevel = Level.SEVERE;
 	private WarningLevel warningLevel = WarningLevel.DEFAULT;
-	
-	private JSSourceFile externs = JSSourceFile.fromCode("externs.js", "");
+	private boolean customExternsOnly = false;
+	private List<JSSourceFile> externs = null;
 
 	public ClosureJavaScriptCompressor() {
 	}
@@ -59,7 +67,31 @@ public class ClosureJavaScriptCompressor implements Compressor {
 		
 		StringWriter writer = new StringWriter();
 		
-		JSSourceFile input = JSSourceFile.fromCode("", source);
+		//prepare source
+		List<JSSourceFile> input = new ArrayList<JSSourceFile>();
+		input.add(JSSourceFile.fromCode("", source));
+		
+		//prepare externs
+		List<JSSourceFile> externsList = new ArrayList<JSSourceFile>();
+		if(compilationLevel.equals(CompilationLevel.ADVANCED_OPTIMIZATIONS)) {
+			//default externs
+			if(!customExternsOnly) {
+				externsList = getDefaultExterns();
+			}
+			//add user defined externs
+			if(externs != null) {
+				for(JSSourceFile extern : externs) {
+					externsList.add(extern);
+				}
+			}
+			//add empty externs
+			if(externsList.size() == 0) {
+				externsList.add(JSSourceFile.fromCode("externs.js", ""));
+			}
+		} else {
+			//empty externs
+			externsList.add(JSSourceFile.fromCode("externs.js", ""));
+		}
 		
 		Compiler.setLoggingLevel(loggingLevel);
 		
@@ -69,7 +101,7 @@ public class ClosureJavaScriptCompressor implements Compressor {
 		compilationLevel.setOptionsForCompilationLevel(compilerOptions);
 		warningLevel.setOptionsForWarningLevel(compilerOptions);
 		
-		Result result = compiler.compile(externs, input, compilerOptions);
+		Result result = compiler.compile(externsList, input, compilerOptions);
 		
 		if (result.success) {
 			writer.write(compiler.toSource());
@@ -79,6 +111,18 @@ public class ClosureJavaScriptCompressor implements Compressor {
 
 		return writer.toString();
 
+	}
+	
+	//read default externs from closure.jar
+	private List<JSSourceFile> getDefaultExterns() throws IOException {
+		InputStream input = ClosureJavaScriptCompressor.class.getResourceAsStream("/externs.zip");
+		ZipInputStream zip = new ZipInputStream(input);
+		List<JSSourceFile> externs = Lists.newLinkedList();
+		for (ZipEntry entry = null; (entry = zip.getNextEntry()) != null;) {
+			LimitInputStream entryStream = new LimitInputStream(zip, entry.getSize());
+			externs.add(JSSourceFile.fromInputStream(entry.getName(), entryStream));
+		}
+		return externs;
 	}
 
 	/**
@@ -95,9 +139,9 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	/**
 	 * Sets level of optimization that should be applied when compiling JavaScript code. 
 	 * If none is provided, <code>CompilationLevel.SIMPLE_OPTIMIZATIONS</code> will be used by default. 
-
-	 * <p><b>Warning:</b> You should avoid <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code> as 
-	 * it would most likely break inline JavaScript.
+	 * 
+	 * <p><b>Warning:</b> Using <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code> could 
+	 * break inline JavaScript if externs are not set properly.
 	 * 
 	 * @param compilationLevel Optimization level to use, could be set to <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code>, <code>CompilationLevel.SIMPLE_OPTIMIZATIONS</code>, <code>CompilationLevel.WHITESPACE_ONLY</code> 
 	 * 
@@ -158,23 +202,28 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	 * 
 	 * @return <code>JSSourceFile</code> used as a reference during compression
 	 */
-	public JSSourceFile getExterns() {
+	public List<JSSourceFile> getExterns() {
 		return externs;
 	}
 
 	/**
 	 * Sets external JavaScript files that are used as a reference for function declarations if 
-	 * <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code> compression level is used.
+	 * <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code> compression level is used. 
 	 * 
-	 * <p><b>Warning:</b> You should avoid <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code> as 
-	 * it would most likely break inline JavaScript.
+	 * <p>A number of default externs defined inside Closure's jar will be used besides user defined ones, 
+	 * to use only user defined externs set {@link #setCustomExternsOnly(boolean) setCustomExternsOnly(true)}
+	 * 
+	 * <p><b>Warning:</b> Using <code>CompilationLevel.ADVANCED_OPTIMIZATIONS</code> could 
+	 * break inline JavaScript if externs are not set properly.
 	 * 
 	 * @param externs <code>JSSourceFile</code> to use as a reference during compression
 	 * 
+	 * @see #setCompilationLevel(CompilationLevel)
+	 * @see #setCustomExternsOnly(boolean)
 	 * @see <a href="http://code.google.com/closure/compiler/docs/api-tutorial3.html">Advanced Compilation and Externs</a>
 	 * @see <a href="http://closure-compiler.googlecode.com/svn/trunk/javadoc/com/google/javascript/jscomp/JSSourceFile.html">JSSourceFile</a>
 	 */
-	public void setExterns(JSSourceFile externs) {
+	public void setExterns(List<JSSourceFile> externs) {
 		this.externs = externs;
 	}
 
@@ -196,6 +245,30 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	 */
 	public void setWarningLevel(WarningLevel warningLevel) {
 		this.warningLevel = warningLevel;
+	}
+
+	/**
+	 * Returns <code>true</code> if default externs defined inside Closure's jar are ignored 
+	 * and only user defined ones are used.
+	 * 
+	 * @return <code>true</code> if default externs defined inside Closure's jar are ignored 
+	 * and only user defined ones are used
+	 */
+	public boolean isCustomExternsOnly() {
+		return customExternsOnly;
+	}
+
+	/**
+	 * If set to <code>true</code>, default externs defined inside Closure's jar will be ignored 
+	 * and only user defined ones will be used.
+	 *  
+	 * @param customExternsOnly <code>true</code> to skip default externs and use only user defined ones
+	 * 
+	 * @see #setExterns(List)
+	 * @see #setCompilationLevel(CompilationLevel)
+	 */
+	public void setCustomExternsOnly(boolean customExternsOnly) {
+		this.customExternsOnly = customExternsOnly;
 	}
 
 }
