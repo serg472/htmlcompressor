@@ -151,7 +151,6 @@ public class HtmlAnalyzer {
 			System.out.println(formatEmptyLine("Compress inline JS (YUI)"));
 		}
 		
-		
 		printFooter();
 		
 	}
