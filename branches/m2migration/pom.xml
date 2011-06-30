@@ -146,17 +146,15 @@
           </execution>
         </executions>
       </plugin>
-	  <!-- build jar with dependencies -->
+	  <!-- Assemble distribution package -->
 	  <plugin>
 	    <artifactId>maven-assembly-plugin</artifactId>
 	    <version>2.2.1</version>
 	    <configuration>
-	      <descriptorRefs>
-	        <descriptorRef>jar-with-dependencies</descriptorRef>
-			<descriptorRef>bin</descriptorRef>
-			<descriptorRef>src</descriptorRef>
-			<descriptorRef>project</descriptorRef>
-	      </descriptorRefs>
+	      <appendAssemblyId>false</appendAssemblyId>
+	      <descriptors>
+            <descriptor>src/main/assembly/distributive.xml</descriptor>
+          </descriptors>
 	    </configuration>
 	  </plugin>
 	  <!-- Configure Javadoc Plugin -->
