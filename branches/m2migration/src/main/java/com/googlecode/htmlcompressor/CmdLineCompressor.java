@@ -410,7 +410,7 @@ public class CmdLineCompressor {
 	}
 
 	private static void printUsage() {
-		System.err.println("Usage: java -jar htmlcompressor.jar [options] [input file]\n\n"
+		System.out.println("Usage: java -jar htmlcompressor.jar [options] [input file]\n\n"
 
 				+ "<input file or URL>            If not provided reads from stdin\n\n"
 	
