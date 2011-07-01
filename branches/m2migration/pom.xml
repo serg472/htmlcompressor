@@ -167,6 +167,28 @@
           <excludePackageNames>jargs</excludePackageNames>
         </configuration>
       </plugin>
+      <!-- Copy javadocs -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>docs</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>target/apidocs</directory>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -255,17 +277,19 @@
   </scm>
   <distributionManagement>
     <!-- use the following if you're not using a snapshot version. -->
-    <!--<repository>
+    <repository>
       <id>maven-staging-repo</id>
       <name>Maven Staging Repository</name>
       <url>scp://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>-->
+    </repository>
     <!-- use the following if you ARE using a snapshot version. -->
+    <!-- 
     <snapshotRepository>
       <id>maven-snapshot-repo</id>
       <name>Maven Snapshot Repository</name>
       <url>scp://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
+     -->
   </distributionManagement>
 
   <!-- ====================================================================== -->
