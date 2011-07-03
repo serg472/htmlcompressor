@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class XmlCompressorTest {
 	
-	private static final String resPath = "d:/www/htmlcompressor/test/res/xml/";
+	private static final String resPath = "./src/test/resources/xml/";
 
 	@Before
 	public void setUp() throws Exception {

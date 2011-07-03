@@ -45,6 +45,7 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	//optional settings
 	private boolean removeIntertagSpaces = false;
 	private boolean removeQuotes = false;
+	private boolean preserveLineBreaks = false;
 	private boolean simpleDoctype = false;
 	private boolean removeScriptAttributes = false;
 	private boolean removeStyleAttributes = false;
@@ -82,6 +83,7 @@ public class HtmlCompressorTag extends BodyTagSupport {
 		htmlCompressor.setRemoveMultiSpaces(removeMultiSpaces);
 		htmlCompressor.setRemoveIntertagSpaces(removeIntertagSpaces);
 		htmlCompressor.setRemoveQuotes(removeQuotes);
+		htmlCompressor.setPreserveLineBreaks(preserveLineBreaks);
 		htmlCompressor.setCompressJavaScript(compressJavaScript);
 		htmlCompressor.setCompressCss(compressCss);
 		htmlCompressor.setYuiJsNoMunge(yuiJsNoMunge);
@@ -180,6 +182,13 @@ public class HtmlCompressorTag extends BodyTagSupport {
 	 */
 	public void setRemoveQuotes(boolean removeQuotes) {
 		this.removeQuotes = removeQuotes;
+	}
+
+	/**
+	 * @see HtmlCompressor#setPreserveLineBreaks(boolean)
+	 */
+	public void setPreserveLineBreaks(boolean preserveLineBreaks) {
+		this.preserveLineBreaks = preserveLineBreaks;
 	}
 
 	/**
