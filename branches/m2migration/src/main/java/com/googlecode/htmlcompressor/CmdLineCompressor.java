@@ -65,8 +65,10 @@ public class CmdLineCompressor {
 		CmdLineParser.Option preserveMultiSpacesOpt = parser.addBooleanOption("preserve-multi-spaces");
 		CmdLineParser.Option removeIntertagSpacesOpt = parser.addBooleanOption("remove-intertag-spaces");
 		CmdLineParser.Option removeQuotesOpt = parser.addBooleanOption("remove-quotes");
+		CmdLineParser.Option preserveLineBreaksOpt = parser.addBooleanOption("preserve-line-breaks");
 		CmdLineParser.Option preservePhpTagsOpt = parser.addBooleanOption("preserve-php");
 		CmdLineParser.Option preserveServerScriptTagsOpt = parser.addBooleanOption("preserve-server-script");
+		CmdLineParser.Option preserveSsiTagsOpt = parser.addBooleanOption("preserve-ssi");
 		CmdLineParser.Option compressJsOpt = parser.addBooleanOption("compress-js");
 		CmdLineParser.Option compressCssOpt = parser.addBooleanOption("compress-css");
 		CmdLineParser.Option jsCompressorOpt = parser.addStringOption("js-compressor");
@@ -222,6 +224,10 @@ public class CmdLineCompressor {
 				if(parser.getOptionValue(preserveServerScriptTagsOpt) != null) {
 					preservePatterns.add(HtmlCompressor.SERVER_SCRIPT_TAG_PATTERN);
 				}
+
+				if(parser.getOptionValue(preserveSsiTagsOpt) != null) {
+					preservePatterns.add(HtmlCompressor.SERVER_SIDE_INCLUDE_PATTERN);
+				}
 				
 				String patternsFilename = (String) parser.getOptionValue(patternsFilenameOpt);
 				if(patternsFilename != null) {
@@ -250,6 +256,7 @@ public class CmdLineCompressor {
 					htmlCompressor.setRemoveMultiSpaces(parser.getOptionValue(preserveMultiSpacesOpt) == null);
 					htmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(removeIntertagSpacesOpt) != null);
 					htmlCompressor.setRemoveQuotes(parser.getOptionValue(removeQuotesOpt) != null);
+					htmlCompressor.setPreserveLineBreaks(parser.getOptionValue(preserveLineBreaksOpt) != null);
 					htmlCompressor.setCompressJavaScript(compressJavaScript);
 					htmlCompressor.setCompressCss(compressCss);
 	
@@ -428,6 +435,7 @@ public class CmdLineCompressor {
 				+ "HTML Compression Options:\n"
 				+ " --preserve-comments           Preserve comments\n"
 				+ " --preserve-multi-spaces       Preserve multiple spaces\n"
+				+ " --preserve-line-breaks        Preserve line breaks\n"
 				+ " --remove-intertag-spaces      Remove intertag spaces\n"
 				+ " --remove-quotes               Remove unneeded quotes\n"
 				+ " --simple-doctype              Change doctype to <!DOCTYPE html>\n"
@@ -463,6 +471,7 @@ public class CmdLineCompressor {
 				+ "Custom Block Preservation Options:\n"
 				+ " --preserve-php                Preserve <?php ... ?> tags\n"
 				+ " --preserve-server-script      Preserve <% ... %> tags\n"
+				+ " --preserve-ssi                Preserve <!--# ... --> tags\n"
 				+ " -p <custom_patterns.txt>      Read regular expressions that define\n"
 				+ "                               custom preservation rules from a file\n\n"
 				

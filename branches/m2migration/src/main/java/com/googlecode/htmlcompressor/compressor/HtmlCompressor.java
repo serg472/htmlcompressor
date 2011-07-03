@@ -54,6 +54,12 @@ public class HtmlCompressor implements Compressor {
 	 * Could be passed inside a list to {@link #setPreservePatterns(List) setPreservePatterns} method.
 	 */
 	public static final Pattern SERVER_SCRIPT_TAG_PATTERN = Pattern.compile("<%.*?%>", Pattern.DOTALL);
+
+	/**
+	 * Predefined pattern that matches <code>&lt;--# ... --></code> tags. 
+	 * Could be passed inside a list to {@link #setPreservePatterns(List) setPreservePatterns} method.
+	 */
+	public static final Pattern SERVER_SIDE_INCLUDE_PATTERN = Pattern.compile("<!--\\s*#.*?-->", Pattern.DOTALL);
 	
 	private boolean enabled = true;
 	
@@ -80,6 +86,7 @@ public class HtmlCompressor implements Compressor {
 	private boolean removeJavaScriptProtocol = false;
 	private boolean removeHttpProtocol = false;
 	private boolean removeHttpsProtocol = false;
+	private boolean preserveLineBreaks = false;
 	
 	private List<Pattern> preservePatterns = null;
 	
@@ -104,6 +111,7 @@ public class HtmlCompressor implements Compressor {
 	protected static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0,number,#}%%%";
 	protected static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0,number,#}%%%";
 	protected static final String tempEventBlock = "%%%COMPRESS~EVENT~{0,number,#}%%%";
+	protected static final String tempLineBreakBlock = "<%%%COMPRESS~LT~{0,number,#}%%%>";
 	protected static final String tempSkipBlock = "<%%%COMPRESS~SKIP~{0,number,#}%%%>";
 	protected static final String tempUserBlock = "<%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%>";
 	
@@ -136,15 +144,17 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern httpsProtocolPattern = Pattern.compile("(<[^>]+?(?:href|src|cite|action)\\s*=\\s*['\"])https:(//[^>]+?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE); //unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
+	protected static final Pattern lineBreakPattern = Pattern.compile("\\p{Blank}*(\\r?\\n)\\p{Blank}*");
 	
 	//patterns for searching for temporary replacements
-	protected static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern tempSkipPattern = Pattern.compile("<%%%COMPRESS~SKIP~(\\d+?)%%%>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>");
+	protected static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%");
+	protected static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%");
+	protected static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%");
+	protected static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%");
+	protected static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%");
+	protected static final Pattern tempSkipPattern = Pattern.compile("<%%%COMPRESS~SKIP~(\\d+?)%%%>");
+	protected static final Pattern tempLineBreakPattern = Pattern.compile("<%%%COMPRESS~LT~(\\d+?)%%%>");
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed
@@ -170,19 +180,20 @@ public class HtmlCompressor implements Compressor {
 		List<String> styleBlocks = new ArrayList<String>();
 		List<String> eventBlocks = new ArrayList<String>();
 		List<String> skipBlocks = new ArrayList<String>();
+		List<String> lineBreakBlocks = new ArrayList<String>();
 		List<List<String>> userBlocks = new ArrayList<List<String>>();
 		
 		//preserve blocks
-		html = preserveBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, userBlocks);
+		html = preserveBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, lineBreakBlocks, userBlocks);
 		
 		//process pure html
 		html = processHtml(html);
 		
 		//process preserved blocks
-		processPreservedBlocks(preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, userBlocks);
+		processPreservedBlocks(preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, lineBreakBlocks, userBlocks);
 		
 		//put preserved blocks back
-		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, userBlocks);
+		html = returnBlocks(html, preBlocks, taBlocks, scriptBlocks, styleBlocks, eventBlocks, condCommentBlocks, skipBlocks, lineBreakBlocks, userBlocks);
 		
 		//calculate compressed statistics
 		endStatistics(html);
@@ -221,7 +232,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<List<String>> userBlocks) throws Exception {
+	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<String> lineBreakBlocks, List<List<String>> userBlocks) throws Exception {
 		
 		//preserve user blocks
 		if(preservePatterns != null) {
@@ -256,7 +267,6 @@ public class HtmlCompressor implements Compressor {
 		matcher.appendTail(sb);
 		html = sb.toString();
 		
-		//TODO
 		//preserve conditional comments
 		HtmlCompressor condCommentCompressor = createCompressorClone(); 
 		matcher = condCommentPattern.matcher(html);
@@ -347,10 +357,35 @@ public class HtmlCompressor implements Compressor {
 		matcher.appendTail(sb);
 		html = sb.toString();
 
+		//preserve line breaks
+		if(preserveLineBreaks) {
+			matcher = lineBreakPattern.matcher(html);
+			index = 0;
+			sb = new StringBuffer();
+			while(matcher.find()) {
+				lineBreakBlocks.add(matcher.group(1));
+				matcher.appendReplacement(sb, MessageFormat.format(tempLineBreakBlock, index++));
+			}
+			matcher.appendTail(sb);
+			html = sb.toString();
+		}
+
 		return html;
 	}
 	
-	protected String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<List<String>> userBlocks) {
+	protected String returnBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<String> lineBreakBlocks, List<List<String>> userBlocks) {
+
+		//put line breaks back
+		if(preserveLineBreaks) {
+			Matcher matcher = tempLineBreakPattern.matcher(html);
+			StringBuffer sb = new StringBuffer();
+			while(matcher.find()) {
+				matcher.appendReplacement(sb, lineBreakBlocks.get(Integer.parseInt(matcher.group(1))));
+			}
+			matcher.appendTail(sb);
+			html = sb.toString();
+		}
+		
 		//put TEXTAREA blocks back
 		Matcher matcher = tempTextAreaPattern.matcher(html);
 		StringBuffer sb = new StringBuffer();
@@ -617,7 +652,7 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<List<String>> userBlocks) throws Exception {
+	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<String> lineBreakBlocks, List<List<String>> userBlocks) throws Exception {
 		processPreBlocks(preBlocks);
 		processTextAreaBlocks(taBlocks);
 		processScriptBlocks(scriptBlocks);
@@ -626,6 +661,7 @@ public class HtmlCompressor implements Compressor {
 		processCondCommentBlocks(condCommentBlocks);
 		processSkipBlocks(skipBlocks);
 		processUserBlocks(userBlocks);
+		processLineBreakBlocks(lineBreakBlocks);
 	}
 	
 	protected void processPreBlocks(List<String> preBlocks) throws Exception {
@@ -655,6 +691,14 @@ public class HtmlCompressor implements Compressor {
 	protected void processSkipBlocks(List<String> skipBlocks) throws Exception {
 		if(generateStatistics) {
 			for(String block : skipBlocks) {
+				statistics.setPreservedSize(statistics.getPreservedSize() + block.length());
+			}
+		}
+	}
+	
+	protected void processLineBreakBlocks(List<String> lineBreakBlocks) throws Exception {
+		if(generateStatistics) {
+			for(String block : lineBreakBlocks) {
 				statistics.setPreservedSize(statistics.getPreservedSize() + block.length());
 			}
 		}
@@ -1536,6 +1580,26 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public HtmlCompressorStatistics getStatistics() {
 		return statistics;
+	}
+
+	/**
+	 * Returns <code>true</code> if line breaks will be preserved.
+	 * 
+	 * @return <code>true</code> if line breaks will be preserved. 
+	 */
+	public boolean isPreserveLineBreaks() {
+		return preserveLineBreaks;
+	}
+
+	/**
+	 * If set to <code>true</code>, line breaks will be preserved. 
+	 * 
+	 * <p>Default is <code>false</code>.
+	 * 
+	 * @param preserveLineBreaks set <code>true</code> to preserve line breaks
+	 */
+	public void setPreserveLineBreaks(boolean preserveLineBreaks) {
+		this.preserveLineBreaks = preserveLineBreaks;
 	}
 	
 }

@@ -19,6 +19,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.javascript.jscomp.CompilationLevel;
+
 public class HtmlCompressorTest {
 	
 	private static final String resPath = "./src/test/resources/html/";
@@ -107,6 +109,7 @@ public class HtmlCompressorTest {
 		List<Pattern> preservePatterns = new ArrayList<Pattern>();
 		preservePatterns.add(HtmlCompressor.PHP_TAG_PATTERN); //<?php ... ?> blocks
 		preservePatterns.add(HtmlCompressor.SERVER_SCRIPT_TAG_PATTERN); //<% ... %> blocks
+		preservePatterns.add(HtmlCompressor.SERVER_SIDE_INCLUDE_PATTERN); //<!--# ... --> blocks
 		preservePatterns.add(Pattern.compile("<jsp:.*?>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE)); //<jsp: ... > tags
 
 		HtmlCompressor compressor = new HtmlCompressor();
@@ -118,12 +121,24 @@ public class HtmlCompressorTest {
 	}
 	
 	@Test
-	public void testCompressJavaScript() throws Exception {
+	public void testCompressJavaScriptYui() throws Exception {
 		String source = readResource("testCompressJavaScript.html");
-		String result = readResource("testCompressJavaScriptResult.html");
+		String result = readResource("testCompressJavaScriptYuiResult.html");
 		
 		HtmlCompressor compressor = new HtmlCompressor();
 		compressor.setCompressJavaScript(true);
+		compressor.setRemoveIntertagSpaces(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+	@Test
+	public void testCompressJavaScriptClosure() throws Exception {
+		String source = readResource("testCompressJavaScript.html");
+		String result = readResource("testCompressJavaScriptClosureResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setCompressJavaScript(true);
+		compressor.setJavaScriptCompressor(new ClosureJavaScriptCompressor(CompilationLevel.ADVANCED_OPTIMIZATIONS));
 		compressor.setRemoveIntertagSpaces(true);
 		
 		assertEquals(result, compressor.compress(source));
@@ -246,6 +261,17 @@ public class HtmlCompressorTest {
 		
 		HtmlCompressor compressor = new HtmlCompressor();
 		compressor.setRemoveHttpsProtocol(true);
+		
+		assertEquals(result, compressor.compress(source));
+	}
+
+	@Test
+	public void testPreserveLineBreaks() throws Exception {
+		String source = readResource("testPreserveLineBreaks.html");
+		String result = readResource("testPreserveLineBreaksResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setPreserveLineBreaks(true);
 		
 		assertEquals(result, compressor.compress(source));
 	}
