@@ -30,7 +30,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/apidocs</directory>
-      <outputDirectory>docs</outputDirectory>
+      <outputDirectory>doc</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/lib</directory>
