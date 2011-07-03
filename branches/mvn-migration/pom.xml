@@ -179,7 +179,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>docs</outputDirectory>
+              <outputDirectory>doc</outputDirectory>
               <resources>          
                 <resource>
                   <directory>target/apidocs</directory>
