@@ -7,7 +7,7 @@ Small, fast and very easy to use Java library that minifies given HTML or XML so
 PACKAGE CONTENT:
 	/bin - contains main ${project.artifactId}-${project.version}.jar binary, 
 			as well as several extra jars (could be useful for IDE integration)
-	/docs - javadocs
+	/doc - javadocs
 	/src - sources
 	/lib - dependencies (for using with a command line compressor or non-Maven projects)
 	pom.xml - Maven POM file
