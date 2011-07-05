@@ -14,6 +14,7 @@ package com.googlecode.htmlcompressor.compressor;
  * limitations under the License.
  */
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -36,10 +37,16 @@ public class YuiCssCompressor implements Compressor {
     }
     
     @Override
-	public String compress(String source) throws Exception {
+	public String compress(String source) {
     	StringWriter result = new StringWriter();
-		CssCompressor compressor = new CssCompressor(new StringReader(source));
-		compressor.compress(result, lineBreak);
+		
+		try {
+			CssCompressor compressor = new CssCompressor(new StringReader(source));
+			compressor.compress(result, lineBreak);
+		} catch (IOException e) {
+			result.write(source);
+			e.printStackTrace();
+		}
 		
 		return result.toString();
 	}

@@ -25,7 +25,6 @@ public interface Compressor {
 	 * 
 	 * @param source The source to compress.
 	 * @return Compressed result.
-	 * @throws Exception
 	 */
-	public abstract String compress(String source) throws Exception;
+	public abstract String compress(String source);
 }

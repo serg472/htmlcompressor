@@ -52,10 +52,9 @@ public class XmlCompressor implements Compressor {
 	 * 
 	 * @param xml XML content to compress
 	 * @return compressed content.
-	 * @throws Exception
 	 */
 	@Override
-	public String compress(String xml) throws Exception {
+	public String compress(String xml) {
 		if(!enabled || xml == null || xml.length() == 0) {
 			return xml;
 		}
@@ -103,7 +102,7 @@ public class XmlCompressor implements Compressor {
 		return xml;
 	}
 	
-	protected String processXml(String xml) throws Exception {
+	protected String processXml(String xml) {
 		//remove comments
 		xml = removeComments(xml);
 		
