@@ -164,6 +164,7 @@
         <configuration>
           <show>public</show>
           <excludePackageNames>jargs</excludePackageNames>
+          <notimestamp>true</notimestamp>
         </configuration>
       </plugin>
       <!-- Copy javadocs -->
@@ -219,7 +220,7 @@
   <name>HTML Compressor and Minifier</name>
   <description>HtmlCompressor is a small, fast and very easy to use Java library that minifies given HTML or XML source by removing extra whitespaces, comments and other unneeded characters without breaking the content structure. As a result pages become smaller in size and load faster. A command-line version of the compressor is also available.</description>
   <url>http://code.google.com/p/htmlcompressor/</url>
-  <inceptionYear>2011</inceptionYear>
+  <inceptionYear>2009</inceptionYear>
   <licenses>
     <license>
       <name>Apache License 2.0</name>

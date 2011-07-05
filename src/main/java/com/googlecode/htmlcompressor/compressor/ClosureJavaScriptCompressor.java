@@ -63,20 +63,24 @@ public class ClosureJavaScriptCompressor implements Compressor {
 	}
 
 	@Override
-	public String compress(String source) throws Exception {
+	public String compress(String source) {
 		
 		StringWriter writer = new StringWriter();
 		
 		//prepare source
 		List<JSSourceFile> input = new ArrayList<JSSourceFile>();
-		input.add(JSSourceFile.fromCode("", source));
+		input.add(JSSourceFile.fromCode("source.js", source));
 		
 		//prepare externs
 		List<JSSourceFile> externsList = new ArrayList<JSSourceFile>();
 		if(compilationLevel.equals(CompilationLevel.ADVANCED_OPTIMIZATIONS)) {
 			//default externs
 			if(!customExternsOnly) {
-				externsList = getDefaultExterns();
+				try {
+					externsList = getDefaultExterns();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			//add user defined externs
 			if(externs != null) {

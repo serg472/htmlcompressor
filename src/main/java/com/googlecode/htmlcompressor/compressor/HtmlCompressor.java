@@ -162,9 +162,8 @@ public class HtmlCompressor implements Compressor {
 	 * 
 	 * @param html HTML content to compress
 	 * @return compressed content.
-	 * @throws Exception
 	 */
-	public String compress(String html) throws Exception {
+	public String compress(String html) {
 		if(!enabled || html == null || html.length() == 0) {
 			return html;
 		}
@@ -232,7 +231,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<String> lineBreakBlocks, List<List<String>> userBlocks) throws Exception {
+	protected String preserveBlocks(String html, List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<String> lineBreakBlocks, List<List<String>> userBlocks) {
 		
 		//preserve user blocks
 		if(preservePatterns != null) {
@@ -652,7 +651,7 @@ public class HtmlCompressor implements Compressor {
 		return html;
 	}
 	
-	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<String> lineBreakBlocks, List<List<String>> userBlocks) throws Exception {
+	protected void processPreservedBlocks(List<String> preBlocks, List<String> taBlocks, List<String> scriptBlocks, List<String> styleBlocks, List<String> eventBlocks, List<String> condCommentBlocks, List<String> skipBlocks, List<String> lineBreakBlocks, List<List<String>> userBlocks) {
 		processPreBlocks(preBlocks);
 		processTextAreaBlocks(taBlocks);
 		processScriptBlocks(scriptBlocks);
@@ -664,7 +663,7 @@ public class HtmlCompressor implements Compressor {
 		processLineBreakBlocks(lineBreakBlocks);
 	}
 	
-	protected void processPreBlocks(List<String> preBlocks) throws Exception {
+	protected void processPreBlocks(List<String> preBlocks) {
 		if(generateStatistics) {
 			for(String block : preBlocks) {
 				statistics.setPreservedSize(statistics.getPreservedSize() + block.length());
@@ -672,7 +671,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected void processTextAreaBlocks(List<String> taBlocks) throws Exception {
+	protected void processTextAreaBlocks(List<String> taBlocks) {
 		if(generateStatistics) {
 			for(String block : taBlocks) {
 				statistics.setPreservedSize(statistics.getPreservedSize() + block.length());
@@ -680,7 +679,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected void processCondCommentBlocks(List<String> condCommentBlocks) throws Exception {
+	protected void processCondCommentBlocks(List<String> condCommentBlocks) {
 		if(generateStatistics) {
 			for(String block : condCommentBlocks) {
 				statistics.setPreservedSize(statistics.getPreservedSize() + block.length());
@@ -688,7 +687,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected void processSkipBlocks(List<String> skipBlocks) throws Exception {
+	protected void processSkipBlocks(List<String> skipBlocks) {
 		if(generateStatistics) {
 			for(String block : skipBlocks) {
 				statistics.setPreservedSize(statistics.getPreservedSize() + block.length());
@@ -696,7 +695,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected void processLineBreakBlocks(List<String> lineBreakBlocks) throws Exception {
+	protected void processLineBreakBlocks(List<String> lineBreakBlocks) {
 		if(generateStatistics) {
 			for(String block : lineBreakBlocks) {
 				statistics.setPreservedSize(statistics.getPreservedSize() + block.length());
@@ -704,7 +703,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected void processUserBlocks(List<List<String>> userBlocks) throws Exception {
+	protected void processUserBlocks(List<List<String>> userBlocks) {
 		if(generateStatistics) {
 			for(List<String> blockList : userBlocks) {
 				for(String block : blockList) {
@@ -714,7 +713,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected void processEventBlocks(List<String> eventBlocks) throws Exception {
+	protected void processEventBlocks(List<String> eventBlocks) {
 		
 		if(generateStatistics) {
 			for(String block : eventBlocks) {
@@ -739,7 +738,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected String removeJavaScriptProtocol(String source) throws Exception {
+	protected String removeJavaScriptProtocol(String source) {
 		//remove javascript: from inline events
 		String result = source;
 		
@@ -755,7 +754,7 @@ public class HtmlCompressor implements Compressor {
 		return result;
 	}
 	
-	protected void processScriptBlocks(List<String> scriptBlocks) throws Exception {
+	protected void processScriptBlocks(List<String> scriptBlocks) {
 		
 		if(generateStatistics) {
 			for(String block : scriptBlocks) {
@@ -780,7 +779,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected void processStyleBlocks(List<String> styleBlocks) throws Exception {
+	protected void processStyleBlocks(List<String> styleBlocks) {
 		
 		if(generateStatistics) {
 			for(String block : styleBlocks) {
@@ -805,7 +804,7 @@ public class HtmlCompressor implements Compressor {
 		}
 	}
 	
-	protected String compressJavaScript(String source) throws Exception {
+	protected String compressJavaScript(String source) {
 		
 		//set default javascript compressor
 		if(javaScriptCompressor == null) {
@@ -840,7 +839,7 @@ public class HtmlCompressor implements Compressor {
 		
 	}
 	
-	protected String compressCssStyles(String source) throws Exception {
+	protected String compressCssStyles(String source) {
 		
 		//set default css compressor
 		if(cssCompressor == null) {
