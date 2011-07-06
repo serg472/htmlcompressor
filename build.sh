@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn clean package javadoc:jar javadoc:test-jar source:jar source:test-jar site:jar assembly:single resources:copy-resources
+mvn clean package javadoc:jar javadoc:test-jar source:jar source:test-jar site:jar assembly:single -P doc-folder-generation
