@@ -136,8 +136,8 @@
 		  <connectionUrl>scm:svn:http://htmlcompressor.googlecode.com/svn/trunk/</connectionUrl>
         </configuration>
       </plugin>
-	  <!-- Maven GPG Plugin -->
-      <plugin>
+	  <!-- Maven GPG Plugin (will be trigered only for releases, see profiles below) -->
+      <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
         <version>1.3</version>
@@ -150,7 +150,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin>-->
 	  <!-- Assemble distribution package -->
 	  <plugin>
 	    <artifactId>maven-assembly-plugin</artifactId>
@@ -281,13 +281,13 @@
     <tag>HEAD</tag>
     <url>http://code.google.com/p/htmlcompressor/source/browse/</url>
   </scm>
-  <distributionManagement>
+  <!--<distributionManagement>-->
     <!-- use the following if you're not using a snapshot version. -->
-    <repository>
+    <!--<repository>
       <id>maven-staging-repo</id>
       <name>Maven Staging Repository</name>
       <url>scp://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
+    </repository>-->
     <!-- use the following if you ARE using a snapshot version. -->
     <!-- 
     <snapshotRepository>
@@ -296,12 +296,12 @@
       <url>scp://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
      -->
-  </distributionManagement>
+  <!--</distributionManagement>-->
 
   <!-- ====================================================================== -->
   <!-- Profile Settings                                                       -->
   <!-- ====================================================================== -->
-  <!--<profiles>
+  <profiles>
     <profile>
       <id>release-sign-artifacts</id>
       <activation>
@@ -315,6 +315,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
+			<version>1.3</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -328,5 +329,5 @@
         </plugins>
       </build>
     </profile>
-  </profiles>-->
+  </profiles>
 </project>
