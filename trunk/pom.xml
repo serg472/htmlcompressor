@@ -177,23 +177,24 @@
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.5</version>
-        <executions>
+		<configuration>
+		  <outputDirectory>doc</outputDirectory>
+		  <resources>          
+			<resource>
+			  <directory>target/apidocs</directory>
+			</resource>
+		  </resources>
+		</configuration>
+		<!-- disable execution due to error during release: locally modified files -->
+        <!--<executions>
           <execution>
             <id>copy-resources</id>
             <phase>validate</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
-            <configuration>
-              <outputDirectory>doc</outputDirectory>
-              <resources>          
-                <resource>
-                  <directory>target/apidocs</directory>
-                </resource>
-              </resources>              
-            </configuration>            
           </execution>
-        </executions>
+        </executions>-->
       </plugin>
     </plugins>
   </build>
