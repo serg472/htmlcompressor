@@ -1,1 +1,1 @@
-mvn clean package javadoc:jar javadoc:test-jar source:jar source:test-jar site:jar assembly:single release:clean release:prepare release:perform
+mvn clean package javadoc:jar javadoc:test-jar source:jar source:test-jar site:jar release:clean release:prepare release:perform
