@@ -1,4 +1,12 @@
 #labels Featured
+*1.4* (July 8, 2011)
+  * The project is now completely migrated to Maven and available as a [http://code.google.com/p/htmlcompressor/#Maven_Artifact Maven artifact]. Thanks Alex Tunyk for outstanding work on this (and who is now a committer on the project)
+  * Added option to preserve line breaks in the original HTML document during a compression for increased readability. See [http://code.google.com/p/htmlcompressor/issues/detail?id=42 Issue #42] for details
+  * Added option to preserve server side includes `<!--# ... -->`. See [http://code.google.com/p/htmlcompressor/issues/detail?id=43 Issue #43] for details
+  * Fixed problem with Closure compressor throwing an error in come cases
+  * Improved space removal around equals sign inside tag attributes during XML compression
+  * `compress()` method of `Compressor` interface doesn't throw a checked `Exception` anymore
+
 *1.3.1* (April 30, 2011)
   * When using advanced level of Google Closure compilation, a set of default built-in into `compiler.jar` externs is used. Default externs could be skipped by setting `ClosureJavaScriptCompressor.setCustomExternsOnly(true)` or `--closure-custom-externs-only` command line parameter
   * A list of custom externs could be passed to the command line compressor using `[--closure-externs <file>], ...` parameters
