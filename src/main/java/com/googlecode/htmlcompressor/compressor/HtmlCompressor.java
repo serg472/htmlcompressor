@@ -144,7 +144,7 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern httpsProtocolPattern = Pattern.compile("(<[^>]+?(?:href|src|cite|action)\\s*=\\s*['\"])https:(//[^>]+?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE); //unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
-	protected static final Pattern lineBreakPattern = Pattern.compile("\\p{Blank}*(\\r?\\n)\\p{Blank}*");
+	protected static final Pattern lineBreakPattern = Pattern.compile("(?:\\p{Blank}*(\\r?\\n)\\p{Blank}*)+");
 	
 	//patterns for searching for temporary replacements
 	protected static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>");
