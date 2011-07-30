@@ -133,6 +133,7 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern doctypePattern = Pattern.compile("<!DOCTYPE[^>]*>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern jsTypeAttrPattern = Pattern.compile("(<script[^>]*)type\\s*=\\s*([\"']*)(?:text|application)/javascript\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern jsLangAttrPattern = Pattern.compile("(<script[^>]*)language\\s*=\\s*([\"']*)javascript\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern jsJqueryTmplTypePattern = Pattern.compile("<script[^>]*type\\s*=\\s*([\"']*)text/x-jquery-tmpl\\1[^>]*>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern styleTypeAttrPattern = Pattern.compile("(<style[^>]*)type\\s*=\\s*([\"']*)text/style\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern linkTypeAttrPattern = Pattern.compile("(<link[^>]*)type\\s*=\\s*([\"']*)text/(?:css|plain)\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern linkRelAttrPattern = Pattern.compile("<link(?:[^>]*)rel\\s*=\\s*([\"']*)(?:alternate\\s+)?stylesheet\\1(?:[^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -322,9 +323,13 @@ public class HtmlCompressor implements Compressor {
 		index = 0;
 		sb = new StringBuffer();
 		while(matcher.find()) {
+			//ignore empty scripts
 			if(matcher.group(2).trim().length() > 0) {
-				scriptBlocks.add(matcher.group(2));
-				matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempScriptBlock, index++)+"$3");
+				//ignore jquery templates
+				if(!jsJqueryTmplTypePattern.matcher(matcher.group(1)).matches()) {
+					scriptBlocks.add(matcher.group(2));
+					matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempScriptBlock, index++)+"$3");
+				}
 			}
 		}
 		matcher.appendTail(sb);
@@ -976,7 +981,7 @@ public class HtmlCompressor implements Compressor {
 	 * This option has effect only if JavaScript compression is enabled. 
 	 * Default is <code>false</code>.
 	 * 
-	 * @param yuiJsNoMunge set <code>true<code> to enable <code>nomunge</code> mode
+	 * @param yuiJsNoMunge set <code>true</code> to enable <code>nomunge</code> mode
 	 * 
 	 * @see <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>
 	 */
