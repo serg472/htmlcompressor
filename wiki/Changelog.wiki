@@ -1,4 +1,7 @@
 #labels Featured
+*1.4.2* (July 30, 2011)
+  * Fixed a bug with custom preserved blocks causing exception if located inside some html tags. See [http://code.google.com/p/htmlcompressor/issues/detail?id=47 Issue #47] for details.
+
 *1.4.1* (July 30, 2011)
   * `<script type="text/x-jquery-tmpl">` tags (jQuery template containers) are not preserved and their content is compressed with the rest of HTML.
 
@@ -141,5 +144,5 @@
   * Created JSP taglib for `<compress:html>` and `<compress:xml>` tags
 
 
-*0.1* (Mar 08, 2009)
+*0.1* (Mar 07, 2009)
   * Initial release
