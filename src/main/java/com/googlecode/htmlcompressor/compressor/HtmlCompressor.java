@@ -111,9 +111,9 @@ public class HtmlCompressor implements Compressor {
 	protected static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0,number,#}%%%";
 	protected static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0,number,#}%%%";
 	protected static final String tempEventBlock = "%%%COMPRESS~EVENT~{0,number,#}%%%";
-	protected static final String tempLineBreakBlock = "<%%%COMPRESS~LT~{0,number,#}%%%>";
+	protected static final String tempLineBreakBlock = "%%%COMPRESS~LT~{0,number,#}%%%";
 	protected static final String tempSkipBlock = "<%%%COMPRESS~SKIP~{0,number,#}%%%>";
-	protected static final String tempUserBlock = "<%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%>";
+	protected static final String tempUserBlock = "%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%";
 	
 	//compiled regex patterns
 	protected static final Pattern emptyPattern = Pattern.compile("\\s");
@@ -155,7 +155,7 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%");
 	protected static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%");
 	protected static final Pattern tempSkipPattern = Pattern.compile("<%%%COMPRESS~SKIP~(\\d+?)%%%>");
-	protected static final Pattern tempLineBreakPattern = Pattern.compile("<%%%COMPRESS~LT~(\\d+?)%%%>");
+	protected static final Pattern tempLineBreakPattern = Pattern.compile("%%%COMPRESS~LT~(\\d+?)%%%");
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed
@@ -456,7 +456,7 @@ public class HtmlCompressor implements Compressor {
 		//put user blocks back
 		if(preservePatterns != null) {
 			for(int p = preservePatterns.size() - 1; p >= 0; p--) {
-				Pattern tempUserPattern = Pattern.compile("<%%%COMPRESS~USER" + p + "~(\\d+?)%%%>");
+				Pattern tempUserPattern = Pattern.compile("%%%COMPRESS~USER" + p + "~(\\d+?)%%%");
 				matcher = tempUserPattern.matcher(html);
 				sb = new StringBuffer();
 				while(matcher.find()) {
