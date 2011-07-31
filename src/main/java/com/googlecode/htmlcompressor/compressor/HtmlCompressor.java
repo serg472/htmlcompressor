@@ -384,7 +384,10 @@ public class HtmlCompressor implements Compressor {
 			Matcher matcher = tempLineBreakPattern.matcher(html);
 			StringBuffer sb = new StringBuffer();
 			while(matcher.find()) {
-				matcher.appendReplacement(sb, lineBreakBlocks.get(Integer.parseInt(matcher.group(1))));
+				int i = Integer.parseInt(matcher.group(1));
+				if(lineBreakBlocks.size() > i) {
+					matcher.appendReplacement(sb, lineBreakBlocks.get(i));
+				}
 			}
 			matcher.appendTail(sb);
 			html = sb.toString();
@@ -394,7 +397,10 @@ public class HtmlCompressor implements Compressor {
 		Matcher matcher = tempTextAreaPattern.matcher(html);
 		StringBuffer sb = new StringBuffer();
 		while(matcher.find()) {
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(taBlocks.get(Integer.parseInt(matcher.group(1)))));
+			int i = Integer.parseInt(matcher.group(1));
+			if(taBlocks.size() > i) {
+				matcher.appendReplacement(sb, Matcher.quoteReplacement(taBlocks.get(i)));
+			}
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -403,7 +409,10 @@ public class HtmlCompressor implements Compressor {
 		matcher = tempStylePattern.matcher(html);
 		sb = new StringBuffer();
 		while(matcher.find()) {
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(styleBlocks.get(Integer.parseInt(matcher.group(1)))));
+			int i = Integer.parseInt(matcher.group(1));
+			if(styleBlocks.size() > i) {
+				matcher.appendReplacement(sb, Matcher.quoteReplacement(styleBlocks.get(i)));
+			}
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -412,7 +421,10 @@ public class HtmlCompressor implements Compressor {
 		matcher = tempScriptPattern.matcher(html);
 		sb = new StringBuffer();
 		while(matcher.find()) {
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(scriptBlocks.get(Integer.parseInt(matcher.group(1)))));
+			int i = Integer.parseInt(matcher.group(1));
+			if(scriptBlocks.size() > i) {
+				matcher.appendReplacement(sb, Matcher.quoteReplacement(scriptBlocks.get(i)));
+			}
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -421,7 +433,10 @@ public class HtmlCompressor implements Compressor {
 		matcher = tempPrePattern.matcher(html);
 		sb = new StringBuffer();
 		while(matcher.find()) {
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(preBlocks.get(Integer.parseInt(matcher.group(1)))));
+			int i = Integer.parseInt(matcher.group(1));
+			if(preBlocks.size() > i) {
+				matcher.appendReplacement(sb, Matcher.quoteReplacement(preBlocks.get(i)));
+			}
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -430,7 +445,10 @@ public class HtmlCompressor implements Compressor {
 		matcher = tempEventPattern.matcher(html);
 		sb = new StringBuffer();
 		while(matcher.find()) {
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(eventBlocks.get(Integer.parseInt(matcher.group(1)))));
+			int i = Integer.parseInt(matcher.group(1));
+			if(eventBlocks.size() > i) {
+				matcher.appendReplacement(sb, Matcher.quoteReplacement(eventBlocks.get(i)));
+			}
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -439,7 +457,10 @@ public class HtmlCompressor implements Compressor {
 		matcher = tempCondCommentPattern.matcher(html);
 		sb = new StringBuffer();
 		while(matcher.find()) {
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(condCommentBlocks.get(Integer.parseInt(matcher.group(1)))));
+			int i = Integer.parseInt(matcher.group(1));
+			if(condCommentBlocks.size() > i) {
+				matcher.appendReplacement(sb, Matcher.quoteReplacement(condCommentBlocks.get(i)));
+			}
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -448,7 +469,10 @@ public class HtmlCompressor implements Compressor {
 		matcher = tempSkipPattern.matcher(html);
 		sb = new StringBuffer();
 		while(matcher.find()) {
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(skipBlocks.get(Integer.parseInt(matcher.group(1)))));
+			int i = Integer.parseInt(matcher.group(1));
+			if(skipBlocks.size() > i) {
+				matcher.appendReplacement(sb, Matcher.quoteReplacement(skipBlocks.get(i)));
+			}
 		}
 		matcher.appendTail(sb);
 		html = sb.toString();
@@ -460,7 +484,10 @@ public class HtmlCompressor implements Compressor {
 				matcher = tempUserPattern.matcher(html);
 				sb = new StringBuffer();
 				while(matcher.find()) {
-					matcher.appendReplacement(sb, Matcher.quoteReplacement(userBlocks.get(p).get(Integer.parseInt(matcher.group(1)))));
+					int i = Integer.parseInt(matcher.group(1));
+					if(userBlocks.size() > p && userBlocks.get(p).size() > i) {
+						matcher.appendReplacement(sb, Matcher.quoteReplacement(userBlocks.get(p).get(i)));
+					}
 				}
 				matcher.appendTail(sb);
 				html = sb.toString();
