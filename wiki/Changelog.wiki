@@ -1,6 +1,9 @@
 #labels Featured
+*1.4.3* (August 3, 2011)
+  * Fixed bug with incorrect handling of preservable blocks inside conditional comments. See [http://code.google.com/p/htmlcompressor/issues/detail?id=48 Issue #48] for details.
+
 *1.4.2* (July 30, 2011)
-  * Fixed a bug with custom preserved blocks causing exception if located inside some html tags. See [http://code.google.com/p/htmlcompressor/issues/detail?id=47 Issue #47] for details.
+  * Fixed bug with custom preserved blocks causing exception if located inside some html tags. See [http://code.google.com/p/htmlcompressor/issues/detail?id=47 Issue #47] for details.
 
 *1.4.1* (July 30, 2011)
   * `<script type="text/x-jquery-tmpl">` tags (jQuery template containers) are not preserved and their content is compressed with the rest of HTML.
