@@ -1573,7 +1573,12 @@ public class HtmlCompressor implements Compressor {
 	 * If set to <code>true</code>, <code>HTTP</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.
 	 * URL without a protocol would make a browser use document's current protocol instead. 
 	 * 
-	 * <p>For example, <code>&lta href="http://example.com"></code> would become <code>&lta href="//example.com"></code>
+	 * <p>Tags marked with <code>rel="external"</code> will be skipped.
+	 * 
+	 * <p>For example: 
+	 * <p><code>&lta href="http://example.com"> &ltscript src="http://google.com/js.js" rel="external"></code> 
+	 * <p>would become: 
+	 * <p><code>&lta href="//example.com"> &ltscript src="http://google.com/js.js" rel="external"></code>
 	 * 
 	 * <p>Default is <code>false</code>.
 	 * 
@@ -1594,9 +1599,14 @@ public class HtmlCompressor implements Compressor {
 
 	/**
 	 * If set to <code>true</code>, <code>HTTPS</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.
-	 * URL without a protocol would make a browser use document's current protocol instead. 
+	 * URL without a protocol would make a browser use document's current protocol instead.
 	 * 
-	 * <p>For example, <code>&lta href="https://example.com"></code> would become <code>&lta href="//example.com"></code>
+	 * <p>Tags marked with <code>rel="external"</code> will be skipped.
+	 * 
+	 * <p>For example: 
+	 * <p><code>&lta href="https://example.com"> &ltscript src="https://google.com/js.js" rel="external"></code> 
+	 * <p>would become: 
+	 * <p><code>&lta href="//example.com"> &ltscript src="https://google.com/js.js" rel="external"></code>
 	 * 
 	 * <p>Default is <code>false</code>.
 	 * 
