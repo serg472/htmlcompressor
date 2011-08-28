@@ -1,8 +1,8 @@
 #labels Featured
 *1.5* (August 28, 2011)
   * Command line compressor was rewritten from scratch and is now able to compress multiple files and directories at once. Please see the [http://code.google.com/p/htmlcompressor/#Compressing_whole_directories_and_multiple_files_at_once front page] for details.
-  * When `setRemoveHttpProtocol(true)` is enabled, tags that are marked with `rel="external"` will be skipped. This might be useful if you want to keep protocol for external resources. See [http://code.google.com/p/htmlcompressor/issues/detail?id=50 Issue #50] for details.
-  * Spaces between custom preserved tags are collapsed again if `setRemoveIntertagSpaces(true)` is enabled. Spaces weren't preserved in this case due to changes in 1.4.2 release. See [http://code.google.com/p/htmlcompressor/issues/detail?id=52 Issue #52] for details.
+  * When `setRemoveHttpProtocol(true)` is enabled, tags that are marked with `rel="external"` will be skipped. This could be useful if you want to keep protocol for external resources. See [http://code.google.com/p/htmlcompressor/issues/detail?id=50 Issue #50] for details.
+  * Spaces between custom preserved tags are collapsed again if `setRemoveIntertagSpaces(true)` is enabled. Spaces weren't removed in this case due to changes in 1.4.2 release. See [http://code.google.com/p/htmlcompressor/issues/detail?id=52 Issue #52] for details.
 
 *1.4.3* (August 3, 2011)
   * Fixed bug with incorrect handling of preservable blocks inside conditional comments. See [http://code.google.com/p/htmlcompressor/issues/detail?id=48 Issue #48] for details.
