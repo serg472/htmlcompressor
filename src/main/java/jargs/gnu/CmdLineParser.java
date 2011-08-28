@@ -387,8 +387,8 @@ public class CmdLineParser {
      * @return A Vector giving the parsed values of all the occurrences of the
      * given Option, or an empty Vector if the option was not set.
      */
-    public final Vector getOptionValues( Option option ) {
-        Vector result = new Vector();
+    public final Vector<String> getOptionValues( Option option ) {
+        Vector<String> result = new Vector<String>();
 
         while (true) {
             Object o = getOptionValue(option, null);
@@ -397,7 +397,7 @@ public class CmdLineParser {
                 return result;
             }
             else {
-                result.addElement(o);
+                result.addElement((String)o);
             }
         }
     }
