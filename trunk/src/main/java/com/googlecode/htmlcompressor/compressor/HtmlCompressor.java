@@ -105,22 +105,25 @@ public class HtmlCompressor implements Compressor {
 	private ErrorReporter yuiErrorReporter = null;
 	
 	//temp replacements for preserved blocks 
-	protected static final String tempCondCommentBlock = "<%%%COMPRESS~COND~{0,number,#}%%%>";
-	protected static final String tempPreBlock = "%%%COMPRESS~PRE~{0,number,#}%%%";
-	protected static final String tempTextAreaBlock = "%%%COMPRESS~TEXTAREA~{0,number,#}%%%";
-	protected static final String tempScriptBlock = "%%%COMPRESS~SCRIPT~{0,number,#}%%%";
-	protected static final String tempStyleBlock = "%%%COMPRESS~STYLE~{0,number,#}%%%";
-	protected static final String tempEventBlock = "%%%COMPRESS~EVENT~{0,number,#}%%%";
-	protected static final String tempLineBreakBlock = "%%%COMPRESS~LT~{0,number,#}%%%";
-	protected static final String tempSkipBlock = "<%%%COMPRESS~SKIP~{0,number,#}%%%>";
-	protected static final String tempUserBlock = "%%%COMPRESS~USER{0,number,#}~{1,number,#}%%%";
+	protected static final String tempCondCommentBlock = "%%%~COMPRESS~COND~{0,number,#}~%%%";
+	protected static final String tempPreBlock = "%%%~COMPRESS~PRE~{0,number,#}~%%%";
+	protected static final String tempTextAreaBlock = "%%%~COMPRESS~TEXTAREA~{0,number,#}~%%%";
+	protected static final String tempScriptBlock = "%%%~COMPRESS~SCRIPT~{0,number,#}~%%%";
+	protected static final String tempStyleBlock = "%%%~COMPRESS~STYLE~{0,number,#}~%%%";
+	protected static final String tempEventBlock = "%%%~COMPRESS~EVENT~{0,number,#}~%%%";
+	protected static final String tempLineBreakBlock = "%%%~COMPRESS~LT~{0,number,#}~%%%";
+	protected static final String tempSkipBlock = "%%%~COMPRESS~SKIP~{0,number,#}~%%%";
+	protected static final String tempUserBlock = "%%%~COMPRESS~USER{0,number,#}~{1,number,#}~%%%";
 	
 	//compiled regex patterns
 	protected static final Pattern emptyPattern = Pattern.compile("\\s");
 	protected static final Pattern skipPattern = Pattern.compile("<!--\\s*\\{\\{\\{\\s*-->(.*?)<!--\\s*\\}\\}\\}\\s*-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern intertagPattern = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern intertagPattern_TagTag = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern intertagPattern_TagCustom = Pattern.compile(">\\s+%%%~", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern intertagPattern_CustomTag = Pattern.compile("~%%%\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern intertagPattern_CustomCustom = Pattern.compile("~%%%\\s+%%%~", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern multispacePattern = Pattern.compile("\\s+", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagQuotePattern = Pattern.compile("\\s*=\\s*([\"'])([a-z0-9-_]+?)\\1(/?)(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
@@ -143,19 +146,20 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern eventJsProtocolPattern = Pattern.compile("^javascript:\\s*(.+)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern httpProtocolPattern = Pattern.compile("(<[^>]+?(?:href|src|cite|action)\\s*=\\s*['\"])http:(//[^>]+?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern httpsProtocolPattern = Pattern.compile("(<[^>]+?(?:href|src|cite|action)\\s*=\\s*['\"])https:(//[^>]+?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern relExternalPattern = Pattern.compile("<(?:[^>]*)rel\\s*=\\s*([\"']*)(?:alternate\\s+)?external\\1(?:[^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE); //unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern lineBreakPattern = Pattern.compile("(?:\\p{Blank}*(\\r?\\n)\\p{Blank}*)+");
 	
 	//patterns for searching for temporary replacements
-	protected static final Pattern tempCondCommentPattern = Pattern.compile("<%%%COMPRESS~COND~(\\d+?)%%%>");
-	protected static final Pattern tempPrePattern = Pattern.compile("%%%COMPRESS~PRE~(\\d+?)%%%");
-	protected static final Pattern tempTextAreaPattern = Pattern.compile("%%%COMPRESS~TEXTAREA~(\\d+?)%%%");
-	protected static final Pattern tempScriptPattern = Pattern.compile("%%%COMPRESS~SCRIPT~(\\d+?)%%%");
-	protected static final Pattern tempStylePattern = Pattern.compile("%%%COMPRESS~STYLE~(\\d+?)%%%");
-	protected static final Pattern tempEventPattern = Pattern.compile("%%%COMPRESS~EVENT~(\\d+?)%%%");
-	protected static final Pattern tempSkipPattern = Pattern.compile("<%%%COMPRESS~SKIP~(\\d+?)%%%>");
-	protected static final Pattern tempLineBreakPattern = Pattern.compile("%%%COMPRESS~LT~(\\d+?)%%%");
+	protected static final Pattern tempCondCommentPattern = Pattern.compile("%%%~COMPRESS~COND~(\\d+?)~%%%");
+	protected static final Pattern tempPrePattern = Pattern.compile("%%%~COMPRESS~PRE~(\\d+?)~%%%");
+	protected static final Pattern tempTextAreaPattern = Pattern.compile("%%%~COMPRESS~TEXTAREA~(\\d+?)~%%%");
+	protected static final Pattern tempScriptPattern = Pattern.compile("%%%~COMPRESS~SCRIPT~(\\d+?)~%%%");
+	protected static final Pattern tempStylePattern = Pattern.compile("%%%~COMPRESS~STYLE~(\\d+?)~%%%");
+	protected static final Pattern tempEventPattern = Pattern.compile("%%%~COMPRESS~EVENT~(\\d+?)~%%%");
+	protected static final Pattern tempSkipPattern = Pattern.compile("%%%~COMPRESS~SKIP~(\\d+?)~%%%");
+	protected static final Pattern tempLineBreakPattern = Pattern.compile("%%%~COMPRESS~LT~(\\d+?)~%%%");
 	
 	/**
 	 * The main method that compresses given HTML source and returns compressed
@@ -480,7 +484,7 @@ public class HtmlCompressor implements Compressor {
 		//put user blocks back
 		if(preservePatterns != null) {
 			for(int p = preservePatterns.size() - 1; p >= 0; p--) {
-				Pattern tempUserPattern = Pattern.compile("%%%COMPRESS~USER" + p + "~(\\d+?)%%%");
+				Pattern tempUserPattern = Pattern.compile("%%%~COMPRESS~USER" + p + "~(\\d+?)~%%%");
 				matcher = tempUserPattern.matcher(html);
 				sb = new StringBuffer();
 				while(matcher.find()) {
@@ -574,6 +578,7 @@ public class HtmlCompressor implements Compressor {
 	}
 
 	protected String removeMultiSpaces(String html) {
+		//collapse multiple spaces
 		if(removeMultiSpaces) {
 			html = multispacePattern.matcher(html).replaceAll(" ");
 		}
@@ -583,7 +588,10 @@ public class HtmlCompressor implements Compressor {
 	protected String removeIntertagSpaces(String html) {
 		//remove inter-tag spaces
 		if(removeIntertagSpaces) {
-			html = intertagPattern.matcher(html).replaceAll("><");
+			html = intertagPattern_TagTag.matcher(html).replaceAll("><");
+			html = intertagPattern_TagCustom.matcher(html).replaceAll(">%%%~");
+			html = intertagPattern_CustomTag.matcher(html).replaceAll("~%%%<");
+			html = intertagPattern_CustomCustom.matcher(html).replaceAll("~%%%%%%~");
 		}
 		return html;
 	}
@@ -670,7 +678,18 @@ public class HtmlCompressor implements Compressor {
 	protected String removeHttpProtocol(String html) {
 		//remove http protocol from tag attributes
 		if(removeHttpProtocol) {
-			html = httpProtocolPattern.matcher(html).replaceAll("$1$2");
+			Matcher matcher = httpProtocolPattern.matcher(html);
+			StringBuffer sb = new StringBuffer();
+			while(matcher.find()) {
+				//if rel!=external
+				if(!relExternalPattern.matcher(matcher.group(0)).matches()) {
+					matcher.appendReplacement(sb, "$1$2");
+				} else {
+					matcher.appendReplacement(sb, "$0");
+				}
+			}
+			matcher.appendTail(sb);
+			html = sb.toString();
 		}
 		return html;
 	}
@@ -678,7 +697,18 @@ public class HtmlCompressor implements Compressor {
 	protected String removeHttpsProtocol(String html) {
 		//remove https protocol from tag attributes
 		if(removeHttpsProtocol) {
-			html = httpsProtocolPattern.matcher(html).replaceAll("$1$2");
+			Matcher matcher = httpsProtocolPattern.matcher(html);
+			StringBuffer sb = new StringBuffer();
+			while(matcher.find()) {
+				//if rel!=external
+				if(!relExternalPattern.matcher(matcher.group(0)).matches()) {
+					matcher.appendReplacement(sb, "$1$2");
+				} else {
+					matcher.appendReplacement(sb, "$0");
+				}
+			}
+			matcher.appendTail(sb);
+			html = sb.toString();
 		}
 		return html;
 	}

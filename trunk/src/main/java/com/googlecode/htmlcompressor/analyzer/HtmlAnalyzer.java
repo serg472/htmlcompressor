@@ -30,7 +30,7 @@ public class HtmlAnalyzer {
 	public HtmlAnalyzer() { 
 	}
 	
-	public void analyze(String source) throws Exception {
+	public void analyze(String source) {
 		int originalSize = source.length();
 		
 		HtmlCompressor compressor = getCleanCompressor();

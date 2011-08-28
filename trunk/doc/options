@@ -15,11 +15,11 @@
 -docencoding
 'UTF-8'
 -doctitle
-'HTML Compressor and Minifier 1.4.3 API'
+'HTML Compressor and Minifier 1.5 API'
 -linkoffline
 'http://download.oracle.com/javase/6/docs/api' 'D:/www/htmlcompressor/target/javadoc-bundle-options'
 -notimestamp
 -use
 -version
 -windowtitle
-'HTML Compressor and Minifier 1.4.3 API'
+'HTML Compressor and Minifier 1.5 API'

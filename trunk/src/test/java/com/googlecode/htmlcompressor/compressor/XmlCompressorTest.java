@@ -30,8 +30,8 @@ public class XmlCompressorTest {
 
 	@Test
 	public void testCompress() throws Exception {
-		String source = readResource("testCompress.html");
-		String result = readResource("testCompressResult.html");
+		String source = readResource("testCompress.xml");
+		String result = readResource("testCompressResult.xml");
 		
 		XmlCompressor compressor = new XmlCompressor();
 		
@@ -40,8 +40,8 @@ public class XmlCompressorTest {
 
 	@Test
 	public void testEnabled() throws Exception {
-		String source = readResource("testEnabled.html");
-		String result = readResource("testEnabledResult.html");
+		String source = readResource("testEnabled.xml");
+		String result = readResource("testEnabledResult.xml");
 		
 		XmlCompressor compressor = new XmlCompressor();
 		compressor.setEnabled(false);
@@ -52,8 +52,8 @@ public class XmlCompressorTest {
 
 	@Test
 	public void testRemoveComments() throws Exception {
-		String source = readResource("testRemoveComments.html");
-		String result = readResource("testRemoveCommentsResult.html");
+		String source = readResource("testRemoveComments.xml");
+		String result = readResource("testRemoveCommentsResult.xml");
 		
 		XmlCompressor compressor = new XmlCompressor();
 		compressor.setRemoveComments(true);
@@ -63,8 +63,8 @@ public class XmlCompressorTest {
 
 	@Test
 	public void testRemoveIntertagSpaces() throws Exception {
-		String source = readResource("testRemoveIntertagSpaces.html");
-		String result = readResource("testRemoveIntertagSpacesResult.html");
+		String source = readResource("testRemoveIntertagSpaces.xml");
+		String result = readResource("testRemoveIntertagSpacesResult.xml");
 		
 		XmlCompressor compressor = new XmlCompressor();
 		compressor.setRemoveIntertagSpaces(true);
