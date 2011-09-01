@@ -119,7 +119,7 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern emptyPattern = Pattern.compile("\\s");
 	protected static final Pattern skipPattern = Pattern.compile("<!--\\s*\\{\\{\\{\\s*-->(.*?)<!--\\s*\\}\\}\\}\\s*-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern condCommentPattern = Pattern.compile("(<!(?:--)?\\[[^\\]]+?]>)(.*?)(<!\\[[^\\]]+]-->)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern commentPattern = Pattern.compile("<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern commentPattern = Pattern.compile("<!---->|<!--[^\\[].*?-->", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern intertagPattern_TagTag = Pattern.compile(">\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern intertagPattern_TagCustom = Pattern.compile(">\\s+%%%~", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern intertagPattern_CustomTag = Pattern.compile("~%%%\\s+<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);

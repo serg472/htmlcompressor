@@ -12,7 +12,7 @@
   <!-- ====================================================================== -->
   <groupId>com.googlecode.htmlcompressor</groupId>
   <artifactId>htmlcompressor</artifactId>
-  <version>1.5</version>
+  <version>1.5.1</version>
   <packaging>jar</packaging>
   
   <!-- ====================================================================== -->
