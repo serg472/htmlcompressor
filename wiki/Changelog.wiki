@@ -1,4 +1,7 @@
 #labels Featured
+*1.5.1* (August 31, 2011)
+  * Fixed a bug with not detecting the end of an empty comment correctly `<!---->`
+
 *1.5* (August 28, 2011)
   * Command line compressor was rewritten from scratch and is now able to compress multiple files and directories at once. Please see the [http://code.google.com/p/htmlcompressor/#Compressing_whole_directories_and_multiple_files_at_once front page] for details.
   * When `setRemoveHttpProtocol(true)` is enabled, tags that are marked with `rel="external"` will be skipped. This could be useful if you want to keep protocol for external resources. See [http://code.google.com/p/htmlcompressor/issues/detail?id=50 Issue #50] for details.
