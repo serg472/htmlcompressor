@@ -1,4 +1,10 @@
 #labels Featured
+*1.5.2* (September 18, 2011)
+  * Added `--recursive` option to command line compressor that will process files inside subdirectories as well (when in directory mode).
+  * Added `setRemoveSurroundingSpaces(tagList)` option to HtmlCompressor that will remove surrounding spaces from listed tags. See [http://code.google.com/p/htmlcompressor/issues/detail?id=54 Issue #54] for details. 
+  * HtmlAnalyzer looks at `--js-compressor` option to determine which js compressor to use (YUI by default).
+  * Fixed bug with command line compressor not being able to take URL as input.
+    
 *1.5.1* (August 31, 2011)
   * Fixed a bug with not detecting the end of an empty comment correctly `<!---->`
 
