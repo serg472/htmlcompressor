@@ -25,6 +25,7 @@ During HTML compression the following is applied to the page source:
   * Unneeded spaces inside tags (around `=` and before `/>`) are removed.
   * Quotes around tag attributes could be removed when safe (off by default).
   * All spaces between tags could be removed (off by default).
+  * Spaces around selected tags could be removed (off by default).
   * Existing doctype declaration could be replaced with simple `<!DOCTYPE html>` declaration (off by default).
   * Default attributes from `<script>`, `<style>`, `<link>`, `<form>`, `<input>` tags could be removed (off by default).
   * Values from boolean tag attributes could be removed (off by default).
@@ -104,11 +105,13 @@ Usage: `java -jar htmlcompressor.jar [options] [input]`
 Global Options:
  -?, /?, -h, --help            Displays this help screen
  -t, --type <html|xml>         If not provided autodetects from file extension
- -c, --charset <charset>       Read the input files using <charset>
- -a, --analyze                 Compression report (all settings below ignored)
+ -r, --recursive               Process files inside subdirectories
+ -c, --charset <charset>       Charset for reading files, UTF-8 by default
  -m, --mask <filemask>         Filter input files inside directories by mask
  -o, --output <path>           Filename or directory for compression results.
                                If none provided outputs result to <stdout>
+ -a, --analyze                 Tries different settings and displays report.
+                               All settings except --js-compressor are ignored
 
 XML Compression Options:
  --preserve-comments           Preserve comments
@@ -130,6 +133,8 @@ HTML Compression Options:
  --remove-js-protocol          Remove "javascript:" from inline event handlers
  --remove-http-protocol        Remove "http:" from tag attributes
  --remove-https-protocol       Remove "https:" from tag attributes
+ --remove-surrounding-spaces <min|max|all|custom_list>
+                               Predefined or custom comma separated list of tags
  --compress-js                 Enable inline JavaScript compression
  --compress-css                Enable inline CSS compression using YUICompressor
  --js-compressor <yui|closure> Switch inline JavaScript compressor between
@@ -206,7 +211,7 @@ For example:
 java -jar htmlcompressor.jar --type html -o /to/ /from/
 }}}
 
-In this mode all files from the input directory (sub-directories are not included) will be compressed and placed into the output directory (with the same filenames).
+In this mode all files from the input directory will be compressed and placed into the output directory (with the same filenames). Sub-directories are not included by default, use `--recursive` option to include sub-directories.
 
 Please note that `--type` parameter in this case plays important role as it not only defines which compressor mode to use, but also which files to compress. For HTML type only `*.html` and `*.htm` files are processed, for XML - only `*.xml`. If type is not explicitly set, it defaults to HTML.
 
@@ -217,7 +222,7 @@ You can overwrite default file masks by setting `--mask <mask>` parameter. Mask 
 
 For example to compress only `.php` files, files which names start with `test-`, and files with two letter extensions:
 {{{
-java -jar htmlcompressor.jar --type html --mask *.php;test-*;*.?? -o /to/ /from/
+java -jar htmlcompressor.jar --type html --recursive --mask *.php;test-*;*.?? -o /to/ /from/
 }}}
 
 (Please note that mask shouldn't contain any spaces)
@@ -233,7 +238,7 @@ Please note that in this mode all files will be placed into the same output fold
 ===HTML Analyzer===
 To run a command line compressor in analyzer mode you only need to specify input file or URL:
 {{{
-java -jar htmlcompressor-1.3.jar -a http://www.cnn.com/
+java -jar htmlcompressor.jar --js-compressor closure -a http://www.cnn.com/
 }}}
 
 In this mode HTML compressor will try to compress provided page with all possible compression parameters and display result in a report:
@@ -241,24 +246,27 @@ In this mode HTML compressor will try to compress provided page with all possibl
 ================================================================================
          Setting          | Incremental Gain |    Total Gain    |  Page Size   |
 ================================================================================
-Compression disabled      |         0 (0.0%) |         0 (0.0%) |      100,509 |
-All settings disabled     |        24 (0.0%) |        24 (0.0%) |      100,485 |
-Comments removed          |     4,193 (4.2%) |     4,217 (4.2%) |       96,292 |
-Multiple spaces removed   |     3,727 (3.9%) |     7,944 (7.9%) |       92,565 |
-No spaces between tags    |       844 (0.9%) |     8,788 (8.7%) |       91,721 |
-Quotes removed from tags  |     2,052 (2.2%) |   10,840 (10.8%) |       89,669 |
-<link> attr. removed      |        64 (0.1%) |   10,904 (10.8%) |       89,605 |
-<style> attr. removed     |         0 (0.0%) |   10,904 (10.8%) |       89,605 |
-<script> attr. removed    |     1,040 (1.2%) |   11,944 (11.9%) |       88,565 |
-<form> attr. removed      |        22 (0.0%) |   11,966 (11.9%) |       88,543 |
-<input> attr. removed     |        40 (0.0%) |   12,006 (11.9%) |       88,503 |
-Simple boolean attributes |        36 (0.0%) |   12,042 (12.0%) |       88,467 |
-Simple doctype            |        86 (0.1%) |   12,128 (12.1%) |       88,381 |
-Remove js pseudo-protocol |         0 (0.0%) |   12,128 (12.1%) |       88,381 |
-Remove http protocol      |     1,170 (1.3%) |   13,298 (13.2%) |       87,211 |
-Remove https protocol     |         0 (0.0%) |   13,298 (13.2%) |       87,211 |
-Compress inline CSS (YUI) |       284 (0.3%) |   13,582 (13.5%) |       86,927 |
-Compress inline JS (YUI)  |     1,491 (1.7%) |   15,073 (15.0%) |       85,436 |
+Compression disabled      |         0 (0.0%) |         0 (0.0%) |      103,568 |
+All settings disabled     |        27 (0.0%) |        27 (0.0%) |      103,541 |
+Comments removed          |     5,517 (5.3%) |     5,544 (5.4%) |       98,024 |
+Multiple spaces removed   |     4,234 (4.3%) |     9,778 (9.4%) |       93,790 |
+No spaces between tags    |       838 (0.9%) |   10,616 (10.3%) |       92,952 |
+No surround spaces (min)  |         4 (0.0%) |   10,620 (10.3%) |       92,948 |
+No surround spaces (max)  |         0 (0.0%) |   10,620 (10.3%) |       92,948 |
+No surround spaces (all)  |       116 (0.1%) |   10,736 (10.4%) |       92,832 |
+Quotes removed from tags  |     2,072 (2.2%) |   12,808 (12.4%) |       90,760 |
+<link> attr. removed      |       112 (0.1%) |   12,920 (12.5%) |       90,648 |
+<style> attr. removed     |         0 (0.0%) |   12,920 (12.5%) |       90,648 |
+<script> attr. removed    |     1,040 (1.1%) |   13,960 (13.5%) |       89,608 |
+<form> attr. removed      |        22 (0.0%) |   13,982 (13.5%) |       89,586 |
+<input> attr. removed     |        40 (0.0%) |   14,022 (13.5%) |       89,546 |
+Simple boolean attributes |        36 (0.0%) |   14,058 (13.6%) |       89,510 |
+Simple doctype            |        86 (0.1%) |   14,144 (13.7%) |       89,424 |
+Remove js pseudo-protocol |         0 (0.0%) |   14,144 (13.7%) |       89,424 |
+Remove http protocol      |     1,095 (1.2%) |   15,239 (14.7%) |       88,329 |
+Remove https protocol     |         0 (0.0%) |   15,239 (14.7%) |       88,329 |
+Compress inline CSS (YUI) |       354 (0.4%) |   15,593 (15.1%) |       87,975 |
+Compress JS (Closure)     |     2,095 (2.4%) |   17,688 (17.1%) |       85,880 |
 ================================================================================
 
 Each consecutive compressor setting is applied on top of previous ones.
@@ -300,6 +308,7 @@ compressor.setRemoveJavaScriptProtocol(true);  //remove "javascript:" from inlin
 compressor.setRemoveHttpProtocol(true);        //replace "http://" with "//" inside tag attributes
 compressor.setRemoveHttpsProtocol(true);       //replace "https://" with "//" inside tag attributes
 compressor.setPreserveLineBreaks(true);        //preserves original line breaks
+compressor.setRemoveSurroundingSpaces("br,p"); //remove spaces around provided tags
 
 compressor.setCompressCss(true);               //compress inline css 
 compressor.setCompressJavaScript(true);        //compress inline javascript
