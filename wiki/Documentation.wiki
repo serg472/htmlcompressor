@@ -77,6 +77,10 @@ If you are generating HTML for your site (or have simple site in pure HTML) you 
   * Don't feed the compressor actual templates (php, jsp, etc). This most likely won't work, even if it does it would be a bad idea anyway as you will lose their readability and further development will be very inconvenient. Instead of compressing templates you should consider compressing resulting html after a template is merged. If you absolutely have to compress templates, you need to set custom block preservation rules for HTML Compressor.
   * If your site is in pure HTML, always keep original files and only compress their copies that will be served to the client. If you compress your only sources, again your further development will be very hard and there is no easy way to decompress pages back.
 
+===Known Issues===
+  * When `<script>` tag contains some custom preserved block (for example `<?php>`), enabling inline javascript compression will fail. Such `<script>` tags could be skipped by wrapping them with `<!-- {{{ -->...<!-- }}} -->` comments (skip blocks).
+  * Removing intertag spaces might break text formatting, for example spaces between  words surrounded with `<b>` will be removed. Such spaces might be preserved by replacing them with `&#20;` or `&nbsp;`.
+
 ==Dependencies==
 XML compressor doesn't rely on any external libraries.
 
