@@ -17,6 +17,7 @@ package com.googlecode.htmlcompressor.analyzer;
 import java.text.NumberFormat;
 import java.util.Formatter;
 
+import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
 /**
@@ -26,8 +27,15 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
  * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
  */
 public class HtmlAnalyzer {
-
+	
+	private String jsCompressor = HtmlCompressor.JS_COMPRESSOR_YUI;
+	
 	public HtmlAnalyzer() { 
+		
+	}
+
+	public HtmlAnalyzer(String jsCompressor) { 
+		this.jsCompressor = jsCompressor;
 	}
 	
 	public void analyze(String source) {
@@ -62,6 +70,24 @@ public class HtmlAnalyzer {
 		compressor.setRemoveIntertagSpaces(true);
 		compResult = compressor.compress(source);
 		System.out.println(formatLine("No spaces between tags", originalSize, compResult.length(), prevSize));
+		prevSize = compResult.length();
+
+		//remove min surrounding spaces
+		compressor.setRemoveSurroundingSpaces(HtmlCompressor.BLOCK_TAGS_MIN);
+		compResult = compressor.compress(source);
+		System.out.println(formatLine("No surround spaces (min)", originalSize, compResult.length(), prevSize));
+		prevSize = compResult.length();
+
+		//remove max surrounding spaces
+		compressor.setRemoveSurroundingSpaces(HtmlCompressor.BLOCK_TAGS_MAX);
+		compResult = compressor.compress(source);
+		System.out.println(formatLine("No surround spaces (max)", originalSize, compResult.length(), prevSize));
+		prevSize = compResult.length();
+
+		//remove all surrounding spaces
+		compressor.setRemoveSurroundingSpaces(HtmlCompressor.ALL_TAGS);
+		compResult = compressor.compress(source);
+		System.out.println(formatLine("No surround spaces (all)", originalSize, compResult.length(), prevSize));
 		prevSize = compResult.length();
 		
 		//remove quotes
@@ -141,14 +167,27 @@ public class HtmlAnalyzer {
 			System.out.println(formatEmptyLine("Compress inline CSS (YUI)"));
 		}
 		
-		//inline js
-		try {
-			compressor.setCompressJavaScript(true);
-			compResult = compressor.compress(source);
-			System.out.println(formatLine("Compress inline JS (YUI)", originalSize, compResult.length(), prevSize));
-			prevSize = compResult.length();
-		} catch (NoClassDefFoundError e){
-			System.out.println(formatEmptyLine("Compress inline JS (YUI)"));
+		if(jsCompressor.equals(HtmlCompressor.JS_COMPRESSOR_YUI)) {
+			//inline js yui
+			try {
+				compressor.setCompressJavaScript(true);
+				compResult = compressor.compress(source);
+				System.out.println(formatLine("Compress inline JS (YUI)", originalSize, compResult.length(), prevSize));
+				prevSize = compResult.length();
+			} catch (NoClassDefFoundError e){
+				System.out.println(formatEmptyLine("Compress inline JS (YUI)"));
+			}
+		} else {
+			//inline js yui
+			try {
+				compressor.setCompressJavaScript(true);
+				compressor.setJavaScriptCompressor(new ClosureJavaScriptCompressor());
+				compResult = compressor.compress(source);
+				System.out.println(formatLine("Compress JS (Closure)", originalSize, compResult.length(), prevSize));
+				prevSize = compResult.length();
+			} catch (NoClassDefFoundError e){
+				System.out.println(formatEmptyLine("Compress JS (Closure)"));
+			}
 		}
 		
 		printFooter();

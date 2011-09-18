@@ -4,7 +4,7 @@
 <HEAD>
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>
-CmdLineCompressor (HTML Compressor and Minifier 1.5.1 API)
+CmdLineCompressor (HTML Compressor and Minifier 1.5.2 API)
 </TITLE>
 
 
@@ -14,7 +14,7 @@ CmdLineCompressor (HTML Compressor and Minifier 1.5.1 API)
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="CmdLineCompressor (HTML Compressor and Minifier 1.5.1 API)";
+        parent.document.title="CmdLineCompressor (HTML Compressor and Minifier 1.5.2 API)";
     }
 }
 </SCRIPT>
@@ -102,9 +102,9 @@ Class CmdLineCompressor</H2>
 <P>
 Wrapper for HTML and XML compressor classes that allows using them from a command line.
  
- <p>Usage: <code>java -jar htmlcompressor.jar [options] [input file]</code>
- <p>To view a list of all available parameters please run with <code>--help</code> option:
- <p><code>java -jar htmlcompressor.jar --help</code>
+ <p>Usage: <code>java -jar htmlcompressor.jar [options] [input]</code>
+ <p>To view a list of all available parameters please run with <code>-?</code> option:
+ <p><code>java -jar htmlcompressor.jar -?</code>
 <P>
 
 <P>
@@ -125,7 +125,7 @@ Wrapper for HTML and XML compressor classes that allows using them from a comman
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../com/googlecode/htmlcompressor/CmdLineCompressor.html#CmdLineCompressor()">CmdLineCompressor</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../com/googlecode/htmlcompressor/CmdLineCompressor.html#CmdLineCompressor(java.lang.String[])">CmdLineCompressor</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -142,16 +142,16 @@ Wrapper for HTML and XML compressor classes that allows using them from a comman
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../com/googlecode/htmlcompressor/CmdLineCompressor.html#init(java.lang.String[])">init</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</CODE>
+<CODE>static&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../com/googlecode/htmlcompressor/CmdLineCompressor.html#main(java.lang.String[])">main</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../com/googlecode/htmlcompressor/CmdLineCompressor.html#main(java.lang.String[])">main</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</CODE>
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../com/googlecode/htmlcompressor/CmdLineCompressor.html#process(java.lang.String[])">process</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -179,10 +179,10 @@ Wrapper for HTML and XML compressor classes that allows using them from a comman
 </TR>
 </TABLE>
 
-<A NAME="CmdLineCompressor()"><!-- --></A><H3>
+<A NAME="CmdLineCompressor(java.lang.String[])"><!-- --></A><H3>
 CmdLineCompressor</H3>
 <PRE>
-public <B>CmdLineCompressor</B>()</PRE>
+public <B>CmdLineCompressor</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</PRE>
 <DL>
 </DL>
 
@@ -207,10 +207,10 @@ public static void <B>main</B>(<A HREF="http://download.oracle.com/javase/6/docs
 </DL>
 <HR>
 
-<A NAME="init(java.lang.String[])"><!-- --></A><H3>
-init</H3>
+<A NAME="process(java.lang.String[])"><!-- --></A><H3>
+process</H3>
 <PRE>
-public void <B>init</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</PRE>
+public void <B>process</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>[]&nbsp;args)</PRE>
 <DL>
 <DD><DL>
 </DL>

@@ -15,6 +15,7 @@ package com.googlecode.htmlcompressor;
  */
 
 import jargs.gnu.CmdLineParser;
+import jargs.gnu.CmdLineParser.Option;
 import jargs.gnu.CmdLineParser.OptionException;
 
 import java.io.BufferedReader;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -48,9 +50,9 @@ import com.googlecode.htmlcompressor.compressor.XmlCompressor;
 /**
  * Wrapper for HTML and XML compressor classes that allows using them from a command line.
  * 
- * <p>Usage: <code>java -jar htmlcompressor.jar [options] [input file]</code>
- * <p>To view a list of all available parameters please run with <code>--help</code> option:
- * <p><code>java -jar htmlcompressor.jar --help</code>
+ * <p>Usage: <code>java -jar htmlcompressor.jar [options] [input]</code>
+ * <p>To view a list of all available parameters please run with <code>-?</code> option:
+ * <p><code>java -jar htmlcompressor.jar -?</code>
  * 
  * @author <a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a>
  */
@@ -58,82 +60,194 @@ public class CmdLineCompressor {
 
 	private static final Pattern urlPattern = Pattern.compile("^https?://.*$", Pattern.CASE_INSENSITIVE);
 	
-	private static CmdLineParser parser = new CmdLineParser();
+	private boolean helpOpt;
+	private boolean analyzeOpt;
+	private String charsetOpt;
+	private String outputFilenameOpt;
+	private String patternsFilenameOpt;
+	private String typeOpt;
+	private String filemaskOpt;
+	private boolean recursiveOpt;
+	private boolean preserveCommentsOpt;
+	private boolean preserveIntertagSpacesOpt;
+	private boolean preserveMultiSpacesOpt;
+	private boolean removeIntertagSpacesOpt;
+	private boolean removeQuotesOpt;
+	private String removeSurroundingSpacesOpt;
+	private boolean preserveLineBreaksOpt;
+	private boolean preservePhpTagsOpt;
+	private boolean preserveServerScriptTagsOpt;
+	private boolean preserveSsiTagsOpt;
+	private boolean compressJsOpt;
+	private boolean compressCssOpt;
+	private String jsCompressorOpt;
 
-	private static CmdLineParser.Option helpOpt = parser.addBooleanOption('h', "help");
-	private static CmdLineParser.Option analyzeOpt = parser.addBooleanOption('a', "analyze");
-	private static CmdLineParser.Option charsetOpt = parser.addStringOption('c', "charset");
-	private static CmdLineParser.Option outputFilenameOpt = parser.addStringOption('o', "output");
-	private static CmdLineParser.Option patternsFilenameOpt = parser.addStringOption('p', "preserve");
-	private static CmdLineParser.Option typeOpt = parser.addStringOption('t', "type");
-	private static CmdLineParser.Option filemaskOpt = parser.addStringOption('m', "mask");
-	private static CmdLineParser.Option preserveCommentsOpt = parser.addBooleanOption("preserve-comments");
-	private static CmdLineParser.Option preserveIntertagSpacesOpt = parser.addBooleanOption("preserve-intertag-spaces");
-	private static CmdLineParser.Option preserveMultiSpacesOpt = parser.addBooleanOption("preserve-multi-spaces");
-	private static CmdLineParser.Option removeIntertagSpacesOpt = parser.addBooleanOption("remove-intertag-spaces");
-	private static CmdLineParser.Option removeQuotesOpt = parser.addBooleanOption("remove-quotes");
-	private static CmdLineParser.Option preserveLineBreaksOpt = parser.addBooleanOption("preserve-line-breaks");
-	private static CmdLineParser.Option preservePhpTagsOpt = parser.addBooleanOption("preserve-php");
-	private static CmdLineParser.Option preserveServerScriptTagsOpt = parser.addBooleanOption("preserve-server-script");
-	private static CmdLineParser.Option preserveSsiTagsOpt = parser.addBooleanOption("preserve-ssi");
-	private static CmdLineParser.Option compressJsOpt = parser.addBooleanOption("compress-js");
-	private static CmdLineParser.Option compressCssOpt = parser.addBooleanOption("compress-css");
-	private static CmdLineParser.Option jsCompressorOpt = parser.addStringOption("js-compressor");
-	
-	private static CmdLineParser.Option simpleDoctypeOpt = parser.addBooleanOption("simple-doctype");
-	private static CmdLineParser.Option removeScriptAttributesOpt = parser.addBooleanOption("remove-script-attr");
-	private static CmdLineParser.Option removeStyleAttributesOpt = parser.addBooleanOption("remove-style-attr");
-	private static CmdLineParser.Option removeLinkAttributesOpt = parser.addBooleanOption("remove-link-attr");
-	private static CmdLineParser.Option removeFormAttributesOpt = parser.addBooleanOption("remove-form-attr");
-	private static CmdLineParser.Option removeInputAttributesOpt = parser.addBooleanOption("remove-input-attr");
-	private static CmdLineParser.Option simpleBooleanAttributesOpt = parser.addBooleanOption("simple-bool-attr");
-	private static CmdLineParser.Option removeJavaScriptProtocolOpt = parser.addBooleanOption("remove-js-protocol");
-	private static CmdLineParser.Option removeHttpProtocolOpt = parser.addBooleanOption("remove-http-protocol");
-	private static CmdLineParser.Option removeHttpsProtocolOpt = parser.addBooleanOption("remove-https-protocol");
+	private boolean simpleDoctypeOpt;
+	private boolean removeScriptAttributesOpt;
+	private boolean removeStyleAttributesOpt;
+	private boolean removeLinkAttributesOpt;
+	private boolean removeFormAttributesOpt;
+	private boolean removeInputAttributesOpt;
+	private boolean simpleBooleanAttributesOpt;
+	private boolean removeJavaScriptProtocolOpt;
+	private boolean removeHttpProtocolOpt;
+	private boolean removeHttpsProtocolOpt;
 
-	private static CmdLineParser.Option nomungeOpt = parser.addBooleanOption("nomunge");
-	private static CmdLineParser.Option linebreakOpt = parser.addStringOption("line-break");
-	private static CmdLineParser.Option preserveSemiOpt = parser.addBooleanOption("preserve-semi");
-	private static CmdLineParser.Option disableOptimizationsOpt = parser.addBooleanOption("disable-optimizations");
+	private boolean nomungeOpt;
+	private int linebreakOpt;
+	private boolean preserveSemiOpt;
+	private boolean disableOptimizationsOpt;
 	
-	private static CmdLineParser.Option closureOptLevelOpt = parser.addStringOption("closure-opt-level");
-	private static CmdLineParser.Option closureCustomExternsOnly = parser.addBooleanOption("closure-custom-externs-only");
-	private static CmdLineParser.Option closureExterns = parser.addStringOption("closure-externs");
+	private String closureOptLevelOpt;
+	private boolean closureCustomExternsOnlyOpt;
+	private List<String> closureExternsOpt;
+	
+	private String[] fileArgsOpt;
 	
 	public static void main(String[] args) {
-		CmdLineCompressor cmdLineCompressor = new CmdLineCompressor();
-		cmdLineCompressor.init(args);
+		CmdLineCompressor cmdLineCompressor = new CmdLineCompressor(args);
+		cmdLineCompressor.process(args);
 	}
 	
-	public void init(String[] args) {
+	public CmdLineCompressor(String[] args) {
+		CmdLineParser parser = new CmdLineParser();
+
+		Option helpOpt = parser.addBooleanOption('h', "help");
+		Option helpOptAlt = parser.addBooleanOption('?', "help_alt");
+		Option analyzeOpt = parser.addBooleanOption('a', "analyze");
+		Option recursiveOpt = parser.addBooleanOption('r', "recursive");
+		Option charsetOpt = parser.addStringOption('c', "charset");
+		Option outputFilenameOpt = parser.addStringOption('o', "output");
+		Option patternsFilenameOpt = parser.addStringOption('p', "preserve");
+		Option typeOpt = parser.addStringOption('t', "type");
+		Option filemaskOpt = parser.addStringOption('m', "mask");
+		Option preserveCommentsOpt = parser.addBooleanOption("preserve-comments");
+		Option preserveIntertagSpacesOpt = parser.addBooleanOption("preserve-intertag-spaces");
+		Option preserveMultiSpacesOpt = parser.addBooleanOption("preserve-multi-spaces");
+		Option removeIntertagSpacesOpt = parser.addBooleanOption("remove-intertag-spaces");
+		Option removeSurroundingSpacesOpt = parser.addStringOption("remove-surrounding-spaces");
+		Option removeQuotesOpt = parser.addBooleanOption("remove-quotes");
+		Option preserveLineBreaksOpt = parser.addBooleanOption("preserve-line-breaks");
+		Option preservePhpTagsOpt = parser.addBooleanOption("preserve-php");
+		Option preserveServerScriptTagsOpt = parser.addBooleanOption("preserve-server-script");
+		Option preserveSsiTagsOpt = parser.addBooleanOption("preserve-ssi");
+		Option compressJsOpt = parser.addBooleanOption("compress-js");
+		Option compressCssOpt = parser.addBooleanOption("compress-css");
+		Option jsCompressorOpt = parser.addStringOption("js-compressor");
+		
+		Option simpleDoctypeOpt = parser.addBooleanOption("simple-doctype");
+		Option removeScriptAttributesOpt = parser.addBooleanOption("remove-script-attr");
+		Option removeStyleAttributesOpt = parser.addBooleanOption("remove-style-attr");
+		Option removeLinkAttributesOpt = parser.addBooleanOption("remove-link-attr");
+		Option removeFormAttributesOpt = parser.addBooleanOption("remove-form-attr");
+		Option removeInputAttributesOpt = parser.addBooleanOption("remove-input-attr");
+		Option simpleBooleanAttributesOpt = parser.addBooleanOption("simple-bool-attr");
+		Option removeJavaScriptProtocolOpt = parser.addBooleanOption("remove-js-protocol");
+		Option removeHttpProtocolOpt = parser.addBooleanOption("remove-http-protocol");
+		Option removeHttpsProtocolOpt = parser.addBooleanOption("remove-https-protocol");
+
+		Option nomungeOpt = parser.addBooleanOption("nomunge");
+		Option linebreakOpt = parser.addStringOption("line-break");
+		Option preserveSemiOpt = parser.addBooleanOption("preserve-semi");
+		Option disableOptimizationsOpt = parser.addBooleanOption("disable-optimizations");
+		
+		Option closureOptLevelOpt = parser.addStringOption("closure-opt-level");
+		Option closureCustomExternsOnlyOpt = parser.addBooleanOption("closure-custom-externs-only");
+		Option closureExternsOpt = parser.addStringOption("closure-externs");
+		
 		try {
 			parser.parse(args);
+			
+			this.helpOpt = (Boolean)parser.getOptionValue(helpOpt, false) || (Boolean)parser.getOptionValue(helpOptAlt, false);
+			this.analyzeOpt = (Boolean)parser.getOptionValue(analyzeOpt, false);
+			this.recursiveOpt = (Boolean)parser.getOptionValue(recursiveOpt, false);
+			this.charsetOpt = (String)parser.getOptionValue(charsetOpt, "UTF-8");
+			this.outputFilenameOpt = (String)parser.getOptionValue(outputFilenameOpt);
+			this.patternsFilenameOpt = (String)parser.getOptionValue(patternsFilenameOpt);
+			this.typeOpt = (String)parser.getOptionValue(typeOpt);
+			this.filemaskOpt = (String)parser.getOptionValue(filemaskOpt);
+			this.preserveCommentsOpt = (Boolean)parser.getOptionValue(preserveCommentsOpt, false);
+			this.preserveIntertagSpacesOpt = (Boolean)parser.getOptionValue(preserveIntertagSpacesOpt, false);
+			this.preserveMultiSpacesOpt = (Boolean)parser.getOptionValue(preserveMultiSpacesOpt, false);
+			this.removeIntertagSpacesOpt = (Boolean)parser.getOptionValue(removeIntertagSpacesOpt, false);
+			this.removeQuotesOpt = (Boolean)parser.getOptionValue(removeQuotesOpt, false);
+			this.preserveLineBreaksOpt = (Boolean)parser.getOptionValue(preserveLineBreaksOpt, false);
+			this.preservePhpTagsOpt = (Boolean)parser.getOptionValue(preservePhpTagsOpt, false);
+			this.preserveServerScriptTagsOpt = (Boolean)parser.getOptionValue(preserveServerScriptTagsOpt, false);
+			this.preserveSsiTagsOpt = (Boolean)parser.getOptionValue(preserveSsiTagsOpt, false);
+			this.compressJsOpt = (Boolean)parser.getOptionValue(compressJsOpt, false);
+			this.compressCssOpt = (Boolean)parser.getOptionValue(compressCssOpt, false);
+			this.jsCompressorOpt = (String)parser.getOptionValue(jsCompressorOpt, HtmlCompressor.JS_COMPRESSOR_YUI);
+			
+			this.simpleDoctypeOpt = (Boolean)parser.getOptionValue(simpleDoctypeOpt, false);
+			this.removeScriptAttributesOpt = (Boolean)parser.getOptionValue(removeScriptAttributesOpt, false);
+			this.removeStyleAttributesOpt = (Boolean)parser.getOptionValue(removeStyleAttributesOpt, false);
+			this.removeLinkAttributesOpt = (Boolean)parser.getOptionValue(removeLinkAttributesOpt, false);
+			this.removeFormAttributesOpt = (Boolean)parser.getOptionValue(removeFormAttributesOpt, false);
+			this.removeInputAttributesOpt = (Boolean)parser.getOptionValue(removeInputAttributesOpt, false);
+			this.simpleBooleanAttributesOpt = (Boolean)parser.getOptionValue(simpleBooleanAttributesOpt, false);
+			this.removeJavaScriptProtocolOpt = (Boolean)parser.getOptionValue(removeJavaScriptProtocolOpt, false);
+			this.removeHttpProtocolOpt = (Boolean)parser.getOptionValue(removeHttpProtocolOpt, false);
+			this.removeHttpsProtocolOpt = (Boolean)parser.getOptionValue(removeHttpsProtocolOpt, false);
 
-			// help
-			Boolean help = (Boolean) parser.getOptionValue(helpOpt);
-			if (help != null && help.booleanValue()) {
-				printUsage();
-				return;
-			} else {
-				//look for "/?" and "-?"
-				for(int i=0;i<args.length;i++) {
-					if(args[i].equals("/?") || args[i].equals("-?")) {
-						printUsage();
-						return;
-					}
+			this.nomungeOpt = (Boolean)parser.getOptionValue(nomungeOpt, false);
+			this.linebreakOpt = (Integer)parser.getOptionValue(linebreakOpt, -1);
+			this.preserveSemiOpt = (Boolean)parser.getOptionValue(preserveSemiOpt, false);
+			this.disableOptimizationsOpt = (Boolean)parser.getOptionValue(disableOptimizationsOpt, false);
+
+			this.closureOptLevelOpt = (String)parser.getOptionValue(closureOptLevelOpt, ClosureJavaScriptCompressor.COMPILATION_LEVEL_SIMPLE);
+			this.closureCustomExternsOnlyOpt = (Boolean)parser.getOptionValue(closureCustomExternsOnlyOpt, false);
+			
+			this.closureExternsOpt = parser.getOptionValues(closureExternsOpt);
+			
+			this.removeSurroundingSpacesOpt = (String)parser.getOptionValue(removeSurroundingSpacesOpt);
+			if(this.removeSurroundingSpacesOpt != null) {
+				if(this.removeSurroundingSpacesOpt.equalsIgnoreCase("min")) {
+					this.removeSurroundingSpacesOpt = HtmlCompressor.BLOCK_TAGS_MIN;
+				} else if(this.removeSurroundingSpacesOpt.equalsIgnoreCase("max")) {
+					this.removeSurroundingSpacesOpt = HtmlCompressor.BLOCK_TAGS_MAX;
+				} else if(this.removeSurroundingSpacesOpt.equalsIgnoreCase("all")) {
+					this.removeSurroundingSpacesOpt = HtmlCompressor.ALL_TAGS;
 				}
 			}
+			
+			//input file
+			this.fileArgsOpt = parser.getRemainingArgs();
+			
+			//charset
+			this.charsetOpt = Charset.isSupported(this.charsetOpt) ? this.charsetOpt : "UTF-8";
+			
+			//look for "/?"
+			for(int i=0;i<args.length;i++) {
+				if(args[i].equals("/?")) {
+					this.helpOpt = true;
+					break;
+				}
+			}
+			
+		} catch (OptionException e) {
+			System.out.println("ERROR: " + e.getMessage());
+			printUsage();
+		}
+		
+	}
+	
+	public void process(String[] args) {
+		try {
 
-			// input file
-			String[] fileArgs = parser.getRemainingArgs();
-
+			// help
+			if (helpOpt) {
+				printUsage();
+				return;
+			}
+			
 			// type
-			String type = (String) parser.getOptionValue(typeOpt);
+			String type = typeOpt;
 			if (type != null && !type.equalsIgnoreCase("html") && !type.equalsIgnoreCase("xml")) {
 				throw new IllegalArgumentException("Unknown type: " + type);
 			}
 
-			if (fileArgs.length == 0) {
+			if (fileArgsOpt.length == 0) {
 				// html by default for stdin
 				if (type == null) {
 					type = "html";
@@ -141,7 +255,7 @@ public class CmdLineCompressor {
 			} else {
 				// detect type from extension
 				if (type == null) {
-					if(fileArgs[0].toLowerCase().endsWith(".xml")) {
+					if(fileArgsOpt[0].toLowerCase().endsWith(".xml")) {
 						type = "xml";
 					} else {
 						type = "html";
@@ -149,10 +263,10 @@ public class CmdLineCompressor {
 				}
 			}
 			
-			if((parser.getOptionValue(analyzeOpt) != null)) {
+			if(analyzeOpt) {
 				//analyzer mode
-				HtmlAnalyzer analyzer = new HtmlAnalyzer();
-				analyzer.analyze(readResource(buildReader(fileArgs.length > 0 ? fileArgs[0] : null)));
+				HtmlAnalyzer analyzer = new HtmlAnalyzer(HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase(jsCompressorOpt) ? HtmlCompressor.JS_COMPRESSOR_CLOSURE : HtmlCompressor.JS_COMPRESSOR_YUI);
+				analyzer.analyze(readResource(buildReader(fileArgsOpt.length > 0 ? fileArgsOpt[0] : null)));
 			} else {
 				//compression mode
 				Compressor compressor = type.equals("xml") ? createXmlCompressor() : createHtmlCompressor();
@@ -163,8 +277,7 @@ public class CmdLineCompressor {
 			}	
 
 		} catch (NoClassDefFoundError e){
-			boolean useClosureCompressor = HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase((String) parser.getOptionValue(jsCompressorOpt));
-			if(useClosureCompressor) {
+			if(HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase(jsCompressorOpt)) {
 				System.out.println("ERROR: For JavaScript compression using Google Closure Compiler\n" +
 						"additional jar file called compiler.jar must be present\n" +
 						"in the same directory as HtmlCompressor jar");
@@ -186,50 +299,31 @@ public class CmdLineCompressor {
 	
 	private Compressor createHtmlCompressor() throws IllegalArgumentException, OptionException {
 		
-		boolean useClosureCompressor = false;
-		
-		// charset
-		String charset = getCharset();
-
-		//line break
-		int linebreakpos = -1;
-		String linebreakstr = (String) parser.getOptionValue(linebreakOpt);
-		if (linebreakstr != null) {
-			try {
-				linebreakpos = Integer.parseInt(linebreakstr, 10);
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException();
-			}
-		}
-
-		boolean compressJavaScript = (parser.getOptionValue(compressJsOpt) != null);
-		boolean compressCss = parser.getOptionValue(compressCssOpt) != null;
-		useClosureCompressor = HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase((String) parser.getOptionValue(jsCompressorOpt));
+		boolean useClosureCompressor = HtmlCompressor.JS_COMPRESSOR_CLOSURE.equalsIgnoreCase(jsCompressorOpt);
 		
 		//custom preserve patterns
 		List<Pattern> preservePatterns = new ArrayList<Pattern>();
 		
 		//predefined
-		if(parser.getOptionValue(preservePhpTagsOpt) != null) {
+		if(preservePhpTagsOpt) {
 			preservePatterns.add(HtmlCompressor.PHP_TAG_PATTERN);
 		}
 		
-		if(parser.getOptionValue(preserveServerScriptTagsOpt) != null) {
+		if(preserveServerScriptTagsOpt) {
 			preservePatterns.add(HtmlCompressor.SERVER_SCRIPT_TAG_PATTERN);
 		}
 
-		if(parser.getOptionValue(preserveSsiTagsOpt) != null) {
+		if(preserveSsiTagsOpt) {
 			preservePatterns.add(HtmlCompressor.SERVER_SIDE_INCLUDE_PATTERN);
 		}
 		
-		String patternsFilename = (String) parser.getOptionValue(patternsFilenameOpt);
-		if(patternsFilename != null) {
+		if(patternsFilenameOpt != null) {
 			
 			BufferedReader patternsIn = null;
 			try {
 
 				//read input file
-				patternsIn = new BufferedReader(new InputStreamReader(new FileInputStream(patternsFilename), charset));
+				patternsIn = new BufferedReader(new InputStreamReader(new FileInputStream(patternsFilenameOpt), charsetOpt));
 	
 				String line = null;
 				while ((line = patternsIn.readLine()) != null){
@@ -251,52 +345,51 @@ public class CmdLineCompressor {
 		//set compressor options
 		HtmlCompressor htmlCompressor = new HtmlCompressor();
 		
-		htmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
-		htmlCompressor.setRemoveMultiSpaces(parser.getOptionValue(preserveMultiSpacesOpt) == null);
-		htmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(removeIntertagSpacesOpt) != null);
-		htmlCompressor.setRemoveQuotes(parser.getOptionValue(removeQuotesOpt) != null);
-		htmlCompressor.setPreserveLineBreaks(parser.getOptionValue(preserveLineBreaksOpt) != null);
-		htmlCompressor.setCompressJavaScript(compressJavaScript);
-		htmlCompressor.setCompressCss(compressCss);
+		htmlCompressor.setRemoveComments(!preserveCommentsOpt);
+		htmlCompressor.setRemoveMultiSpaces(!preserveMultiSpacesOpt);
+		htmlCompressor.setRemoveIntertagSpaces(removeIntertagSpacesOpt);
+		htmlCompressor.setRemoveQuotes(removeQuotesOpt);
+		htmlCompressor.setPreserveLineBreaks(preserveLineBreaksOpt);
+		htmlCompressor.setCompressJavaScript(compressJsOpt);
+		htmlCompressor.setCompressCss(compressCssOpt);
 
-		htmlCompressor.setSimpleDoctype(parser.getOptionValue(simpleDoctypeOpt) != null);
-		htmlCompressor.setRemoveScriptAttributes(parser.getOptionValue(removeScriptAttributesOpt) != null);
-		htmlCompressor.setRemoveStyleAttributes(parser.getOptionValue(removeStyleAttributesOpt) != null);
-		htmlCompressor.setRemoveLinkAttributes(parser.getOptionValue(removeLinkAttributesOpt) != null);
-		htmlCompressor.setRemoveFormAttributes(parser.getOptionValue(removeFormAttributesOpt) != null);
-		htmlCompressor.setRemoveInputAttributes(parser.getOptionValue(removeInputAttributesOpt) != null);
-		htmlCompressor.setSimpleBooleanAttributes(parser.getOptionValue(simpleBooleanAttributesOpt) != null);
-		htmlCompressor.setRemoveJavaScriptProtocol(parser.getOptionValue(removeJavaScriptProtocolOpt) != null);
-		htmlCompressor.setRemoveHttpProtocol(parser.getOptionValue(removeHttpProtocolOpt) != null);
-		htmlCompressor.setRemoveHttpsProtocol(parser.getOptionValue(removeHttpsProtocolOpt) != null);
+		htmlCompressor.setSimpleDoctype(simpleDoctypeOpt);
+		htmlCompressor.setRemoveScriptAttributes(removeScriptAttributesOpt);
+		htmlCompressor.setRemoveStyleAttributes(removeStyleAttributesOpt);
+		htmlCompressor.setRemoveLinkAttributes(removeLinkAttributesOpt);
+		htmlCompressor.setRemoveFormAttributes(removeFormAttributesOpt);
+		htmlCompressor.setRemoveInputAttributes(removeInputAttributesOpt);
+		htmlCompressor.setSimpleBooleanAttributes(simpleBooleanAttributesOpt);
+		htmlCompressor.setRemoveJavaScriptProtocol(removeJavaScriptProtocolOpt);
+		htmlCompressor.setRemoveHttpProtocol(removeHttpProtocolOpt);
+		htmlCompressor.setRemoveHttpsProtocol(removeHttpsProtocolOpt);
+		htmlCompressor.setRemoveSurroundingSpaces(removeSurroundingSpacesOpt);
 		
 		htmlCompressor.setPreservePatterns(preservePatterns);
 
-		htmlCompressor.setYuiJsNoMunge(parser.getOptionValue(nomungeOpt) != null);
-		htmlCompressor.setYuiJsPreserveAllSemiColons(parser.getOptionValue(preserveSemiOpt) != null);
-		htmlCompressor.setYuiJsDisableOptimizations(parser.getOptionValue(disableOptimizationsOpt) != null);
-		htmlCompressor.setYuiJsLineBreak(linebreakpos);
-		htmlCompressor.setYuiCssLineBreak(linebreakpos);
+		htmlCompressor.setYuiJsNoMunge(nomungeOpt);
+		htmlCompressor.setYuiJsPreserveAllSemiColons(preserveSemiOpt);
+		htmlCompressor.setYuiJsDisableOptimizations(disableOptimizationsOpt);
+		htmlCompressor.setYuiJsLineBreak(linebreakOpt);
+		htmlCompressor.setYuiCssLineBreak(linebreakOpt);
 		
 		//switch js compressor to closure
-		if(compressJavaScript && useClosureCompressor) {
+		if(compressJsOpt && useClosureCompressor) {
 			ClosureJavaScriptCompressor closureCompressor = new ClosureJavaScriptCompressor();
 
-			String closureOptLevel = (String) parser.getOptionValue(closureOptLevelOpt);
-			if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
+			if(closureOptLevelOpt.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_ADVANCED)) {
 				closureCompressor.setCompilationLevel(CompilationLevel.ADVANCED_OPTIMIZATIONS);
-				closureCompressor.setCustomExternsOnly(parser.getOptionValue(closureCustomExternsOnly) != null);
+				closureCompressor.setCustomExternsOnly(closureCustomExternsOnlyOpt);
 				
 				//get externs
-				List<String> externFiles = parser.getOptionValues(closureExterns);
-				if(externFiles.size() > 0) {
+				if(closureExternsOpt.size() > 0) {
 					List<JSSourceFile> externs = new ArrayList<JSSourceFile>();
-					for(String externFile : externFiles) {
+					for(String externFile : closureExternsOpt) {
 						externs.add(JSSourceFile.fromFile(externFile));
 					}
 					closureCompressor.setExterns(externs);
 				}
-			} else if(closureOptLevel != null && closureOptLevel.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
+			} else if(closureOptLevelOpt.equalsIgnoreCase(ClosureJavaScriptCompressor.COMPILATION_LEVEL_WHITESPACE)) {
 				closureCompressor.setCompilationLevel(CompilationLevel.WHITESPACE_ONLY);
 			} else {
 				closureCompressor.setCompilationLevel(CompilationLevel.SIMPLE_OPTIMIZATIONS);
@@ -310,8 +403,8 @@ public class CmdLineCompressor {
 	
 	private Compressor createXmlCompressor() throws IllegalArgumentException, OptionException {
 		XmlCompressor xmlCompressor = new XmlCompressor();
-		xmlCompressor.setRemoveComments(parser.getOptionValue(preserveCommentsOpt) == null);
-		xmlCompressor.setRemoveIntertagSpaces(parser.getOptionValue(preserveIntertagSpacesOpt) == null);
+		xmlCompressor.setRemoveComments(!preserveCommentsOpt);
+		xmlCompressor.setRemoveIntertagSpaces(!preserveIntertagSpacesOpt);
 			
 		return xmlCompressor;
 	}
@@ -319,65 +412,79 @@ public class CmdLineCompressor {
 	private Map<String, String> buildInputOutputMap() throws IllegalArgumentException, IOException {
 		Map<String, String> map = new HashMap<String, String>();
 		
-		String type = (String) parser.getOptionValue(typeOpt);
-		String filemask = (String) parser.getOptionValue(filemaskOpt);
-		
-		
-		String[] fileArgs = parser.getRemainingArgs();
-
 		File outpuFile = null;
-		String outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
-		if(outputFilename != null) {
-			outpuFile = new File(outputFilename);
+		if(outputFilenameOpt != null) {
+			outpuFile = new File(outputFilenameOpt);
 			
 			//make dirs
-			if(outputFilename.endsWith("/") || outputFilename.endsWith("\\")) {
+			if(outputFilenameOpt.endsWith("/") || outputFilenameOpt.endsWith("\\")) {
 				outpuFile.mkdirs();
 			} else {
 				(new File(outpuFile.getCanonicalFile().getParent())).mkdirs();
 			}
 		}
 		
-		if(fileArgs.length > 1 && (outpuFile == null || !outpuFile.isDirectory())) {
-			throw new IllegalArgumentException("Output must be a directory");
+		if(fileArgsOpt.length > 1 && (outpuFile == null || !outpuFile.isDirectory())) {
+			throw new IllegalArgumentException("Output must be a directory and end with a slash (/)");
 		}
 		
-		if(fileArgs.length == 0) {
-			map.put(null, outputFilename);
+		if(fileArgsOpt.length == 0) {
+			map.put(null, outputFilenameOpt);
 		} else {
-			for(int i=0; i<fileArgs.length; i++) {
-				if(!urlPattern.matcher(fileArgs[i]).matches()) {
-					File inputFile = new File(fileArgs[i]);
+			for(int i=0; i<fileArgsOpt.length; i++) {
+				if(!urlPattern.matcher(fileArgsOpt[i]).matches()) {
+					File inputFile = new File(fileArgsOpt[i]);
 					if(inputFile.isDirectory()) {
 						//is dir
 						if(outpuFile != null && outpuFile.isDirectory()) {
-							for(File file : inputFile.listFiles(new CompressorFileFilter(type, filemask))) {
-								if(!file.isDirectory()) {
-									String from = file.getCanonicalPath();
-									String to = from.replaceFirst(escRegEx(inputFile.getCanonicalPath()), Matcher.quoteReplacement(outpuFile.getCanonicalPath())); 
-									map.put(from, to);
+							if(!recursiveOpt) {
+								//non-recursive
+								for(File file : inputFile.listFiles(new CompressorFileFilter(typeOpt, filemaskOpt, false))) {
+									if(!file.isDirectory()) {
+										String from = file.getCanonicalPath();
+										String to = from.replaceFirst(escRegEx(inputFile.getCanonicalPath()), Matcher.quoteReplacement(outpuFile.getCanonicalPath())); 
+										map.put(from, to);
+									}
 								}
+							} else {
+								//recursive
+								Stack<File> fileStack = new Stack<File>();
+								fileStack.push(inputFile);
+								while(!fileStack.isEmpty()) {
+									File child = fileStack.pop();
+									if (child.isDirectory()) {
+										for(File f : child.listFiles(new CompressorFileFilter(typeOpt, filemaskOpt, true))) {
+											fileStack.push(f);
+										}
+									} else if (child.isFile()) {
+										String from = child.getCanonicalPath();
+										String to = from.replaceFirst(escRegEx(inputFile.getCanonicalPath()), Matcher.quoteReplacement(outpuFile.getCanonicalPath())); 
+										map.put(from, to);
+										//make dirs
+										(new File((new File(to)).getCanonicalFile().getParent())).mkdirs();
+									}
+								}								
 							}
 						} else {
-							throw new IllegalArgumentException("Output must be a directory");
+							throw new IllegalArgumentException("Output must be a directory and end with a slash (/)");
 						}
 					} else {
 						//is file
 						if(outpuFile != null && outpuFile.isDirectory()) {
 							String from = inputFile.getCanonicalPath();
 							String to = from.replaceFirst(escRegEx(inputFile.getCanonicalFile().getParentFile().getCanonicalPath()), Matcher.quoteReplacement(outpuFile.getCanonicalPath())); 
-							map.put(fileArgs[i], to);
+							map.put(fileArgsOpt[i], to);
 						} else {
-							map.put(fileArgs[i], outputFilename);
+							map.put(fileArgsOpt[i], outputFilenameOpt);
 						}
 						
 					}
 				} else {
 					//is url
-					if(fileArgs.length == 1 && (outpuFile == null || !outpuFile.isDirectory())) {
-						map.put(null, outputFilename);
+					if(fileArgsOpt.length == 1 && (outpuFile == null || !outpuFile.isDirectory())) {
+						map.put(fileArgsOpt[i], outputFilenameOpt);
 					} else {
-						throw new IllegalArgumentException("Input from URL cannot have directory as output");
+						throw new IllegalArgumentException("Input URL should be single and cannot have directory as output");
 					}
 				}
 			}
@@ -386,33 +493,22 @@ public class CmdLineCompressor {
 		return map;
 	}
 	
-	private String getCharset() {
-		String charset = (String) parser.getOptionValue(charsetOpt);
-		if (charset == null || !Charset.isSupported(charset)) {
-			charset = "UTF-8";
-		}
-		return charset;
-	}
-	
 	private BufferedReader buildReader(String filename) throws IOException {
-		String charset = getCharset();
 		
 		if (filename == null) {
-			return new BufferedReader(new InputStreamReader(System.in, charset));
+			return new BufferedReader(new InputStreamReader(System.in, charsetOpt));
 		} else if(urlPattern.matcher(filename).matches()) {
 			return new BufferedReader(new InputStreamReader((new URL(filename)).openConnection().getInputStream()));
 		} else {
-			return new BufferedReader(new InputStreamReader(new FileInputStream(filename), charset));
+			return new BufferedReader(new InputStreamReader(new FileInputStream(filename), charsetOpt));
 		}
 	}
 
 	private Writer buildWriter(String filename) throws IOException {
-		String charset = getCharset();
-		
 		if (filename == null) {
-			return new OutputStreamWriter(System.out, charset);
+			return new OutputStreamWriter(System.out, charsetOpt);
 		} else {
-			return  new OutputStreamWriter(new FileOutputStream(filename), charset);
+			return  new OutputStreamWriter(new FileOutputStream(filename), charsetOpt);
 		}
 	}
 	
@@ -463,11 +559,13 @@ public class CmdLineCompressor {
 				+ "Global Options:\n"
 				+ " -?, /?, -h, --help            Displays this help screen\n"
 				+ " -t, --type <html|xml>         If not provided autodetects from file extension\n"
-				+ " -c, --charset <charset>       Read the input files using <charset>\n"
-				+ " -a, --analyze                 Compression report (all settings below ignored)\n"
+				+ " -r, --recursive               Process files inside subdirectories\n"
+				+ " -c, --charset <charset>       Charset for reading files, UTF-8 by default\n"
 				+ " -m, --mask <filemask>         Filter input files inside directories by mask\n"
 				+ " -o, --output <path>           Filename or directory for compression results.\n"
-				+ "                               If none provided outputs result to <stdout>\n\n"
+				+ "                               If none provided outputs result to <stdout>\n"
+				+ " -a, --analyze                 Tries different settings and displays report.\n"
+				+ "                               All settings except --js-compressor are ignored\n\n"
 	
 				+ "XML Compression Options:\n"
 				+ " --preserve-comments           Preserve comments\n"
@@ -489,6 +587,8 @@ public class CmdLineCompressor {
 				+ " --remove-js-protocol          Remove \"javascript:\" from inline event handlers\n"
 				+ " --remove-http-protocol        Remove \"http:\" from tag attributes\n"
 				+ " --remove-https-protocol       Remove \"https:\" from tag attributes\n"
+				+ " --remove-surrounding-spaces <min|max|all|custom_list>\n" 
+				+ "                               Predefined or custom comma separated list of tags\n"
 				+ " --compress-js                 Enable inline JavaScript compression\n"
 				+ " --compress-css                Enable inline CSS compression using YUICompressor\n"
 				+ " --js-compressor <yui|closure> Switch inline JavaScript compressor between\n"
@@ -526,8 +626,12 @@ public class CmdLineCompressor {
 	private class CompressorFileFilter implements FileFilter {
 		
 		private Pattern filemaskPattern;
+		private boolean withDirs;
 		
-		public CompressorFileFilter(String type, String filemask) {
+		public CompressorFileFilter(String type, String filemask, boolean withDirs) {
+			
+			this.withDirs = withDirs;
+			
 			if(filemask == null) {
 				if(type != null && type.equals("xml")) {
 					filemaskPattern = Pattern.compile("^.*\\.xml$", Pattern.CASE_INSENSITIVE);
@@ -536,10 +640,10 @@ public class CmdLineCompressor {
 				}
 			} else {
 				//turn mask into regexp
-				filemask = filemask.replaceAll(escRegEx("."), Matcher.quoteReplacement("\\.")); 	// "." -> "\."
-				filemask = filemask.replaceAll(escRegEx("*"), Matcher.quoteReplacement(".*"));		// "*" -> ".*"
-				filemask = filemask.replaceAll(escRegEx("?"), Matcher.quoteReplacement("."));		// "?" -> "."
-				filemask = filemask.replaceAll(escRegEx(";"), Matcher.quoteReplacement("$|^"));		// "," -> "$|^"
+				filemask = filemask.replaceAll(escRegEx("."), Matcher.quoteReplacement("\\."));
+				filemask = filemask.replaceAll(escRegEx("*"), Matcher.quoteReplacement(".*"));
+				filemask = filemask.replaceAll(escRegEx("?"), Matcher.quoteReplacement("."));
+				filemask = filemask.replaceAll(escRegEx(";"), Matcher.quoteReplacement("$|^"));
 				filemask = "^" + filemask + "$";
 				
 				filemaskPattern = Pattern.compile(filemask, Pattern.CASE_INSENSITIVE);
@@ -548,10 +652,15 @@ public class CmdLineCompressor {
 		
 		@Override
 		public boolean accept(File file) {
-			//take only matching non-dirs
-			if(!file.isDirectory()) {
-				return filemaskPattern.matcher(file.getName()).matches();
-			} 
+			if(!withDirs) {
+				//take only matching non-dirs
+				if(!file.isDirectory()) {
+					return filemaskPattern.matcher(file.getName()).matches();
+				}
+			} else {
+				//take matching files and dirs
+				return file.isDirectory() || filemaskPattern.matcher(file.getName()).matches();
+			}
 			return false;
 		}
 		

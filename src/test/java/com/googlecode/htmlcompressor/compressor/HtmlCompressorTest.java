@@ -276,6 +276,18 @@ public class HtmlCompressorTest {
 		assertEquals(result, compressor.compress(source));
 	}
 
+	@Test
+	public void testSurroundingSpaces() throws Exception {
+		String source = readResource("testSurroundingSpaces.html");
+		String result = readResource("testSurroundingSpacesResult.html");
+		
+		HtmlCompressor compressor = new HtmlCompressor();
+		compressor.setRemoveIntertagSpaces(true);
+		compressor.setRemoveSurroundingSpaces("p,br");
+		
+		assertEquals(result, compressor.compress(source));
+	}
+
 	private String readResource(String filename) {
 		
 		StringBuilder builder = new StringBuilder();

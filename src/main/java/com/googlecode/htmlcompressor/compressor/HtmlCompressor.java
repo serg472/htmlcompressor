@@ -61,6 +61,25 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public static final Pattern SERVER_SIDE_INCLUDE_PATTERN = Pattern.compile("<!--\\s*#.*?-->", Pattern.DOTALL);
 	
+	/**
+	 * Predefined list of tags that are very likely to be block-level. 
+	 * Could be passed to {@link #setRemoveSurroundingSpaces(String) setRemoveSurroundingSpaces} method.
+	 */
+	public static final String BLOCK_TAGS_MIN = "html,head,body,br,p";
+
+	/**
+	 * Predefined list of tags that are block-level by default, excluding <code>&lt;div></code> and <code>&lt;li></code> tags. 
+	 * Table tags are also included.
+	 * Could be passed to {@link #setRemoveSurroundingSpaces(String) setRemoveSurroundingSpaces} method.
+	 */
+	public static final String BLOCK_TAGS_MAX = BLOCK_TAGS_MIN + ",h1,h2,h3,h4,h5,h6,blockquote,center,dl,fieldset,form,frame,frameset,hr,noframes,ol,table,tbody,tr,td,th,tfoot,thead,ul";
+	
+	/**
+	 * Could be passed to {@link #setRemoveSurroundingSpaces(String) setRemoveSurroundingSpaces} method 
+	 * to remove all surrounding spaces (not recommended).
+	 */
+	public static final String ALL_TAGS = "all";
+	
 	private boolean enabled = true;
 	
 	//javascript and css compressor implementations
@@ -87,6 +106,7 @@ public class HtmlCompressor implements Compressor {
 	private boolean removeHttpProtocol = false;
 	private boolean removeHttpsProtocol = false;
 	private boolean preserveLineBreaks = false;
+	private String removeSurroundingSpaces = null;
 	
 	private List<Pattern> preservePatterns = null;
 	
@@ -150,6 +170,9 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern eventPattern1 = Pattern.compile("(\\son[a-z]+\\s*=\\s*\")([^\"\\\\\\r\\n]*(?:\\\\.[^\"\\\\\\r\\n]*)*)(\")", Pattern.CASE_INSENSITIVE); //unmasked: \son[a-z]+\s*=\s*"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"
 	protected static final Pattern eventPattern2 = Pattern.compile("(\\son[a-z]+\\s*=\\s*')([^'\\\\\\r\\n]*(?:\\\\.[^'\\\\\\r\\n]*)*)(')", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern lineBreakPattern = Pattern.compile("(?:\\p{Blank}*(\\r?\\n)\\p{Blank}*)+");
+	protected static final Pattern surroundingSpacesMinPattern = Pattern.compile("\\s*(</?(?:" + BLOCK_TAGS_MIN.replaceAll(",", "|") + ")(?:>|[\\s/][^>]*>))\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern surroundingSpacesMaxPattern = Pattern.compile("\\s*(</?(?:" + BLOCK_TAGS_MAX.replaceAll(",", "|") + ")(?:>|[\\s/][^>]*>))\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern surroundingSpacesAllPattern = Pattern.compile("\\s*(<[^>]+>)\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	
 	//patterns for searching for temporary replacements
 	protected static final Pattern tempCondCommentPattern = Pattern.compile("%%%~COMPRESS~COND~(\\d+?)~%%%");
@@ -545,7 +568,36 @@ public class HtmlCompressor implements Compressor {
 		//remove quotes from tag attributes
 		html = removeQuotesInsideTags(html);
 		
+		//remove surrounding spaces
+		html = removeSurroundingSpaces(html);
+		
 		return html.trim();
+	}
+	
+	protected String removeSurroundingSpaces(String html) {
+		//remove spaces around provided tags
+		if(removeSurroundingSpaces != null) {
+			Pattern pattern;
+			if(removeSurroundingSpaces.equalsIgnoreCase(BLOCK_TAGS_MIN)) {
+				pattern = surroundingSpacesMinPattern;
+			} else if(removeSurroundingSpaces.equalsIgnoreCase(BLOCK_TAGS_MAX)) {
+				pattern = surroundingSpacesMaxPattern;
+			} if(removeSurroundingSpaces.equalsIgnoreCase(ALL_TAGS)) {
+				pattern = surroundingSpacesAllPattern;
+			} else {
+				pattern = Pattern.compile("\\s*(</?(?:" + removeSurroundingSpaces.replaceAll(",", "|") + ")(?:>|[\\s/][^>]*>))\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+			}
+			
+			Matcher matcher = pattern.matcher(html);
+			StringBuffer sb = new StringBuffer();
+			while(matcher.find()) {
+				matcher.appendReplacement(sb, "$1");
+			}
+			matcher.appendTail(sb);
+			html = sb.toString();
+			
+		}
+		return html;
 	}
 
 	protected String removeQuotesInsideTags(String html) {
@@ -1281,6 +1333,11 @@ public class HtmlCompressor implements Compressor {
 	 * Priority between custom rules are defined by their position in a list 
 	 * (beginning of a list has higher priority).
 	 * 
+	 * <p>Besides custom patterns, you can use 3 predefined patterns: 
+	 * {@link #PHP_TAG_PATTERN PHP_TAG_PATTERN},
+	 * {@link #SERVER_SCRIPT_TAG_PATTERN SERVER_SCRIPT_TAG_PATTERN},
+	 * {@link #SERVER_SIDE_INCLUDE_PATTERN SERVER_SIDE_INCLUDE_PATTERN}.
+	 * 
 	 * @param preservePatterns List of <code>Pattern</code> objects that will be 
 	 * used to skip matched blocks during compression  
 	 */
@@ -1671,6 +1728,32 @@ public class HtmlCompressor implements Compressor {
 	 */
 	public void setPreserveLineBreaks(boolean preserveLineBreaks) {
 		this.preserveLineBreaks = preserveLineBreaks;
+	}
+
+	/**
+	 * Returns a comma separated list of tags around which spaces will be removed. 
+	 * 
+	 * @return a comma separated list of tags around which spaces will be removed. 
+	 */
+	public String getRemoveSurroundingSpaces() {
+		return removeSurroundingSpaces;
+	}
+
+	/**
+	 * Enables surrounding spaces removal around provided comma separated list of tags.
+	 * 
+	 * <p>Besides custom defined lists, you can pass one of 3 predefined lists of tags: 
+	 * {@link #BLOCK_TAGS_MIN BLOCK_TAGS_MIN},
+	 * {@link #BLOCK_TAGS_MAX BLOCK_TAGS_MAX},
+	 * {@link #ALL_TAGS ALL_TAGS}.
+	 * 
+	 * @param tagList a comma separated list of tags around which spaces will be removed
+	 */
+	public void setRemoveSurroundingSpaces(String tagList) {
+		if(tagList != null && tagList.length() == 0) {
+			tagList = null;
+		}
+		this.removeSurroundingSpaces = tagList;
 	}
 	
 }
