@@ -4,7 +4,7 @@
 <HEAD>
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE>
-HtmlCompressor (HTML Compressor and Minifier 1.5.1 API)
+HtmlCompressor (HTML Compressor and Minifier 1.5.2 API)
 </TITLE>
 
 
@@ -14,7 +14,7 @@ HtmlCompressor (HTML Compressor and Minifier 1.5.1 API)
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="HtmlCompressor (HTML Compressor and Minifier 1.5.1 API)";
+        parent.document.title="HtmlCompressor (HTML Compressor and Minifier 1.5.2 API)";
     }
 }
 </SCRIPT>
@@ -135,6 +135,31 @@ Class that compresses given HTML source by removing comments, extra spaces and
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#ALL_TAGS">ALL_TAGS</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method 
+ to remove all surrounding spaces (not recommended).</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MAX">BLOCK_TAGS_MAX</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Predefined list of tags that are block-level by default, excluding <code>&lt;div></code> and <code>&lt;li></code> tags.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MIN">BLOCK_TAGS_MIN</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Predefined list of tags that are very likely to be block-level.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#JS_COMPRESSOR_CLOSURE">JS_COMPRESSOR_CLOSURE</A></B></CODE>
 
 <BR>
@@ -232,6 +257,14 @@ Class that compresses given HTML source by removing comments, extra spaces and
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a list of Patterns defining custom preserving block rules</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getRemoveSurroundingSpaces()">getRemoveSurroundingSpaces</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a comma separated list of tags around which spaces will be removed.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -628,6 +661,14 @@ Class that compresses given HTML source by removing comments, extra spaces and
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)">setRemoveSurroundingSpaces</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;tagList)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enables surrounding spaces removal around provided comma separated list of tags.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setSimpleBooleanAttributes(boolean)">setSimpleBooleanAttributes</A></B>(boolean&nbsp;simpleBooleanAttributes)</CODE>
 
 <BR>
@@ -780,6 +821,46 @@ public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/u
 <P>
 <DL>
 </DL>
+</DL>
+<HR>
+
+<A NAME="BLOCK_TAGS_MIN"><!-- --></A><H3>
+BLOCK_TAGS_MIN</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>BLOCK_TAGS_MIN</B></PRE>
+<DL>
+<DD>Predefined list of tags that are very likely to be block-level. 
+ Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method.
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.BLOCK_TAGS_MIN">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="BLOCK_TAGS_MAX"><!-- --></A><H3>
+BLOCK_TAGS_MAX</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>BLOCK_TAGS_MAX</B></PRE>
+<DL>
+<DD>Predefined list of tags that are block-level by default, excluding <code>&lt;div></code> and <code>&lt;li></code> tags. 
+ Table tags are also included.
+ Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method.
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.BLOCK_TAGS_MAX">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="ALL_TAGS"><!-- --></A><H3>
+ALL_TAGS</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>ALL_TAGS</B></PRE>
+<DL>
+<DD>Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method 
+ to remove all surrounding spaces (not recommended).
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.ALL_TAGS">Constant Field Values</A></DL>
 </DL>
 
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
@@ -1312,6 +1393,11 @@ public void <B>setPreservePatterns</B>(<A HREF="http://download.oracle.com/javas
  <p>Custom preservation rules have higher priority than default rules.
  Priority between custom rules are defined by their position in a list 
  (beginning of a list has higher priority).
+ 
+ <p>Besides custom patterns, you can use 3 predefined patterns: 
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#PHP_TAG_PATTERN"><CODE>PHP_TAG_PATTERN</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#SERVER_SCRIPT_TAG_PATTERN"><CODE>SERVER_SCRIPT_TAG_PATTERN</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#SERVER_SIDE_INCLUDE_PATTERN"><CODE>SERVER_SIDE_INCLUDE_PATTERN</CODE></A>.
 <P>
 <DD><DL>
 </DL>
@@ -1922,6 +2008,44 @@ public void <B>setPreserveLineBreaks</B>(boolean&nbsp;preserveLineBreaks)</PRE>
 </DD>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>preserveLineBreaks</CODE> - set <code>true</code> to preserve line breaks</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getRemoveSurroundingSpaces()"><!-- --></A><H3>
+getRemoveSurroundingSpaces</H3>
+<PRE>
+public <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>getRemoveSurroundingSpaces</B>()</PRE>
+<DL>
+<DD>Returns a comma separated list of tags around which spaces will be removed.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>a comma separated list of tags around which spaces will be removed.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveSurroundingSpaces(java.lang.String)"><!-- --></A><H3>
+setRemoveSurroundingSpaces</H3>
+<PRE>
+public void <B>setRemoveSurroundingSpaces</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;tagList)</PRE>
+<DL>
+<DD>Enables surrounding spaces removal around provided comma separated list of tags.
+ 
+ <p>Besides custom defined lists, you can pass one of 3 predefined lists of tags: 
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MIN"><CODE>BLOCK_TAGS_MIN</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MAX"><CODE>BLOCK_TAGS_MAX</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#ALL_TAGS"><CODE>ALL_TAGS</CODE></A>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>tagList</CODE> - a comma separated list of tags around which spaces will be removed</DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
