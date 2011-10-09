@@ -12,7 +12,7 @@
   <!-- ====================================================================== -->
   <groupId>com.googlecode.htmlcompressor</groupId>
   <artifactId>htmlcompressor</artifactId>
-  <version>1.5.2-SNAPSHOT</version>
+  <version>1.5.2</version>
   <packaging>jar</packaging>
   
   <!-- ====================================================================== -->
@@ -237,9 +237,9 @@
     <url>http://code.google.com/p/htmlcompressor/issues/list</url>
   </issueManagement>
   <scm>
-    <connection>scm:svn:http://htmlcompressor.googlecode.com/svn/trunk/</connection>
-    <developerConnection>scm:svn:https://htmlcompressor.googlecode.com/svn/trunk/</developerConnection>
-    <url>http://code.google.com/p/htmlcompressor/source/browse/</url>
+    <connection>scm:svn:http://htmlcompressor.googlecode.com/svn/tags/htmlcompressor-1.5.2</connection>
+    <developerConnection>scm:svn:https://htmlcompressor.googlecode.com/svn/tags/htmlcompressor-1.5.2</developerConnection>
+    <url>http://code.google.com/p/htmlcompressor/source/browse/tags/htmlcompressor-1.5.2</url>
   </scm>
 
   <!-- ====================================================================== -->
