@@ -1,0 +1,822 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>
+HtmlCompressorTag (HTML Compressor and Minifier 1.5.2 API)
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="HtmlCompressorTag (HTML Compressor and Minifier 1.5.2 API)";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/HtmlCompressorTag.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/taglib/CssCompressorTag.html" title="class in com.googlecode.htmlcompressor.taglib"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/taglib/JavaScriptCompressorTag.html" title="class in com.googlecode.htmlcompressor.taglib"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../index.html?com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="HtmlCompressorTag.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+com.googlecode.htmlcompressor.taglib</FONT>
+<BR>
+Class HtmlCompressorTag</H2>
+<PRE>
+<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</A>
+  <IMG SRC="../../../../resources/inherit.gif" ALT="extended by ">javax.servlet.jsp.tagext.TagSupport
+      <IMG SRC="../../../../resources/inherit.gif" ALT="extended by ">javax.servlet.jsp.tagext.BodyTagSupport
+          <IMG SRC="../../../../resources/inherit.gif" ALT="extended by "><B>com.googlecode.htmlcompressor.taglib.HtmlCompressorTag</B>
+</PRE>
+<DL>
+<DT><B>All Implemented Interfaces:</B> <DD><A HREF="http://download.oracle.com/javase/6/docs/api/java/io/Serializable.html?is-external=true" title="class or interface in java.io">Serializable</A>, javax.servlet.jsp.tagext.BodyTag, javax.servlet.jsp.tagext.IterationTag, javax.servlet.jsp.tagext.JspTag, javax.servlet.jsp.tagext.Tag</DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public class <B>HtmlCompressorTag</B><DT>extends javax.servlet.jsp.tagext.BodyTagSupport</DL>
+</PRE>
+
+<P>
+JSP tag that compresses an HTML content within &lt;compress:html>.
+ Compression parameters are set by default (no JavaScript and CSS compression).
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD><a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a></DD>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>HtmlCompressor</CODE></A>, 
+<A HREF="../../../../serialized-form.html#com.googlecode.htmlcompressor.taglib.HtmlCompressorTag">Serialized Form</A></DL>
+<HR>
+
+<P>
+<!-- =========== FIELD SUMMARY =========== -->
+
+<A NAME="field_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Field Summary</B></FONT></TH>
+</TR>
+</TABLE>
+&nbsp;<A NAME="fields_inherited_from_class_javax.servlet.jsp.tagext.BodyTag"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Fields inherited from interface javax.servlet.jsp.tagext.BodyTag</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>EVAL_BODY_BUFFERED, EVAL_BODY_TAG</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="fields_inherited_from_class_javax.servlet.jsp.tagext.IterationTag"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Fields inherited from interface javax.servlet.jsp.tagext.IterationTag</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>EVAL_BODY_AGAIN</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="fields_inherited_from_class_javax.servlet.jsp.tagext.Tag"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Fields inherited from interface javax.servlet.jsp.tagext.Tag</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>EVAL_BODY_INCLUDE, EVAL_PAGE, SKIP_BODY, SKIP_PAGE</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#HtmlCompressorTag()">HtmlCompressorTag</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#doEndTag()">doEndTag</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setClosureOptLevel(java.lang.String)">setClosureOptLevel</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;closureOptLevel)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets level of optimization if <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a> is used 
+ for compressing inline JavaScript.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setCompressCss(boolean)">setCompressCss</A></B>(boolean&nbsp;compressCss)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setCompressJavaScript(boolean)">setCompressJavaScript</A></B>(boolean&nbsp;compressJavaScript)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setEnabled(boolean)">setEnabled</A></B>(boolean&nbsp;enabled)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setJsCompressor(java.lang.String)">setJsCompressor</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;jsCompressor)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets JavaScript compressor implementation that will be used 
+ to compress inline JavaScript in HTML.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setPreserveLineBreaks(boolean)">setPreserveLineBreaks</A></B>(boolean&nbsp;preserveLineBreaks)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveComments(boolean)">setRemoveComments</A></B>(boolean&nbsp;removeComments)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveFormAttributes(boolean)">setRemoveFormAttributes</A></B>(boolean&nbsp;removeFormAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveHttpProtocol(boolean)">setRemoveHttpProtocol</A></B>(boolean&nbsp;removeHttpProtocol)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveHttpsProtocol(boolean)">setRemoveHttpsProtocol</A></B>(boolean&nbsp;removeHttpsProtocol)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveInputAttributes(boolean)">setRemoveInputAttributes</A></B>(boolean&nbsp;removeInputAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveIntertagSpaces(boolean)">setRemoveIntertagSpaces</A></B>(boolean&nbsp;removeIntertagSpaces)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveJavaScriptProtocol(boolean)">setRemoveJavaScriptProtocol</A></B>(boolean&nbsp;removeJavaScriptProtocol)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveLinkAttributes(boolean)">setRemoveLinkAttributes</A></B>(boolean&nbsp;removeLinkAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveMultiSpaces(boolean)">setRemoveMultiSpaces</A></B>(boolean&nbsp;removeMultiSpaces)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveQuotes(boolean)">setRemoveQuotes</A></B>(boolean&nbsp;removeQuotes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveScriptAttributes(boolean)">setRemoveScriptAttributes</A></B>(boolean&nbsp;removeScriptAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setRemoveStyleAttributes(boolean)">setRemoveStyleAttributes</A></B>(boolean&nbsp;removeStyleAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setSimpleBooleanAttributes(boolean)">setSimpleBooleanAttributes</A></B>(boolean&nbsp;simpleBooleanAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setSimpleDoctype(boolean)">setSimpleDoctype</A></B>(boolean&nbsp;simpleDoctype)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setYuiCssLineBreak(int)">setYuiCssLineBreak</A></B>(int&nbsp;yuiCssLineBreak)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setYuiJsDisableOptimizations(boolean)">setYuiJsDisableOptimizations</A></B>(boolean&nbsp;yuiJsDisableOptimizations)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setYuiJsLineBreak(int)">setYuiJsLineBreak</A></B>(int&nbsp;yuiJsLineBreak)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setYuiJsNoMunge(boolean)">setYuiJsNoMunge</A></B>(boolean&nbsp;yuiJsNoMunge)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html#setYuiJsPreserveAllSemiColons(boolean)">setYuiJsPreserveAllSemiColons</A></B>(boolean&nbsp;yuiJsPreserveAllSemiColons)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_javax.servlet.jsp.tagext.BodyTagSupport"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class javax.servlet.jsp.tagext.BodyTagSupport</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>doAfterBody, doInitBody, doStartTag, getBodyContent, getPreviousOut, release, setBodyContent</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_javax.servlet.jsp.tagext.TagSupport"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class javax.servlet.jsp.tagext.TagSupport</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>findAncestorWithClass, getId, getParent, getValue, getValues, removeValue, setId, setPageContext, setParent, setValue</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long, int)" title="class or interface in java.lang">wait</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_javax.servlet.jsp.tagext.Tag"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from interface javax.servlet.jsp.tagext.Tag</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>getParent, setPageContext, setParent</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="HtmlCompressorTag()"><!-- --></A><H3>
+HtmlCompressorTag</H3>
+<PRE>
+public <B>HtmlCompressorTag</B>()</PRE>
+<DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="doEndTag()"><!-- --></A><H3>
+doEndTag</H3>
+<PRE>
+public int <B>doEndTag</B>()
+             throws javax.servlet.jsp.JspException</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE>doEndTag</CODE> in interface <CODE>javax.servlet.jsp.tagext.Tag</CODE><DT><B>Overrides:</B><DD><CODE>doEndTag</CODE> in class <CODE>javax.servlet.jsp.tagext.BodyTagSupport</CODE></DL>
+</DD>
+<DD><DL>
+
+<DT><B>Throws:</B>
+<DD><CODE>javax.servlet.jsp.JspException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setCompressJavaScript(boolean)"><!-- --></A><H3>
+setCompressJavaScript</H3>
+<PRE>
+public void <B>setCompressJavaScript</B>(boolean&nbsp;compressJavaScript)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setCompressJavaScript(boolean)"><CODE>HtmlCompressor.setCompressJavaScript(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setCompressCss(boolean)"><!-- --></A><H3>
+setCompressCss</H3>
+<PRE>
+public void <B>setCompressCss</B>(boolean&nbsp;compressCss)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setCompressCss(boolean)"><CODE>HtmlCompressor.setCompressCss(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsNoMunge(boolean)"><!-- --></A><H3>
+setYuiJsNoMunge</H3>
+<PRE>
+public void <B>setYuiJsNoMunge</B>(boolean&nbsp;yuiJsNoMunge)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsNoMunge(boolean)"><CODE>HtmlCompressor.setYuiJsNoMunge(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsPreserveAllSemiColons(boolean)"><!-- --></A><H3>
+setYuiJsPreserveAllSemiColons</H3>
+<PRE>
+public void <B>setYuiJsPreserveAllSemiColons</B>(boolean&nbsp;yuiJsPreserveAllSemiColons)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsPreserveAllSemiColons(boolean)"><CODE>HtmlCompressor.setYuiJsPreserveAllSemiColons(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsDisableOptimizations(boolean)"><!-- --></A><H3>
+setYuiJsDisableOptimizations</H3>
+<PRE>
+public void <B>setYuiJsDisableOptimizations</B>(boolean&nbsp;yuiJsDisableOptimizations)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsDisableOptimizations(boolean)"><CODE>HtmlCompressor.setYuiJsDisableOptimizations(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsLineBreak(int)"><!-- --></A><H3>
+setYuiJsLineBreak</H3>
+<PRE>
+public void <B>setYuiJsLineBreak</B>(int&nbsp;yuiJsLineBreak)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsLineBreak(int)"><CODE>HtmlCompressor.setYuiJsLineBreak(int)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiCssLineBreak(int)"><!-- --></A><H3>
+setYuiCssLineBreak</H3>
+<PRE>
+public void <B>setYuiCssLineBreak</B>(int&nbsp;yuiCssLineBreak)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiCssLineBreak(int)"><CODE>HtmlCompressor.setYuiCssLineBreak(int)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveQuotes(boolean)"><!-- --></A><H3>
+setRemoveQuotes</H3>
+<PRE>
+public void <B>setRemoveQuotes</B>(boolean&nbsp;removeQuotes)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveQuotes(boolean)"><CODE>HtmlCompressor.setRemoveQuotes(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setPreserveLineBreaks(boolean)"><!-- --></A><H3>
+setPreserveLineBreaks</H3>
+<PRE>
+public void <B>setPreserveLineBreaks</B>(boolean&nbsp;preserveLineBreaks)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setPreserveLineBreaks(boolean)"><CODE>HtmlCompressor.setPreserveLineBreaks(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setEnabled(boolean)"><!-- --></A><H3>
+setEnabled</H3>
+<PRE>
+public void <B>setEnabled</B>(boolean&nbsp;enabled)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setEnabled(boolean)"><CODE>HtmlCompressor.setEnabled(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveComments(boolean)"><!-- --></A><H3>
+setRemoveComments</H3>
+<PRE>
+public void <B>setRemoveComments</B>(boolean&nbsp;removeComments)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveComments(boolean)"><CODE>HtmlCompressor.setRemoveComments(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveMultiSpaces(boolean)"><!-- --></A><H3>
+setRemoveMultiSpaces</H3>
+<PRE>
+public void <B>setRemoveMultiSpaces</B>(boolean&nbsp;removeMultiSpaces)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveMultiSpaces(boolean)"><CODE>HtmlCompressor.setRemoveMultiSpaces(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveIntertagSpaces(boolean)"><!-- --></A><H3>
+setRemoveIntertagSpaces</H3>
+<PRE>
+public void <B>setRemoveIntertagSpaces</B>(boolean&nbsp;removeIntertagSpaces)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveIntertagSpaces(boolean)"><CODE>HtmlCompressor.setRemoveIntertagSpaces(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setJsCompressor(java.lang.String)"><!-- --></A><H3>
+setJsCompressor</H3>
+<PRE>
+public void <B>setJsCompressor</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;jsCompressor)</PRE>
+<DL>
+<DD>Sets JavaScript compressor implementation that will be used 
+ to compress inline JavaScript in HTML.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>jsCompressor</CODE> - Could be either <code>"yui"</code> for using <A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor</CODE></A> (used by default if none provided) or
+ <code>"closure"</code> for using <A HREF="../../../../com/googlecode/htmlcompressor/compressor/ClosureJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>ClosureJavaScriptCompressor</CODE></A><DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor</CODE></A>, 
+<A HREF="../../../../com/googlecode/htmlcompressor/compressor/ClosureJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>ClosureJavaScriptCompressor</CODE></A>, 
+<a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>, 
+<a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setClosureOptLevel(java.lang.String)"><!-- --></A><H3>
+setClosureOptLevel</H3>
+<PRE>
+public void <B>setClosureOptLevel</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;closureOptLevel)</PRE>
+<DL>
+<DD>Sets level of optimization if <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a> is used 
+ for compressing inline JavaScript.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>closureOptLevel</CODE> - Could be either <code>"simple"</code> (used by default), <code>"whitespace"</code> or <code>"advanced"</code><DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/ClosureJavaScriptCompressor.html#setCompilationLevel(com.google.javascript.jscomp.CompilationLevel)"><CODE>ClosureJavaScriptCompressor.setCompilationLevel(CompilationLevel)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setSimpleDoctype(boolean)"><!-- --></A><H3>
+setSimpleDoctype</H3>
+<PRE>
+public void <B>setSimpleDoctype</B>(boolean&nbsp;simpleDoctype)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setSimpleDoctype(boolean)"><CODE>HtmlCompressor.setSimpleDoctype(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveScriptAttributes(boolean)"><!-- --></A><H3>
+setRemoveScriptAttributes</H3>
+<PRE>
+public void <B>setRemoveScriptAttributes</B>(boolean&nbsp;removeScriptAttributes)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveScriptAttributes(boolean)"><CODE>HtmlCompressor.setRemoveScriptAttributes(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveStyleAttributes(boolean)"><!-- --></A><H3>
+setRemoveStyleAttributes</H3>
+<PRE>
+public void <B>setRemoveStyleAttributes</B>(boolean&nbsp;removeStyleAttributes)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveStyleAttributes(boolean)"><CODE>HtmlCompressor.setRemoveStyleAttributes(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveLinkAttributes(boolean)"><!-- --></A><H3>
+setRemoveLinkAttributes</H3>
+<PRE>
+public void <B>setRemoveLinkAttributes</B>(boolean&nbsp;removeLinkAttributes)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveLinkAttributes(boolean)"><CODE>HtmlCompressor.setRemoveLinkAttributes(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveFormAttributes(boolean)"><!-- --></A><H3>
+setRemoveFormAttributes</H3>
+<PRE>
+public void <B>setRemoveFormAttributes</B>(boolean&nbsp;removeFormAttributes)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveFormAttributes(boolean)"><CODE>HtmlCompressor.setRemoveFormAttributes(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveInputAttributes(boolean)"><!-- --></A><H3>
+setRemoveInputAttributes</H3>
+<PRE>
+public void <B>setRemoveInputAttributes</B>(boolean&nbsp;removeInputAttributes)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveInputAttributes(boolean)"><CODE>HtmlCompressor.setRemoveInputAttributes(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setSimpleBooleanAttributes(boolean)"><!-- --></A><H3>
+setSimpleBooleanAttributes</H3>
+<PRE>
+public void <B>setSimpleBooleanAttributes</B>(boolean&nbsp;simpleBooleanAttributes)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setSimpleBooleanAttributes(boolean)"><CODE>HtmlCompressor.setSimpleBooleanAttributes(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveJavaScriptProtocol(boolean)"><!-- --></A><H3>
+setRemoveJavaScriptProtocol</H3>
+<PRE>
+public void <B>setRemoveJavaScriptProtocol</B>(boolean&nbsp;removeJavaScriptProtocol)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveJavaScriptProtocol(boolean)"><CODE>HtmlCompressor.setRemoveJavaScriptProtocol(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveHttpProtocol(boolean)"><!-- --></A><H3>
+setRemoveHttpProtocol</H3>
+<PRE>
+public void <B>setRemoveHttpProtocol</B>(boolean&nbsp;removeHttpProtocol)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveHttpProtocol(boolean)"><CODE>HtmlCompressor.setRemoveHttpProtocol(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveHttpsProtocol(boolean)"><!-- --></A><H3>
+setRemoveHttpsProtocol</H3>
+<PRE>
+public void <B>setRemoveHttpsProtocol</B>(boolean&nbsp;removeHttpsProtocol)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveHttpsProtocol(boolean)"><CODE>HtmlCompressor.setRemoveHttpsProtocol(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/HtmlCompressorTag.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/taglib/CssCompressorTag.html" title="class in com.googlecode.htmlcompressor.taglib"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/taglib/JavaScriptCompressorTag.html" title="class in com.googlecode.htmlcompressor.taglib"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../index.html?com/googlecode/htmlcompressor/taglib/HtmlCompressorTag.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="HtmlCompressorTag.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+Copyright &#169; 2009-2011 <a href="http://code.google.com/p/htmlcompressor/">Sergiy Kovalchuk</a>. All Rights Reserved.
+</BODY>
+</HTML>

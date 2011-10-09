@@ -1,0 +1,2114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>
+HtmlCompressor (HTML Compressor and Minifier 1.5.2 API)
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="HtmlCompressor (HTML Compressor and Minifier 1.5.2 API)";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/HtmlCompressor.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../index.html?com/googlecode/htmlcompressor/compressor/HtmlCompressor.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="HtmlCompressor.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+com.googlecode.htmlcompressor.compressor</FONT>
+<BR>
+Class HtmlCompressor</H2>
+<PRE>
+<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</A>
+  <IMG SRC="../../../../resources/inherit.gif" ALT="extended by "><B>com.googlecode.htmlcompressor.compressor.HtmlCompressor</B>
+</PRE>
+<DL>
+<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A></DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public class <B>HtmlCompressor</B><DT>extends <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A><DT>implements <A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A></DL>
+</PRE>
+
+<P>
+Class that compresses given HTML source by removing comments, extra spaces and 
+ line breaks while preserving content within &lt;pre>, &lt;textarea>, &lt;script> 
+ and &lt;style> tags. 
+ <p>Blocks that should be additionally preserved could be marked with:
+ <br><code>&lt;!-- {{{ -->
+ <br>&nbsp;&nbsp;&nbsp;&nbsp;...
+ <br>&lt;!-- }}} --></code> 
+ <br>or any number of user defined patterns. 
+ <p>Content inside &lt;script> or &lt;style> tags could be optionally compressed using 
+ <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> or <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>
+ libraries.
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD><a href="mailto:serg472@gmail.com">Sergiy Kovalchuk</a></DD>
+</DL>
+<HR>
+
+<P>
+<!-- =========== FIELD SUMMARY =========== -->
+
+<A NAME="field_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Field Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#ALL_TAGS">ALL_TAGS</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method 
+ to remove all surrounding spaces (not recommended).</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MAX">BLOCK_TAGS_MAX</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Predefined list of tags that are block-level by default, excluding <code>&lt;div></code> and <code>&lt;li></code> tags.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MIN">BLOCK_TAGS_MIN</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Predefined list of tags that are very likely to be block-level.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#JS_COMPRESSOR_CLOSURE">JS_COMPRESSOR_CLOSURE</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#JS_COMPRESSOR_YUI">JS_COMPRESSOR_YUI</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#PHP_TAG_PATTERN">PHP_TAG_PATTERN</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Predefined pattern that matches <code>&lt;?php ...</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#SERVER_SCRIPT_TAG_PATTERN">SERVER_SCRIPT_TAG_PATTERN</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Predefined pattern that matches <code>&lt;% ...</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#SERVER_SIDE_INCLUDE_PATTERN">SERVER_SIDE_INCLUDE_PATTERN</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Predefined pattern that matches <code>&lt;--# ...</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#HtmlCompressor()">HtmlCompressor</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#compress(java.lang.String)">compress</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;html)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The main method that compresses given HTML source and returns compressed
+ result.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getCssCompressor()">getCssCompressor</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns CSS compressor implementation that will be used 
+ to compress inline CSS in HTML.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getJavaScriptCompressor()">getJavaScriptCompressor</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns JavaScript compressor implementation that will be used 
+ to compress inline JavaScript in HTML.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getPreservePatterns()">getPreservePatterns</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a list of Patterns defining custom preserving block rules</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getRemoveSurroundingSpaces()">getRemoveSurroundingSpaces</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a comma separated list of tags around which spaces will be removed.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor">HtmlCompressorStatistics</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getStatistics()">getStatistics</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>HtmlCompressorStatistics</CODE></A> object containing statistics of the last HTML compression, if enabled.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getYuiCssLineBreak()">getYuiCssLineBreak</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns number of symbols per line Yahoo YUI Compressor
+ will use during CSS compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;org.mozilla.javascript.ErrorReporter</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getYuiErrorReporter()">getYuiErrorReporter</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>ErrorReporter</code> used by YUI Compressor to log error messages 
+ during JavasSript compression</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getYuiJsLineBreak()">getYuiJsLineBreak</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns number of symbols per line Yahoo YUI Compressor
+ will use during JavaScript compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isCompressCss()">isCompressCss</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if CSS compression is enabled.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isCompressJavaScript()">isCompressJavaScript</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if JavaScript compression is enabled.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isEnabled()">isEnabled</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if compression is enabled.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isGenerateStatistics()">isGenerateStatistics</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if HTML compression statistics is generated</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isPreserveLineBreaks()">isPreserveLineBreaks</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if line breaks will be preserved.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveComments()">isRemoveComments</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if all HTML comments will be removed.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveFormAttributes()">isRemoveFormAttributes</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveHttpProtocol()">isRemoveHttpProtocol</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if <code>HTTP</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveHttpsProtocol()">isRemoveHttpsProtocol</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if <code>HTTPS</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveInputAttributes()">isRemoveInputAttributes</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveIntertagSpaces()">isRemoveIntertagSpaces</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if all inter-tag whitespace characters will be removed.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveJavaScriptProtocol()">isRemoveJavaScriptProtocol</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveLinkAttributes()">isRemoveLinkAttributes</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if unnecessary attributes will be removed from <code>&lt;link></code> tags</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveMultiSpaces()">isRemoveMultiSpaces</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if all multiple whitespace characters will be replaced with single spaces.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveQuotes()">isRemoveQuotes</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if all unnecessary quotes will be removed 
+ from tag attributes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveScriptAttributes()">isRemoveScriptAttributes</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if unnecessary attributes wil be removed from <code>&lt;script></code> tags</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isRemoveStyleAttributes()">isRemoveStyleAttributes</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isSimpleBooleanAttributes()">isSimpleBooleanAttributes</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if boolean attributes will be simplified</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isSimpleDoctype()">isSimpleDoctype</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if existing DOCTYPE declaration will be replaced with simple <code><!DOCTYPE html></code> declaration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isYuiJsDisableOptimizations()">isYuiJsDisableOptimizations</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if Yahoo YUI Compressor
+ will disable all the built-in micro optimizations during JavaScript compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isYuiJsNoMunge()">isYuiJsNoMunge</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if Yahoo YUI Compressor
+ will only minify javascript without obfuscating local symbols.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#isYuiJsPreserveAllSemiColons()">isYuiJsPreserveAllSemiColons</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <code>true</code> if Yahoo YUI Compressor
+ will preserve unnecessary semicolons during JavaScript compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setCompressCss(boolean)">setCompressCss</A></B>(boolean&nbsp;compressCss)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enables CSS compression within &lt;style> tags using 
+ <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> 
+ if set to <code>true</code>.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setCompressJavaScript(boolean)">setCompressJavaScript</A></B>(boolean&nbsp;compressJavaScript)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enables JavaScript compression within &lt;script> tags using 
+ <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> 
+ if set to <code>true</code>.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setCssCompressor(com.googlecode.htmlcompressor.compressor.Compressor)">setCssCompressor</A></B>(<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A>&nbsp;cssCompressor)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets CSS compressor implementation that will be used 
+ to compress inline CSS in HTML.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setEnabled(boolean)">setEnabled</A></B>(boolean&nbsp;enabled)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>false</code> all compression will be bypassed.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setGenerateStatistics(boolean)">setGenerateStatistics</A></B>(boolean&nbsp;generateStatistics)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, HTML compression statistics will be generated.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setJavaScriptCompressor(com.googlecode.htmlcompressor.compressor.Compressor)">setJavaScriptCompressor</A></B>(<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A>&nbsp;javaScriptCompressor)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets JavaScript compressor implementation that will be used 
+ to compress inline JavaScript in HTML.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setPreserveLineBreaks(boolean)">setPreserveLineBreaks</A></B>(boolean&nbsp;preserveLineBreaks)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, line breaks will be preserved.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setPreservePatterns(java.util.List)">setPreservePatterns</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A>&gt;&nbsp;preservePatterns)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This method allows setting custom block preservation rules defined by regular 
+ expression patterns.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveComments(boolean)">setRemoveComments</A></B>(boolean&nbsp;removeComments)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code> all HTML comments will be removed.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveFormAttributes(boolean)">setRemoveFormAttributes</A></B>(boolean&nbsp;removeFormAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveHttpProtocol(boolean)">setRemoveHttpProtocol</A></B>(boolean&nbsp;removeHttpProtocol)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, <code>HTTP</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveHttpsProtocol(boolean)">setRemoveHttpsProtocol</A></B>(boolean&nbsp;removeHttpsProtocol)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, <code>HTTPS</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveInputAttributes(boolean)">setRemoveInputAttributes</A></B>(boolean&nbsp;removeInputAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveIntertagSpaces(boolean)">setRemoveIntertagSpaces</A></B>(boolean&nbsp;removeIntertagSpaces)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code> all inter-tag whitespace characters will be removed.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveJavaScriptProtocol(boolean)">setRemoveJavaScriptProtocol</A></B>(boolean&nbsp;removeJavaScriptProtocol)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveLinkAttributes(boolean)">setRemoveLinkAttributes</A></B>(boolean&nbsp;removeLinkAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, following attributes will be removed from <code>&lt;link rel="stylesheet"></code> and <code>&lt;link rel="alternate stylesheet"></code> tags: 
+ 
+ type="text/css"
+ type="text/plain"
+ </TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveMultiSpaces(boolean)">setRemoveMultiSpaces</A></B>(boolean&nbsp;removeMultiSpaces)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code> all multiple whitespace characters will be replaced with single spaces.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveQuotes(boolean)">setRemoveQuotes</A></B>(boolean&nbsp;removeQuotes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code> all unnecessary quotes will be removed  
+ from tag attributes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveScriptAttributes(boolean)">setRemoveScriptAttributes</A></B>(boolean&nbsp;removeScriptAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, following attributes will be removed from <code>&lt;script></code> tags: 
+ 
+ type="text/javascript"
+ type="application/javascript"
+ language="javascript"
+ </TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveStyleAttributes(boolean)">setRemoveStyleAttributes</A></B>(boolean&nbsp;removeStyleAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)">setRemoveSurroundingSpaces</A></B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;tagList)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enables surrounding spaces removal around provided comma separated list of tags.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setSimpleBooleanAttributes(boolean)">setSimpleBooleanAttributes</A></B>(boolean&nbsp;simpleBooleanAttributes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, any values of following boolean attributes will be removed:
+ 
+ checked
+ selected
+ disabled
+ readonly
+ </TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setSimpleDoctype(boolean)">setSimpleDoctype</A></B>(boolean&nbsp;simpleDoctype)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If set to <code>true</code>, existing DOCTYPE declaration will be replaced with simple <code>&lt;!DOCTYPE html></code> declaration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiCssLineBreak(int)">setYuiCssLineBreak</A></B>(int&nbsp;yuiCssLineBreak)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tells Yahoo YUI Compressor to break lines after the specified number of symbols 
+ during CSS compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiErrorReporter(org.mozilla.javascript.ErrorReporter)">setYuiErrorReporter</A></B>(org.mozilla.javascript.ErrorReporter&nbsp;yuiErrorReporter)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets <code>ErrorReporter</code> that YUI Compressor will use for reporting errors during 
+ JavaScript compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsDisableOptimizations(boolean)">setYuiJsDisableOptimizations</A></B>(boolean&nbsp;yuiJsDisableOptimizations)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tells Yahoo YUI Compressor to disable all the built-in micro optimizations
+ during JavaScript compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsLineBreak(int)">setYuiJsLineBreak</A></B>(int&nbsp;yuiJsLineBreak)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tells Yahoo YUI Compressor to break lines after the specified number of symbols 
+ during JavaScript compression.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsNoMunge(boolean)">setYuiJsNoMunge</A></B>(boolean&nbsp;yuiJsNoMunge)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tells Yahoo YUI Compressor to only minify javascript without obfuscating 
+ local symbols.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setYuiJsPreserveAllSemiColons(boolean)">setYuiJsPreserveAllSemiColons</A></B>(boolean&nbsp;yuiJsPreserveAllSemiColons)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tells Yahoo YUI Compressor to preserve unnecessary semicolons 
+ during JavaScript compression.</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</A>, <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long, int)" title="class or interface in java.lang">wait</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ============ FIELD DETAIL =========== -->
+
+<A NAME="field_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Field Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="JS_COMPRESSOR_YUI"><!-- --></A><H3>
+JS_COMPRESSOR_YUI</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>JS_COMPRESSOR_YUI</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.JS_COMPRESSOR_YUI">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="JS_COMPRESSOR_CLOSURE"><!-- --></A><H3>
+JS_COMPRESSOR_CLOSURE</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>JS_COMPRESSOR_CLOSURE</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.JS_COMPRESSOR_CLOSURE">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="PHP_TAG_PATTERN"><!-- --></A><H3>
+PHP_TAG_PATTERN</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A> <B>PHP_TAG_PATTERN</B></PRE>
+<DL>
+<DD>Predefined pattern that matches <code>&lt;?php ... ?></code> tags. 
+ Could be passed inside a list to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setPreservePatterns(java.util.List)"><CODE>setPreservePatterns</CODE></A> method.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+
+<A NAME="SERVER_SCRIPT_TAG_PATTERN"><!-- --></A><H3>
+SERVER_SCRIPT_TAG_PATTERN</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A> <B>SERVER_SCRIPT_TAG_PATTERN</B></PRE>
+<DL>
+<DD>Predefined pattern that matches <code>&lt;% ... %></code> tags. 
+ Could be passed inside a list to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setPreservePatterns(java.util.List)"><CODE>setPreservePatterns</CODE></A> method.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+
+<A NAME="SERVER_SIDE_INCLUDE_PATTERN"><!-- --></A><H3>
+SERVER_SIDE_INCLUDE_PATTERN</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A> <B>SERVER_SIDE_INCLUDE_PATTERN</B></PRE>
+<DL>
+<DD>Predefined pattern that matches <code>&lt;--# ... --></code> tags. 
+ Could be passed inside a list to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setPreservePatterns(java.util.List)"><CODE>setPreservePatterns</CODE></A> method.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+
+<A NAME="BLOCK_TAGS_MIN"><!-- --></A><H3>
+BLOCK_TAGS_MIN</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>BLOCK_TAGS_MIN</B></PRE>
+<DL>
+<DD>Predefined list of tags that are very likely to be block-level. 
+ Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method.
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.BLOCK_TAGS_MIN">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="BLOCK_TAGS_MAX"><!-- --></A><H3>
+BLOCK_TAGS_MAX</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>BLOCK_TAGS_MAX</B></PRE>
+<DL>
+<DD>Predefined list of tags that are block-level by default, excluding <code>&lt;div></code> and <code>&lt;li></code> tags. 
+ Table tags are also included.
+ Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method.
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.BLOCK_TAGS_MAX">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="ALL_TAGS"><!-- --></A><H3>
+ALL_TAGS</H3>
+<PRE>
+public static final <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>ALL_TAGS</B></PRE>
+<DL>
+<DD>Could be passed to <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setRemoveSurroundingSpaces(java.lang.String)"><CODE>setRemoveSurroundingSpaces</CODE></A> method 
+ to remove all surrounding spaces (not recommended).
+<P>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#com.googlecode.htmlcompressor.compressor.HtmlCompressor.ALL_TAGS">Constant Field Values</A></DL>
+</DL>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="HtmlCompressor()"><!-- --></A><H3>
+HtmlCompressor</H3>
+<PRE>
+public <B>HtmlCompressor</B>()</PRE>
+<DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="compress(java.lang.String)"><!-- --></A><H3>
+compress</H3>
+<PRE>
+public <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>compress</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;html)</PRE>
+<DL>
+<DD>The main method that compresses given HTML source and returns compressed
+ result.
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html#compress(java.lang.String)">compress</A></CODE> in interface <CODE><A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A></CODE></DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>html</CODE> - HTML content to compress
+<DT><B>Returns:</B><DD>compressed content.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isCompressJavaScript()"><!-- --></A><H3>
+isCompressJavaScript</H3>
+<PRE>
+public boolean <B>isCompressJavaScript</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if JavaScript compression is enabled.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>current state of JavaScript compression.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setCompressJavaScript(boolean)"><!-- --></A><H3>
+setCompressJavaScript</H3>
+<PRE>
+public void <B>setCompressJavaScript</B>(boolean&nbsp;compressJavaScript)</PRE>
+<DL>
+<DD>Enables JavaScript compression within &lt;script> tags using 
+ <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> 
+ if set to <code>true</code>. Default is <code>false</code> for performance reasons.
+  
+ <p><b>Note:</b> Compressing JavaScript is not recommended if pages are 
+ compressed dynamically on-the-fly because of performance impact. 
+ You should consider putting JavaScript into a separate file and
+ compressing it using standalone YUICompressor for example.</p>
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>compressJavaScript</CODE> - set <code>true</code> to enable JavaScript compression. 
+ Default is <code>false</code><DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isCompressCss()"><!-- --></A><H3>
+isCompressCss</H3>
+<PRE>
+public boolean <B>isCompressCss</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if CSS compression is enabled.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>current state of CSS compression.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setCompressCss(boolean)"><!-- --></A><H3>
+setCompressCss</H3>
+<PRE>
+public void <B>setCompressCss</B>(boolean&nbsp;compressCss)</PRE>
+<DL>
+<DD>Enables CSS compression within &lt;style> tags using 
+ <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> 
+ if set to <code>true</code>. Default is <code>false</code> for performance reasons.
+  
+ <p><b>Note:</b> Compressing CSS is not recommended if pages are 
+ compressed dynamically on-the-fly because of performance impact. 
+ You should consider putting CSS into a separate file and
+ compressing it using standalone YUICompressor for example.</p>
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>compressCss</CODE> - set <code>true</code> to enable CSS compression. 
+ Default is <code>false</code><DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isYuiJsNoMunge()"><!-- --></A><H3>
+isYuiJsNoMunge</H3>
+<PRE>
+public boolean <B>isYuiJsNoMunge</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if Yahoo YUI Compressor
+ will only minify javascript without obfuscating local symbols. 
+ This corresponds to <code>--nomunge</code> command line option.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>nomunge</code> parameter value used for JavaScript compression.<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsNoMunge(boolean)"><!-- --></A><H3>
+setYuiJsNoMunge</H3>
+<PRE>
+public void <B>setYuiJsNoMunge</B>(boolean&nbsp;yuiJsNoMunge)</PRE>
+<DL>
+<DD>Tells Yahoo YUI Compressor to only minify javascript without obfuscating 
+ local symbols. This corresponds to <code>--nomunge</code> command line option. 
+ This option has effect only if JavaScript compression is enabled. 
+ Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>yuiJsNoMunge</CODE> - set <code>true</code> to enable <code>nomunge</code> mode<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isYuiJsPreserveAllSemiColons()"><!-- --></A><H3>
+isYuiJsPreserveAllSemiColons</H3>
+<PRE>
+public boolean <B>isYuiJsPreserveAllSemiColons</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if Yahoo YUI Compressor
+ will preserve unnecessary semicolons during JavaScript compression. 
+ This corresponds to <code>--preserve-semi</code> command line option.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>preserve-semi</code> parameter value used for JavaScript compression.<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsPreserveAllSemiColons(boolean)"><!-- --></A><H3>
+setYuiJsPreserveAllSemiColons</H3>
+<PRE>
+public void <B>setYuiJsPreserveAllSemiColons</B>(boolean&nbsp;yuiJsPreserveAllSemiColons)</PRE>
+<DL>
+<DD>Tells Yahoo YUI Compressor to preserve unnecessary semicolons 
+ during JavaScript compression. This corresponds to 
+ <code>--preserve-semi</code> command line option. 
+ This option has effect only if JavaScript compression is enabled.
+ Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>yuiJsPreserveAllSemiColons</CODE> - set <code>true<code> to enable <code>preserve-semi</code> mode<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isYuiJsDisableOptimizations()"><!-- --></A><H3>
+isYuiJsDisableOptimizations</H3>
+<PRE>
+public boolean <B>isYuiJsDisableOptimizations</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if Yahoo YUI Compressor
+ will disable all the built-in micro optimizations during JavaScript compression. 
+ This corresponds to <code>--disable-optimizations</code> command line option.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>disable-optimizations</code> parameter value used for JavaScript compression.<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsDisableOptimizations(boolean)"><!-- --></A><H3>
+setYuiJsDisableOptimizations</H3>
+<PRE>
+public void <B>setYuiJsDisableOptimizations</B>(boolean&nbsp;yuiJsDisableOptimizations)</PRE>
+<DL>
+<DD>Tells Yahoo YUI Compressor to disable all the built-in micro optimizations
+ during JavaScript compression. This corresponds to 
+ <code>--disable-optimizations</code> command line option. 
+ This option has effect only if JavaScript compression is enabled.
+ Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>yuiJsDisableOptimizations</CODE> - set <code>true<code> to enable 
+ <code>disable-optimizations</code> mode<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getYuiJsLineBreak()"><!-- --></A><H3>
+getYuiJsLineBreak</H3>
+<PRE>
+public int <B>getYuiJsLineBreak</B>()</PRE>
+<DL>
+<DD>Returns number of symbols per line Yahoo YUI Compressor
+ will use during JavaScript compression. 
+ This corresponds to <code>--line-break</code> command line option.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>line-break</code> parameter value used for JavaScript compression.<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiJsLineBreak(int)"><!-- --></A><H3>
+setYuiJsLineBreak</H3>
+<PRE>
+public void <B>setYuiJsLineBreak</B>(int&nbsp;yuiJsLineBreak)</PRE>
+<DL>
+<DD>Tells Yahoo YUI Compressor to break lines after the specified number of symbols 
+ during JavaScript compression. This corresponds to 
+ <code>--line-break</code> command line option. 
+ This option has effect only if JavaScript compression is enabled.
+ Default is <code>-1</code> to disable line breaks.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>yuiJsLineBreak</CODE> - set number of symbols per line<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getYuiCssLineBreak()"><!-- --></A><H3>
+getYuiCssLineBreak</H3>
+<PRE>
+public int <B>getYuiCssLineBreak</B>()</PRE>
+<DL>
+<DD>Returns number of symbols per line Yahoo YUI Compressor
+ will use during CSS compression. 
+ This corresponds to <code>--line-break</code> command line option.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>line-break</code> parameter value used for CSS compression.<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiCssLineBreak(int)"><!-- --></A><H3>
+setYuiCssLineBreak</H3>
+<PRE>
+public void <B>setYuiCssLineBreak</B>(int&nbsp;yuiCssLineBreak)</PRE>
+<DL>
+<DD>Tells Yahoo YUI Compressor to break lines after the specified number of symbols 
+ during CSS compression. This corresponds to 
+ <code>--line-break</code> command line option. 
+ This option has effect only if CSS compression is enabled.
+ Default is <code>-1</code> to disable line breaks.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>yuiCssLineBreak</CODE> - set number of symbols per line<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveQuotes()"><!-- --></A><H3>
+isRemoveQuotes</H3>
+<PRE>
+public boolean <B>isRemoveQuotes</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if all unnecessary quotes will be removed 
+ from tag attributes.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveQuotes(boolean)"><!-- --></A><H3>
+setRemoveQuotes</H3>
+<PRE>
+public void <B>setRemoveQuotes</B>(boolean&nbsp;removeQuotes)</PRE>
+<DL>
+<DD>If set to <code>true</code> all unnecessary quotes will be removed  
+ from tag attributes. Default is <code>false</code>.
+ 
+ <p><b>Note:</b> Even though quotes are removed only when it is safe to do so, 
+ it still might break strict HTML validation. Turn this option on only if 
+ a page validation is not very important or to squeeze the most out of the compression.
+ This option has no performance impact.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeQuotes</CODE> - set <code>true</code> to remove unnecessary quotes from tag attributes</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isEnabled()"><!-- --></A><H3>
+isEnabled</H3>
+<PRE>
+public boolean <B>isEnabled</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if compression is enabled.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if compression is enabled.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setEnabled(boolean)"><!-- --></A><H3>
+setEnabled</H3>
+<PRE>
+public void <B>setEnabled</B>(boolean&nbsp;enabled)</PRE>
+<DL>
+<DD>If set to <code>false</code> all compression will be bypassed. Might be useful for testing purposes. 
+ Default is <code>true</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>enabled</CODE> - set <code>false</code> to bypass all compression</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveComments()"><!-- --></A><H3>
+isRemoveComments</H3>
+<PRE>
+public boolean <B>isRemoveComments</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if all HTML comments will be removed.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if all HTML comments will be removed</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveComments(boolean)"><!-- --></A><H3>
+setRemoveComments</H3>
+<PRE>
+public void <B>setRemoveComments</B>(boolean&nbsp;removeComments)</PRE>
+<DL>
+<DD>If set to <code>true</code> all HTML comments will be removed.   
+ Default is <code>true</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeComments</CODE> - set <code>true</code> to remove all HTML comments</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveMultiSpaces()"><!-- --></A><H3>
+isRemoveMultiSpaces</H3>
+<PRE>
+public boolean <B>isRemoveMultiSpaces</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if all multiple whitespace characters will be replaced with single spaces.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if all multiple whitespace characters will be replaced with single spaces.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveMultiSpaces(boolean)"><!-- --></A><H3>
+setRemoveMultiSpaces</H3>
+<PRE>
+public void <B>setRemoveMultiSpaces</B>(boolean&nbsp;removeMultiSpaces)</PRE>
+<DL>
+<DD>If set to <code>true</code> all multiple whitespace characters will be replaced with single spaces.
+ Default is <code>true</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeMultiSpaces</CODE> - set <code>true</code> to replace all multiple whitespace characters 
+ will single spaces.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveIntertagSpaces()"><!-- --></A><H3>
+isRemoveIntertagSpaces</H3>
+<PRE>
+public boolean <B>isRemoveIntertagSpaces</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if all inter-tag whitespace characters will be removed.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if all inter-tag whitespace characters will be removed.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveIntertagSpaces(boolean)"><!-- --></A><H3>
+setRemoveIntertagSpaces</H3>
+<PRE>
+public void <B>setRemoveIntertagSpaces</B>(boolean&nbsp;removeIntertagSpaces)</PRE>
+<DL>
+<DD>If set to <code>true</code> all inter-tag whitespace characters will be removed.
+ Default is <code>false</code>.
+ 
+ <p><b>Note:</b> It is fairly safe to turn this option on unless you 
+ rely on spaces for page formatting. Even if you do, you can always preserve 
+ required spaces with <code>&amp;nbsp;</code>. This option has no performance impact.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeIntertagSpaces</CODE> - set <code>true</code> to remove all inter-tag whitespace characters</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getPreservePatterns()"><!-- --></A><H3>
+getPreservePatterns</H3>
+<PRE>
+public <A HREF="http://download.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A>&gt; <B>getPreservePatterns</B>()</PRE>
+<DL>
+<DD>Returns a list of Patterns defining custom preserving block rules
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>list of <code>Pattern</code> objects defining rules for preserving block rules</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setPreservePatterns(java.util.List)"><!-- --></A><H3>
+setPreservePatterns</H3>
+<PRE>
+public void <B>setPreservePatterns</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html?is-external=true" title="class or interface in java.util.regex">Pattern</A>&gt;&nbsp;preservePatterns)</PRE>
+<DL>
+<DD>This method allows setting custom block preservation rules defined by regular 
+ expression patterns. Blocks that match provided patterns will be skipped during HTML compression. 
+ 
+ <p>Custom preservation rules have higher priority than default rules.
+ Priority between custom rules are defined by their position in a list 
+ (beginning of a list has higher priority).
+ 
+ <p>Besides custom patterns, you can use 3 predefined patterns: 
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#PHP_TAG_PATTERN"><CODE>PHP_TAG_PATTERN</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#SERVER_SCRIPT_TAG_PATTERN"><CODE>SERVER_SCRIPT_TAG_PATTERN</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#SERVER_SIDE_INCLUDE_PATTERN"><CODE>SERVER_SIDE_INCLUDE_PATTERN</CODE></A>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>preservePatterns</CODE> - List of <code>Pattern</code> objects that will be 
+ used to skip matched blocks during compression</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getYuiErrorReporter()"><!-- --></A><H3>
+getYuiErrorReporter</H3>
+<PRE>
+public org.mozilla.javascript.ErrorReporter <B>getYuiErrorReporter</B>()</PRE>
+<DL>
+<DD>Returns <code>ErrorReporter</code> used by YUI Compressor to log error messages 
+ during JavasSript compression
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>ErrorReporter</code> used by YUI Compressor to log error messages 
+ during JavasSript compression<DT><B>See Also:</B><DD><a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>, 
+<a href="http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ErrorReporter.html">Error Reporter Interface</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setYuiErrorReporter(org.mozilla.javascript.ErrorReporter)"><!-- --></A><H3>
+setYuiErrorReporter</H3>
+<PRE>
+public void <B>setYuiErrorReporter</B>(org.mozilla.javascript.ErrorReporter&nbsp;yuiErrorReporter)</PRE>
+<DL>
+<DD>Sets <code>ErrorReporter</code> that YUI Compressor will use for reporting errors during 
+ JavaScript compression. If no <code>ErrorReporter</code> was provided 
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.DefaultErrorReporter.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor.DefaultErrorReporter</CODE></A> will be used 
+ which reports errors to <code>System.err</code> stream.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>yuiErrorReporter</CODE> - <code>ErrorReporter<code> that will be used by YUI Compressor<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.DefaultErrorReporter.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor.DefaultErrorReporter</CODE></A>, 
+<a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>, 
+<a href="http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ErrorReporter.html">ErrorReporter Interface</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getJavaScriptCompressor()"><!-- --></A><H3>
+getJavaScriptCompressor</H3>
+<PRE>
+public <A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A> <B>getJavaScriptCompressor</B>()</PRE>
+<DL>
+<DD>Returns JavaScript compressor implementation that will be used 
+ to compress inline JavaScript in HTML.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>Compressor</code> implementation that will be used 
+ to compress inline JavaScript in HTML.<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor</CODE></A>, 
+<A HREF="../../../../com/googlecode/htmlcompressor/compressor/ClosureJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>ClosureJavaScriptCompressor</CODE></A>, 
+<a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>, 
+<a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setJavaScriptCompressor(com.googlecode.htmlcompressor.compressor.Compressor)"><!-- --></A><H3>
+setJavaScriptCompressor</H3>
+<PRE>
+public void <B>setJavaScriptCompressor</B>(<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A>&nbsp;javaScriptCompressor)</PRE>
+<DL>
+<DD>Sets JavaScript compressor implementation that will be used 
+ to compress inline JavaScript in HTML. 
+ 
+ <p>HtmlCompressor currently 
+ comes with basic implementations for <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> (called <A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor</CODE></A>)
+ and <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a> (called <A HREF="../../../../com/googlecode/htmlcompressor/compressor/ClosureJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>ClosureJavaScriptCompressor</CODE></A>) that should be enough for most cases, 
+ but users can also create their own JavaScript compressors for custom needs.
+ 
+ <p>If no compressor is set <A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor</CODE></A> will be used by default.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>javaScriptCompressor</CODE> - <A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor"><CODE>Compressor</CODE></A> implementation that will be used for inline JavaScript compression<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiJavaScriptCompressor</CODE></A>, 
+<A HREF="../../../../com/googlecode/htmlcompressor/compressor/ClosureJavaScriptCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>ClosureJavaScriptCompressor</CODE></A>, 
+<a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a>, 
+<a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getCssCompressor()"><!-- --></A><H3>
+getCssCompressor</H3>
+<PRE>
+public <A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A> <B>getCssCompressor</B>()</PRE>
+<DL>
+<DD>Returns CSS compressor implementation that will be used 
+ to compress inline CSS in HTML.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>Compressor</code> implementation that will be used 
+ to compress inline CSS in HTML.<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiCssCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiCssCompressor</CODE></A>, 
+<a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setCssCompressor(com.googlecode.htmlcompressor.compressor.Compressor)"><!-- --></A><H3>
+setCssCompressor</H3>
+<PRE>
+public void <B>setCssCompressor</B>(<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor">Compressor</A>&nbsp;cssCompressor)</PRE>
+<DL>
+<DD>Sets CSS compressor implementation that will be used 
+ to compress inline CSS in HTML. 
+ 
+ <p>HtmlCompressor currently 
+ comes with basic implementation for <a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a> (called <A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiCssCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiCssCompressor</CODE></A>), 
+ but users can also create their own CSS compressors for custom needs. 
+ 
+ <p>If no compressor is set <A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiCssCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiCssCompressor</CODE></A> will be used by default.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>cssCompressor</CODE> - <A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor"><CODE>Compressor</CODE></A> implementation that will be used for inline CSS compression<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/YuiCssCompressor.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>YuiCssCompressor</CODE></A>, 
+<a href="http://developer.yahoo.com/yui/compressor/">Yahoo YUI Compressor</a></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isSimpleDoctype()"><!-- --></A><H3>
+isSimpleDoctype</H3>
+<PRE>
+public boolean <B>isSimpleDoctype</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if existing DOCTYPE declaration will be replaced with simple <code><!DOCTYPE html></code> declaration.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if existing DOCTYPE declaration will be replaced with simple <code><!DOCTYPE html></code> declaration.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setSimpleDoctype(boolean)"><!-- --></A><H3>
+setSimpleDoctype</H3>
+<PRE>
+public void <B>setSimpleDoctype</B>(boolean&nbsp;simpleDoctype)</PRE>
+<DL>
+<DD>If set to <code>true</code>, existing DOCTYPE declaration will be replaced with simple <code>&lt;!DOCTYPE html></code> declaration.
+ Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>simpleDoctype</CODE> - set <code>true</code> to replace existing DOCTYPE declaration with <code>&lt;!DOCTYPE html></code></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveScriptAttributes()"><!-- --></A><H3>
+isRemoveScriptAttributes</H3>
+<PRE>
+public boolean <B>isRemoveScriptAttributes</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if unnecessary attributes wil be removed from <code>&lt;script></code> tags
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if unnecessary attributes wil be removed from <code>&lt;script></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveScriptAttributes(boolean)"><!-- --></A><H3>
+setRemoveScriptAttributes</H3>
+<PRE>
+public void <B>setRemoveScriptAttributes</B>(boolean&nbsp;removeScriptAttributes)</PRE>
+<DL>
+<DD>If set to <code>true</code>, following attributes will be removed from <code>&lt;script></code> tags: 
+ <ul>
+ <li>type="text/javascript"</li>
+ <li>type="application/javascript"</li>
+ <li>language="javascript"</li>
+ </ul>
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeScriptAttributes</CODE> - set <code>true</code> to remove unnecessary attributes from <code>&lt;script></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveStyleAttributes()"><!-- --></A><H3>
+isRemoveStyleAttributes</H3>
+<PRE>
+public boolean <B>isRemoveStyleAttributes</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveStyleAttributes(boolean)"><!-- --></A><H3>
+setRemoveStyleAttributes</H3>
+<PRE>
+public void <B>setRemoveStyleAttributes</B>(boolean&nbsp;removeStyleAttributes)</PRE>
+<DL>
+<DD>If set to <code>true</code>, <code>type="text/style"</code> attributes will be removed from <code>&lt;style></code> tags. Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeStyleAttributes</CODE> - set <code>true</code> to remove <code>type="text/style"</code> attributes from <code>&lt;style></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveLinkAttributes()"><!-- --></A><H3>
+isRemoveLinkAttributes</H3>
+<PRE>
+public boolean <B>isRemoveLinkAttributes</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if unnecessary attributes will be removed from <code>&lt;link></code> tags
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if unnecessary attributes will be removed from <code>&lt;link></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveLinkAttributes(boolean)"><!-- --></A><H3>
+setRemoveLinkAttributes</H3>
+<PRE>
+public void <B>setRemoveLinkAttributes</B>(boolean&nbsp;removeLinkAttributes)</PRE>
+<DL>
+<DD>If set to <code>true</code>, following attributes will be removed from <code>&lt;link rel="stylesheet"></code> and <code>&lt;link rel="alternate stylesheet"></code> tags: 
+ <ul>
+ <li>type="text/css"</li>
+ <li>type="text/plain"</li>
+ </ul>
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeLinkAttributes</CODE> - set <code>true</code> to remove unnecessary attributes from <code>&lt;link></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveFormAttributes()"><!-- --></A><H3>
+isRemoveFormAttributes</H3>
+<PRE>
+public boolean <B>isRemoveFormAttributes</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveFormAttributes(boolean)"><!-- --></A><H3>
+setRemoveFormAttributes</H3>
+<PRE>
+public void <B>setRemoveFormAttributes</B>(boolean&nbsp;removeFormAttributes)</PRE>
+<DL>
+<DD>If set to <code>true</code>, <code>method="get"</code> attributes will be removed from <code>&lt;form></code> tags. Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeFormAttributes</CODE> - set <code>true</code> to remove <code>method="get"</code> attributes from <code>&lt;form></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveInputAttributes()"><!-- --></A><H3>
+isRemoveInputAttributes</H3>
+<PRE>
+public boolean <B>isRemoveInputAttributes</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveInputAttributes(boolean)"><!-- --></A><H3>
+setRemoveInputAttributes</H3>
+<PRE>
+public void <B>setRemoveInputAttributes</B>(boolean&nbsp;removeInputAttributes)</PRE>
+<DL>
+<DD>If set to <code>true</code>, <code>type="text"</code> attributes will be removed from <code>&lt;input></code> tags. Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeInputAttributes</CODE> - set <code>true</code> to remove <code>type="text"</code> attributes from <code>&lt;input></code> tags</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isSimpleBooleanAttributes()"><!-- --></A><H3>
+isSimpleBooleanAttributes</H3>
+<PRE>
+public boolean <B>isSimpleBooleanAttributes</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if boolean attributes will be simplified
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if boolean attributes will be simplified</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setSimpleBooleanAttributes(boolean)"><!-- --></A><H3>
+setSimpleBooleanAttributes</H3>
+<PRE>
+public void <B>setSimpleBooleanAttributes</B>(boolean&nbsp;simpleBooleanAttributes)</PRE>
+<DL>
+<DD>If set to <code>true</code>, any values of following boolean attributes will be removed:
+ <ul>
+ <li>checked</li>
+ <li>selected</li>
+ <li>disabled</li>
+ <li>readonly</li>
+ </ul>
+ 
+ <p>For example, <code>&ltinput readonly="readonly"></code> would become <code>&ltinput readonly></code>
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>simpleBooleanAttributes</CODE> - set <code>true</code> to simplify boolean attributes</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveJavaScriptProtocol()"><!-- --></A><H3>
+isRemoveJavaScriptProtocol</H3>
+<PRE>
+public boolean <B>isRemoveJavaScriptProtocol</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveJavaScriptProtocol(boolean)"><!-- --></A><H3>
+setRemoveJavaScriptProtocol</H3>
+<PRE>
+public void <B>setRemoveJavaScriptProtocol</B>(boolean&nbsp;removeJavaScriptProtocol)</PRE>
+<DL>
+<DD>If set to <code>true</code>, <code>javascript:</code> pseudo-protocol will be removed from inline event handlers.
+ 
+ <p>For example, <code>&lta onclick="javascript:alert()"></code> would become <code>&lta onclick="alert()"></code>
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeJavaScriptProtocol</CODE> - set <code>true</code> to remove <code>javascript:</code> pseudo-protocol from inline event handlers.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveHttpProtocol()"><!-- --></A><H3>
+isRemoveHttpProtocol</H3>
+<PRE>
+public boolean <B>isRemoveHttpProtocol</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if <code>HTTP</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if <code>HTTP</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveHttpProtocol(boolean)"><!-- --></A><H3>
+setRemoveHttpProtocol</H3>
+<PRE>
+public void <B>setRemoveHttpProtocol</B>(boolean&nbsp;removeHttpProtocol)</PRE>
+<DL>
+<DD>If set to <code>true</code>, <code>HTTP</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.
+ URL without a protocol would make a browser use document's current protocol instead. 
+ 
+ <p>Tags marked with <code>rel="external"</code> will be skipped.
+ 
+ <p>For example: 
+ <p><code>&lta href="http://example.com"> &ltscript src="http://google.com/js.js" rel="external"></code> 
+ <p>would become: 
+ <p><code>&lta href="//example.com"> &ltscript src="http://google.com/js.js" rel="external"></code>
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeHttpProtocol</CODE> - set <code>true</code> to remove <code>HTTP</code> protocol from tag attributes</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isRemoveHttpsProtocol()"><!-- --></A><H3>
+isRemoveHttpsProtocol</H3>
+<PRE>
+public boolean <B>isRemoveHttpsProtocol</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if <code>HTTPS</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if <code>HTTPS</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveHttpsProtocol(boolean)"><!-- --></A><H3>
+setRemoveHttpsProtocol</H3>
+<PRE>
+public void <B>setRemoveHttpsProtocol</B>(boolean&nbsp;removeHttpsProtocol)</PRE>
+<DL>
+<DD>If set to <code>true</code>, <code>HTTPS</code> protocol will be removed from <code>href</code>, <code>src</code>, <code>cite</code>, and <code>action</code> tag attributes.
+ URL without a protocol would make a browser use document's current protocol instead.
+ 
+ <p>Tags marked with <code>rel="external"</code> will be skipped.
+ 
+ <p>For example: 
+ <p><code>&lta href="https://example.com"> &ltscript src="https://google.com/js.js" rel="external"></code> 
+ <p>would become: 
+ <p><code>&lta href="//example.com"> &ltscript src="https://google.com/js.js" rel="external"></code>
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>removeHttpsProtocol</CODE> - set <code>true</code> to remove <code>HTTP</code> protocol from tag attributes</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isGenerateStatistics()"><!-- --></A><H3>
+isGenerateStatistics</H3>
+<PRE>
+public boolean <B>isGenerateStatistics</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if HTML compression statistics is generated
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if HTML compression statistics is generated</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setGenerateStatistics(boolean)"><!-- --></A><H3>
+setGenerateStatistics</H3>
+<PRE>
+public void <B>setGenerateStatistics</B>(boolean&nbsp;generateStatistics)</PRE>
+<DL>
+<DD>If set to <code>true</code>, HTML compression statistics will be generated. 
+ 
+ <p><strong>Important:</strong> Enabling statistics makes HTML compressor not thread safe. 
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>generateStatistics</CODE> - set <code>true</code> to generate HTML compression statistics<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#getStatistics()"><CODE>getStatistics()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getStatistics()"><!-- --></A><H3>
+getStatistics</H3>
+<PRE>
+public <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor">HtmlCompressorStatistics</A> <B>getStatistics</B>()</PRE>
+<DL>
+<DD>Returns <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>HtmlCompressorStatistics</CODE></A> object containing statistics of the last HTML compression, if enabled. 
+ Should be called after <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#compress(java.lang.String)"><CODE>compress(String)</CODE></A>
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>HtmlCompressorStatistics</CODE></A> object containing last HTML compression statistics<DT><B>See Also:</B><DD><A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor"><CODE>HtmlCompressorStatistics</CODE></A>, 
+<A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#setGenerateStatistics(boolean)"><CODE>setGenerateStatistics(boolean)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isPreserveLineBreaks()"><!-- --></A><H3>
+isPreserveLineBreaks</H3>
+<PRE>
+public boolean <B>isPreserveLineBreaks</B>()</PRE>
+<DL>
+<DD>Returns <code>true</code> if line breaks will be preserved.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><code>true</code> if line breaks will be preserved.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setPreserveLineBreaks(boolean)"><!-- --></A><H3>
+setPreserveLineBreaks</H3>
+<PRE>
+public void <B>setPreserveLineBreaks</B>(boolean&nbsp;preserveLineBreaks)</PRE>
+<DL>
+<DD>If set to <code>true</code>, line breaks will be preserved. 
+ 
+ <p>Default is <code>false</code>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>preserveLineBreaks</CODE> - set <code>true</code> to preserve line breaks</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getRemoveSurroundingSpaces()"><!-- --></A><H3>
+getRemoveSurroundingSpaces</H3>
+<PRE>
+public <A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A> <B>getRemoveSurroundingSpaces</B>()</PRE>
+<DL>
+<DD>Returns a comma separated list of tags around which spaces will be removed.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>a comma separated list of tags around which spaces will be removed.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setRemoveSurroundingSpaces(java.lang.String)"><!-- --></A><H3>
+setRemoveSurroundingSpaces</H3>
+<PRE>
+public void <B>setRemoveSurroundingSpaces</B>(<A HREF="http://download.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</A>&nbsp;tagList)</PRE>
+<DL>
+<DD>Enables surrounding spaces removal around provided comma separated list of tags.
+ 
+ <p>Besides custom defined lists, you can pass one of 3 predefined lists of tags: 
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MIN"><CODE>BLOCK_TAGS_MIN</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#BLOCK_TAGS_MAX"><CODE>BLOCK_TAGS_MAX</CODE></A>,
+ <A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressor.html#ALL_TAGS"><CODE>ALL_TAGS</CODE></A>.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>tagList</CODE> - a comma separated list of tags around which spaces will be removed</DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/HtmlCompressor.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/compressor/Compressor.html" title="interface in com.googlecode.htmlcompressor.compressor"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/googlecode/htmlcompressor/compressor/HtmlCompressorStatistics.html" title="class in com.googlecode.htmlcompressor.compressor"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../index.html?com/googlecode/htmlcompressor/compressor/HtmlCompressor.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="HtmlCompressor.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+Copyright &#169; 2009-2011 <a href="http://code.google.com/p/htmlcompressor/">Sergiy Kovalchuk</a>. All Rights Reserved.
+</BODY>
+</HTML>
