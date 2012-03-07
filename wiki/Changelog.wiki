@@ -1,4 +1,8 @@
 #labels Featured
+*1.5.3* (March 6, 2012)
+  * `<script>` tags with unknown `type` attribute are getting preserved but not compressed. See [http://code.google.com/p/htmlcompressor/issues/detail?id=67 Issue #67] for details. 
+  * Space between final tag attribute and a trailing slash is preserved now if attribute value is unquoted (`<input value=x />`). See [http://code.google.com/p/htmlcompressor/issues/detail?id=60 Issue #60] for details. 
+
 *1.5.2* (September 18, 2011)
   * Added `--recursive` option to command line compressor that will process files inside subdirectories as well (when in directory mode).
   * Added `setRemoveSurroundingSpaces(tagList)` option to HtmlCompressor that will remove surrounding spaces from listed tags. See [http://code.google.com/p/htmlcompressor/issues/detail?id=54 Issue #54] for details. 
