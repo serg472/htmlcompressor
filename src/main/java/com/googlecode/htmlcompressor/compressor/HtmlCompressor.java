@@ -146,6 +146,7 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern intertagPattern_CustomCustom = Pattern.compile("~%%%\\s+%%%~", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern multispacePattern = Pattern.compile("\\s+", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagEndSpacePattern = Pattern.compile("(<(?:[^>]+?))(?:\\s+?)(/?>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern tagLastUnquotedValuePattern = Pattern.compile("=\\s*[a-z0-9-_]+$", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern tagQuotePattern = Pattern.compile("\\s*=\\s*([\"'])([a-z0-9-_]+?)\\1(/?)(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern prePattern = Pattern.compile("(<pre[^>]*?>)(.*?)(</pre>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern taPattern = Pattern.compile("(<textarea[^>]*?>)(.*?)(</textarea>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -154,9 +155,9 @@ public class HtmlCompressor implements Compressor {
 	protected static final Pattern tagPropertyPattern = Pattern.compile("(\\s\\w+)\\s*=\\s*(?=[^<]*?>)", Pattern.CASE_INSENSITIVE);
 	protected static final Pattern cdataPattern = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)\\]\\]>\\s*", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern doctypePattern = Pattern.compile("<!DOCTYPE[^>]*>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	protected static final Pattern typeAttrPattern = Pattern.compile("type\\s*=\\s*([\\\"']*)(.+?)\\1", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern jsTypeAttrPattern = Pattern.compile("(<script[^>]*)type\\s*=\\s*([\"']*)(?:text|application)/javascript\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern jsLangAttrPattern = Pattern.compile("(<script[^>]*)language\\s*=\\s*([\"']*)javascript\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-	protected static final Pattern jsJqueryTmplTypePattern = Pattern.compile("<script[^>]*type\\s*=\\s*([\"']*)text/x-jquery-tmpl\\1[^>]*>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern styleTypeAttrPattern = Pattern.compile("(<style[^>]*)type\\s*=\\s*([\"']*)text/style\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern linkTypeAttrPattern = Pattern.compile("(<link[^>]*)type\\s*=\\s*([\"']*)text/(?:css|plain)\\2([^>]*>)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	protected static final Pattern linkRelAttrPattern = Pattern.compile("<link(?:[^>]*)rel\\s*=\\s*([\"']*)(?:alternate\\s+)?stylesheet\\1(?:[^>]*)>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
@@ -283,12 +284,12 @@ public class HtmlCompressor implements Compressor {
 		
 		//preserve <!-- {{{ ---><!-- }}} ---> skip blocks
 		Matcher matcher = skipPattern.matcher(html);
-		int index = 0;
+		int skipBlockIndex = 0;
 		StringBuffer sb = new StringBuffer();
 		while(matcher.find()) {
 			if(matcher.group(1).trim().length() > 0) {
 				skipBlocks.add(matcher.group(1));
-				matcher.appendReplacement(sb, MessageFormat.format(tempSkipBlock, index++));
+				matcher.appendReplacement(sb, MessageFormat.format(tempSkipBlock, skipBlockIndex++));
 			}
 		}
 		matcher.appendTail(sb);
@@ -297,7 +298,7 @@ public class HtmlCompressor implements Compressor {
 		//preserve conditional comments
 		HtmlCompressor condCommentCompressor = createCompressorClone(); 
 		matcher = condCommentPattern.matcher(html);
-		index = 0;
+		int index = 0;
 		sb = new StringBuffer();
 		while(matcher.find()) {
 			if(matcher.group(2).trim().length() > 0) {
@@ -352,11 +353,26 @@ public class HtmlCompressor implements Compressor {
 		while(matcher.find()) {
 			//ignore empty scripts
 			if(matcher.group(2).trim().length() > 0) {
-				//ignore jquery templates
-				if(!jsJqueryTmplTypePattern.matcher(matcher.group(1)).matches()) {
+				
+				//check type
+				String type = "";
+				Matcher typeMatcher = typeAttrPattern.matcher(matcher.group(1));
+				if(typeMatcher.find()) {
+					type = typeMatcher.group(2).toLowerCase();
+				}
+				
+				if(type.length() == 0 || type.equals("text/javascript") || type.equals("application/javascript")) {
+					//javascript block, preserve and compress with js compressor
 					scriptBlocks.add(matcher.group(2));
 					matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempScriptBlock, index++)+"$3");
+				} else if(type.equals("text/x-jquery-tmpl")) {
+					//jquery template, ignore so it gets compressed with the rest of html
+				} else {
+					//some custom script, preserve it inside "skip blocks" so it won't be compressed with js compressor 
+					skipBlocks.add(matcher.group(2));
+					matcher.appendReplacement(sb, "$1"+MessageFormat.format(tempSkipBlock, skipBlockIndex++)+"$3");
 				}
+				
 			}
 		}
 		matcher.appendTail(sb);
@@ -625,7 +641,20 @@ public class HtmlCompressor implements Compressor {
 		html = tagPropertyPattern.matcher(html).replaceAll("$1=");
 		
 		//remove ending spaces inside tags
-		html = tagEndSpacePattern.matcher(html).replaceAll("$1$2");
+		//html = tagEndSpacePattern.matcher(html).replaceAll("$1$2");
+		Matcher matcher = tagEndSpacePattern.matcher(html);
+		StringBuffer sb = new StringBuffer();
+		while(matcher.find()) {
+			//keep space if attribute value is unquoted before trailing slash
+			if(matcher.group(2).startsWith("/") && tagLastUnquotedValuePattern.matcher(matcher.group(1)).find()) {
+				matcher.appendReplacement(sb, "$1 $2");
+			} else {
+				matcher.appendReplacement(sb, "$1$2");
+			}
+		}
+		matcher.appendTail(sb);
+		html = sb.toString();
+		
 		return html;
 	}
 
