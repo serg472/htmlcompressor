@@ -119,10 +119,8 @@ public class HtmlCompressorTag extends BodyTagSupport {
 			bodyContent.clear();
 			bodyContent.append(htmlCompressor.compress(content));
 			bodyContent.writeOut(pageContext.getOut());
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new JspException("Failed to compress html",e);
 		}
 		
 		return super.doEndTag();
