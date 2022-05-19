@@ -1,3 +1,5 @@
+## !!! This library is no longer maintained !!! ##
+
 HtmlCompressor is a small, fast and very easy to use Java library that minifies given HTML or XML source by removing extra whitespaces, comments and other unneeded characters without breaking the content structure. As a result pages become smaller in size and load faster. A command-line version of the compressor is also available.
 
 ## How it Works ##
